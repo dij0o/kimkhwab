@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>KimKhawb Hair Studio - Invoices</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="css/simplebar.css">
+    <!-- Fonts CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="css/feather.css">
+    <link rel="stylesheet" href="css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="css/select2.css">
+    <link rel="stylesheet" href="css/dropzone.css">
+    <link rel="stylesheet" href="css/uppy.min.css">
+    <link rel="stylesheet" href="css/jquery.steps.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="css/quill.snow.css">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="css/daterangepicker.css">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/app-light.css" id="lightTheme">
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled>
+  </head>
+  <body class="vertical  light  ">
+    <div class="wrapper">
+      <nav class="topnav navbar navbar-light">
+        <div class="d-flex flex-grow-1"></div>
+        <ul class="nav">
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-bell fe-16"></span>
+              <span class="dot dot-md bg-success"></span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="avatar avatar-sm mt-2">
+                <img src="./assets/avatars/face-1.jpg" alt="..." class="avatar-img rounded-circle">
+              </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Activities</a>
+              <a class="dropdown-item" href="#">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+        <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+          <i class="fe fe-x"><span class="sr-only"></span></i>
+        </a>
+        <nav class="vertnav navbar navbar-light">
+          <!-- nav bar -->
+          <div class="w-100 mb-4 d-flex">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+              <img src="assets/images/logo.png" id="logo" class="navbar-brand-img brand-md" alt="Logo" style="width: 8rem; height: auto;">
+            </a>
+          </div>
+          <ul class="navbar-nav flex-fill w-100 mb-2">
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Overview</span>
+            </p>
+            <!-- Overview -->
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_dashboard.html">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- Customer Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Customer Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_customers.html">
+                <i class="fe fe-users fe-16"></i>
+                <span class="ml-3 item-text">Customers</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_calendar.html">
+                <i class="fe fe-calendar fe-16"></i>
+                <span class="ml-3 item-text">Appointments</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_gallery.html">
+                <i class="fe fe-image fe-16"></i>
+                <span class="ml-3 item-text">Gallery</span>
+              </a>
+            </li>
+             <!-- Service Management -->
+             <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Service Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services_categories.html">
+                <i class="fe fe-folder fe-16"></i>
+                <span class="ml-3 item-text">Service Categories</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services.html">
+                <i class="fe fe-settings fe-16"></i>
+                <span class="ml-3 item-text">Services</span>
+              </a>
+            </li>
+
+            <!-- Financial -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Financials</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_bookkeeping.html">
+                <i class="fe fe-book fe-16"></i>
+                <span class="ml-3 item-text">Ledger</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link active" href="kk_invoices.html">
+                <i class="fe fe-file-text fe-16"></i>
+                <span class="ml-3 item-text">Invoices</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_payslips.html">
+                <i class="fe fe-dollar-sign fe-16"></i>
+                <span class="ml-3 item-text">Payslips</span>
+              </a>
+            </li>
+
+            <!-- Staff -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Staff Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_employees.html">
+                <i class="fe fe-user fe-16"></i>
+                <span class="ml-3 item-text">Employees</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_roles_permissions.html">
+                <i class="fe fe-shield fe-16"></i>
+                <span class="ml-3 item-text">Roles & Permissions</span>
+              </a>
+            </li>
+
+            <!-- Reports -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Reports</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_reports.html">
+                <i class="fe fe-clipboard fe-16"></i>
+                <span class="ml-3 item-text">Reports</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="card shadow mb-4 border-0">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h2 class="h3 mb-0 page-title">Invoices</h2>
+                    </div>
+                    <div class="col-auto">
+                      <a href="kk_invoice_new.html" class="btn btn-primary"><span class="fe fe-plus fe-12 mr-2"></span>Create New Invoice for Walk-in</a>
+                      <a href="kk_invoice_new.html" class="btn btn-primary"><span class="fe fe-plus fe-12 mr-2"></span>Create New Invoice from Appointment</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- table -->
+              <div class="card shadow mb-4 border-0">
+                <div class="card-body">
+                  <!-- table -->
+                  <table class="table datatables" id="dataTable-1">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Date/Time</th>
+                        <th>Customer</th>
+                        <th>Staff</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Appointment</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>#001</td>
+                        <td>Jan 15, 2024<br><small class="text-muted">10:30 AM - 12:00 PM</small></td>
+                        <td>Sarah Johnson</td>
+                        <td>Ahmed Khan</td>
+                        <td>Hair Styling, Hair Coloring +2 more</td>
+                        <td>Rs. 2,500.00</td>
+                        <td><span class="badge badge-primary">Paid</span></td>
+                        <td><a href="#" onclick="viewAppointment(1)" class="text-primary"><span class="fe fe-link fe-12"></span></a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(1)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(1)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(1)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#002</td>
+                        <td>Jan 14, 2024<br><small class="text-muted">2:00 PM - 3:30 PM</small></td>
+                        <td>Walk-in Customer</td>
+                        <td>Nadia Khan</td>
+                        <td>Hair Treatment</td>
+                        <td>Rs. 1,800.00</td>
+                        <td><span class="badge badge-secondary">Unpaid</span></td>
+                        <td>-</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(2)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(2)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(2)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#003</td>
+                        <td>Jan 13, 2024<br><small class="text-muted">11:00 AM - 1:00 PM</small></td>
+                        <td>Maria Garcia</td>
+                        <td>Ahmed Khan</td>
+                        <td>Bridal Makeup, Hair Styling, Facial Treatment</td>
+                        <td>Rs. 4,500.00</td>
+                        <td><span class="badge badge-primary">Paid</span></td>
+                        <td><a href="#" onclick="viewAppointment(3)" class="text-primary"><span class="fe fe-link fe-12"></span></a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(3)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(3)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(3)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#004</td>
+                        <td>Jan 12, 2024<br><small class="text-muted">3:30 PM - 4:30 PM</small></td>
+                        <td>Priya Sharma</td>
+                        <td>Nadia Khan</td>
+                        <td>Manicure, Pedicure +1 more</td>
+                        <td>Rs. 1,200.00</td>
+                        <td><span class="badge badge-secondary">Unpaid</span></td>
+                        <td><a href="#" onclick="viewAppointment(4)" class="text-primary"><span class="fe fe-link fe-12"></span></a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(4)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(4)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(4)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#005</td>
+                        <td>Jan 11, 2024<br><small class="text-muted">9:00 AM - 10:30 AM</small></td>
+                        <td>Fatima Ali</td>
+                        <td>Ahmed Khan</td>
+                        <td>Hair Coloring</td>
+                        <td>Rs. 1,500.00</td>
+                        <td><span class="badge badge-primary">Paid</span></td>
+                        <td>-</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(5)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(5)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(5)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#006</td>
+                        <td>Jan 10, 2024<br><small class="text-muted">1:00 PM - 2:30 PM</small></td>
+                        <td>Zara Ahmed</td>
+                        <td>Nadia Khan</td>
+                        <td>Hair Treatment, Facial Treatment</td>
+                        <td>Rs. 2,800.00</td>
+                        <td><span class="badge badge-primary">Paid</span></td>
+                        <td><a href="#" onclick="viewAppointment(6)" class="text-primary"><span class="fe fe-link fe-12"></span></a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(6)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(6)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(6)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#007</td>
+                        <td>Jan 9, 2024<br><small class="text-muted">4:00 PM - 5:00 PM</small></td>
+                        <td>Walk-in Customer</td>
+                        <td>Ahmed Khan</td>
+                        <td>Hair Styling</td>
+                        <td>Rs. 800.00</td>
+                        <td><span class="badge badge-secondary">Unpaid</span></td>
+                        <td>-</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(7)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(7)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(7)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>#008</td>
+                        <td>Jan 8, 2024<br><small class="text-muted">10:00 AM - 11:30 AM</small></td>
+                        <td>Layla Hassan</td>
+                        <td>Nadia Khan</td>
+                        <td>Bridal Makeup, Hair Styling</td>
+                        <td>Rs. 3,200.00</td>
+                        <td><span class="badge badge-primary">Paid</span></td>
+                        <td><a href="#" onclick="viewAppointment(8)" class="text-primary"><span class="fe fe-link fe-12"></span></a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="viewInvoiceDetails(8)">View Details</a>
+                              <a class="dropdown-item" href="#" onclick="printInvoice(8)">Print</a>
+                              <a class="dropdown-item" href="#" onclick="deleteInvoice(8)">Delete</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div> <!-- .col-12 -->
+          </div> <!-- .row -->
+
+
+        </div> <!-- .container-fluid -->
+        <!-- Create Invoice Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="createInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="createInvoiceModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="createInvoiceModalLabel">Create New Invoice</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="form-group">
+                    <label for="invoiceCustomer">Customer</label>
+                    <select class="form-control select2" id="invoiceCustomer" required>
+                      <option value="">Select Customer</option>
+                      <option value="1">Sarah Johnson</option>
+                      <option value="2">Maria Garcia</option>
+                      <option value="3">Priya Sharma</option>
+                      <option value="4">Fatima Ali</option>
+                      <option value="walkin">Walk-in Customer</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="invoiceStaff">Staff Member</label>
+                    <select class="form-control select2" id="invoiceStaff" required>
+                      <option value="">Select Staff</option>
+                      <option value="1">Ahmed Khan</option>
+                      <option value="2">Nadia Khan</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="invoiceServices">Services</label>
+                    <select class="form-control select2" id="invoiceServices" multiple required>
+                      <option value="1">Hair Styling - Rs. 45.00</option>
+                      <option value="2">Hair Coloring - Rs. 85.00</option>
+                      <option value="3">Hair Treatment - Rs. 65.00</option>
+                      <option value="4">Bridal Makeup - Rs. 120.00</option>
+                      <option value="5">Facial Treatment - Rs. 75.00</option>
+                      <option value="6">Manicure - Rs. 35.00</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="invoiceDate">Invoice Date</label>
+                    <input type="date" class="form-control" id="invoiceDate" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="invoiceNotes">Notes</label>
+                    <textarea class="form-control" id="invoiceNotes" rows="3" placeholder="Additional notes..."></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Create Invoice</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Invoice Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="viewInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="viewInvoiceModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewInvoiceModalLabel">Invoice Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6>Invoice Information</h6>
+                    <p><strong>Invoice #:</strong> <span id="viewInvoiceNumber"></span></p>
+                    <p><strong>Date:</strong> <span id="viewInvoiceDate"></span></p>
+                    <p><strong>Status:</strong> <span id="viewInvoiceStatus"></span></p>
+                  </div>
+                  <div class="col-md-6">
+                    <h6>Customer Information</h6>
+                    <p><strong>Customer:</strong> <span id="viewInvoiceCustomer"></span></p>
+                    <p><strong>Staff:</strong> <span id="viewInvoiceStaff"></span></p>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <h6>Services</h6>
+                  <div id="viewInvoiceServices"></div>
+                </div>
+                <div class="mt-4 text-right">
+                  <h5><strong>Total: <span id="viewInvoiceTotal"></span></strong></h5>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printInvoice()">Print</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Appointment Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="viewAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="viewAppointmentModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewAppointmentModalLabel">Appointment Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label>Appointment #</label>
+                      <input type="text" class="form-control" id="viewAppointmentId" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Date</label>
+                      <input type="text" class="form-control" id="viewAppointmentDate" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Time</label>
+                      <input type="text" class="form-control" id="viewAppointmentTime" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Status</label>
+                      <input type="text" class="form-control" id="viewAppointmentStatus" readonly>
+                    </div>
+
+                    <h6 class="mt-4">Customer & Service</h6>
+                    <div class="form-group">
+                      <label>Customer</label>
+                      <input type="text" class="form-control" id="viewAppointmentCustomer" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Stylist</label>
+                      <input type="text" class="form-control" id="viewAppointmentStylist" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Service Category</label>
+                      <input type="text" class="form-control" id="viewAppointmentCategory" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Service</label>
+                      <input type="text" class="form-control" id="viewAppointmentService" readonly>
+                    </div>
+
+                    <h6 class="mt-4">Additional Information</h6>
+                    <div class="form-group">
+                      <label>Referral Source</label>
+                      <input type="text" class="form-control" id="viewAppointmentSource" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Notes</label>
+                      <textarea class="form-control" id="viewAppointmentNotes" rows="3" readonly></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="kk_calendar.html" class="btn btn-primary">View in Calendar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="deleteInvoiceModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteInvoiceModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure you want to delete this invoice? This action cannot be undone.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="list-group list-group-flush my-n3">
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-box fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Package has uploaded successfull</strong></small>
+                        <div class="my-0 text-muted small">Package is zipped and uploaded</div>
+                        <small class="badge badge-pill badge-light text-muted">1m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-download fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Widgets are updated successfull</strong></small>
+                        <div class="my-0 text-muted small">Just create new layout Index, form, table</div>
+                        <small class="badge badge-pill badge-light text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-inbox fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Notifications have been sent</strong></small>
+                        <div class="my-0 text-muted small">Fusce dapibus, tellus ac cursus commodo</div>
+                        <small class="badge badge-pill badge-light text-muted">30m ago</small>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-link fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Link was attached to menu</strong></small>
+                        <div class="my-0 text-muted small">New layout has been attached to the menu</div>
+                        <small class="badge badge-pill badge-light text-muted">1h ago</small>
+                      </div>
+                    </div>
+                  </div> <!-- / .row -->
+                </div> <!-- / .list-group -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Clear All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src='js/daterangepicker.js'></script>
+    <script src='js/jquery.stickOnScroll.js'></script>
+    <script src="js/tinycolor-min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    <script src="js/datamaps-zoomto.js"></script>
+    <script src="js/datamaps.custom.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script>
+      /* defind global options */
+      Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+      Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+    <script src="js/gauge.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/apexcharts.custom.js"></script>
+    <script src='js/jquery.mask.min.js'></script>
+    <script src='js/select2.min.js'></script>
+    <script src='js/jquery.steps.min.js'></script>
+    <script src='js/jquery.validate.min.js'></script>
+    <script src='js/jquery.timepicker.js'></script>
+    <script src='js/dropzone.min.js'></script>
+    <script src='js/uppy.min.js'></script>
+    <script src='js/quill.min.js'></script>
+    <script src='js/jquery.dataTables.min.js'></script>
+    <script src='js/dataTables.bootstrap4.min.js'></script>
+    <script>
+      $('#dataTable-1').DataTable(
+      {
+        autoWidth: true,
+        "lengthMenu": [
+          [16, 32, 64, -1],
+          [16, 32, 64, "All"]
+        ]
+      });
+    </script>
+    <script>
+      $('.select2').select2(
+      {
+        theme: 'bootstrap4',
+      });
+      $('.select2-multi').select2(
+      {
+        multiple: true,
+        theme: 'bootstrap4',
+      });
+      $('.drgpicker').daterangepicker(
+      {
+        singleDatePicker: true,
+        timePicker: false,
+        showDropdowns: true,
+        locale:
+        {
+          format: 'MM/DD/YYYY'
+        }
+      });
+      $('.time-input').timepicker(
+      {
+        'scrollDefault': 'now',
+        'zindex': '9999' /* fix modal open */
+      });
+      /** date range picker */
+      if ($('.datetimes').length)
+      {
+        $('.datetimes').daterangepicker(
+        {
+          timePicker: true,
+          startDate: moment().startOf('hour'),
+          endDate: moment().startOf('hour').add(32, 'hour'),
+          locale:
+          {
+            format: 'M/DD hh:mm A'
+          }
+        });
+      }
+      var start = moment().subtract(29, 'days');
+      var end = moment();
+
+      function cb(start, end)
+      {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      }
+      $('#reportrange').daterangepicker(
+      {
+        startDate: start,
+        endDate: end,
+        ranges:
+        {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+      }, cb);
+      cb(start, end);
+      $('.input-placeholder').mask("00/00/0000",
+      {
+        placeholder: "__/__/____"
+      });
+      $('.input-zip').mask('00000-000',
+      {
+        placeholder: "____-___"
+      });
+      $('.input-money').mask("#.##0,00",
+      {
+        reverse: true
+      });
+      $('.input-phoneus').mask('(000) 000-0000');
+      $('.input-mixed').mask('AAA 000-S0S');
+      $('.input-ip').mask('0ZZ.0ZZ.0ZZ.0ZZ',
+      {
+        translation:
+        {
+          'Z':
+          {
+            pattern: /[0-9]/,
+            optional: true
+          }
+        },
+        placeholder: "___.___.___.___"
+      });
+      // editor
+      var editor = document.getElementById('editor');
+      if (editor)
+      {
+        var toolbarOptions = [
+          [
+          {
+            'font': []
+          }],
+          [
+          {
+            'header': [1, 2, 3, 4, 5, 6, false]
+          }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [
+          {
+            'header': 1
+          },
+          {
+            'header': 2
+          }],
+          [
+          {
+            'list': 'ordered'
+          },
+          {
+            'list': 'bullet'
+          }],
+          [
+          {
+            'script': 'sub'
+          },
+          {
+            'script': 'super'
+          }],
+          [
+          {
+            'indent': '-1'
+          },
+          {
+            'indent': '+1'
+          }], // outdent/indent
+          [
+          {
+            'direction': 'rtl'
+          }], // text direction
+          [
+          {
+            'color': []
+          },
+          {
+            'background': []
+          }], // dropdown with defaults from theme
+          [
+          {
+            'align': []
+          }],
+          ['clean'] // remove formatting button
+        ];
+        var quill = new Quill(editor,
+        {
+          modules:
+          {
+            toolbar: toolbarOptions
+          },
+          theme: 'snow'
+        });
+      }
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function()
+      {
+        'use strict';
+        window.addEventListener('load', function()
+        {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form)
+          {
+            form.addEventListener('submit', function(event)
+            {
+              if (form.checkValidity() === false)
+              {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
+    <script>
+      var uptarg = document.getElementById('drag-drop-area');
+      if (uptarg)
+      {
+        var uppy = Uppy.Core().use(Uppy.Dashboard,
+        {
+          inline: true,
+          target: uptarg,
+          proudlyDisplayPoweredByUppy: false,
+          theme: 'dark',
+          width: 770,
+          height: 210,
+          plugins: ['Webcam']
+        }).use(Uppy.Tus,
+        {
+          endpoint: 'https://master.tus.io/files/'
+        });
+        uppy.on('complete', (result) =>
+        {
+          console.log('Upload complete! We’ve uploaded these files:', result.successful)
+        });
+      }
+    </script>
+    <script src="js/apps.js"></script>
+
+    <!-- Invoice JavaScript Functions -->
+    <script>
+
+      // Initialize Select2 for modals
+      $('#invoiceCustomer, #invoiceStaff').select2({
+        theme: 'bootstrap4',
+        dropdownParent: $('#createInvoiceModal')
+      });
+
+      $('#invoiceServices').select2({
+        theme: 'bootstrap4',
+        dropdownParent: $('#createInvoiceModal')
+      });
+
+      // Set default date to today
+      document.getElementById('invoiceDate').value = new Date().toISOString().split('T')[0];
+
+      // Invoice data (mock data for demo)
+      const invoiceData = {
+        1: {
+          number: '#001',
+          date: 'Jan 15, 2024',
+          time: '10:30 AM - 12:00 PM',
+          customer: 'Sarah Johnson',
+          staff: 'Ahmed Khan',
+          services: ['Hair Styling', 'Hair Coloring', 'Hair Treatment', 'Facial Treatment'],
+          total: 'Rs. 2,500.00',
+          status: 'Paid',
+          hasAppointment: true
+        },
+        2: {
+          number: '#002',
+          date: 'Jan 14, 2024',
+          time: '2:00 PM - 3:30 PM',
+          customer: 'Walk-in',
+          staff: 'Nadia Khan',
+          services: ['Hair Treatment'],
+          total: 'Rs. 1,800.00',
+          status: 'Unpaid',
+          hasAppointment: false
+        },
+        3: {
+          number: '#003',
+          date: 'Jan 13, 2024',
+          time: '11:00 AM - 1:00 PM',
+          customer: 'Maria Garcia',
+          staff: 'Ahmed Khan',
+          services: ['Bridal Makeup', 'Hair Styling', 'Facial Treatment'],
+          total: 'Rs. 4,500.00',
+          status: 'Paid',
+          hasAppointment: true
+        },
+        4: {
+          number: '#004',
+          date: 'Jan 12, 2024',
+          time: '3:30 PM - 4:30 PM',
+          customer: 'Priya Sharma',
+          staff: 'Nadia Khan',
+          services: ['Manicure', 'Pedicure', 'Nail Art'],
+          total: 'Rs. 1,200.00',
+          status: 'Unpaid',
+          hasAppointment: true
+        },
+        5: {
+          number: '#005',
+          date: 'Jan 11, 2024',
+          time: '9:00 AM - 10:30 AM',
+          customer: 'Fatima Ali',
+          staff: 'Ahmed Khan',
+          services: ['Hair Coloring'],
+          total: 'Rs. 1,500.00',
+          status: 'Paid',
+          hasAppointment: false
+        }
+      };
+
+      // View invoice details
+      window.viewInvoiceDetails = function(id) {
+        const invoice = invoiceData[id];
+        if (!invoice) return;
+
+        document.getElementById('viewInvoiceNumber').textContent = invoice.number;
+        document.getElementById('viewInvoiceDate').textContent = invoice.date + ' (' + invoice.time + ')';
+        document.getElementById('viewInvoiceStatus').innerHTML = `<span class="badge badge-${invoice.status === 'Paid' ? 'primary' : 'secondary'}">${invoice.status}</span>`;
+        document.getElementById('viewInvoiceCustomer').textContent = invoice.customer;
+        document.getElementById('viewInvoiceStaff').textContent = invoice.staff;
+
+        const servicesHtml = invoice.services.map(service => `<div class="mb-2">• ${service}</div>`).join('');
+        document.getElementById('viewInvoiceServices').innerHTML = servicesHtml;
+        document.getElementById('viewInvoiceTotal').textContent = invoice.total;
+
+        $('#viewInvoiceModal').modal('show');
+      };
+
+      // Print invoice
+      window.printInvoice = function(id) {
+        const invoice = invoiceData[id];
+        if (!invoice) return;
+
+        // Create print window content
+        const printContent = `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>KimKhawb Hair Studio</h2>
+            <h3>Invoice ${invoice.number}</h3>
+            <p><strong>Date:</strong> ${invoice.date}</p>
+            <p><strong>Customer:</strong> ${invoice.customer}</p>
+            <p><strong>Staff:</strong> ${invoice.staff}</p>
+            <hr>
+            <h4>Services:</h4>
+            ${invoice.services.map(service => `<p>• ${service}</p>`).join('')}
+            <hr>
+            <h3>Total: ${invoice.total}</h3>
+            <p><strong>Status:</strong> ${invoice.status}</p>
+          </div>
+        `;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+      };
+
+      // Duplicate invoice
+      window.duplicateInvoice = function(id) {
+        const invoice = invoiceData[id];
+        if (!invoice) return;
+
+        // Pre-fill the create invoice modal
+        document.getElementById('invoiceDate').value = new Date().toISOString().split('T')[0];
+
+        // Show the create modal
+        $('#createInvoiceModal').modal('show');
+
+        // You could pre-select the customer and services here
+        console.log('Duplicating invoice:', invoice.number);
+      };
+
+      // Delete invoice
+      let pendingDeleteId = null;
+      window.deleteInvoice = function(id) {
+        pendingDeleteId = id;
+        $('#deleteInvoiceModal').modal('show');
+      };
+
+      document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (pendingDeleteId != null) {
+          // Remove the row from the table
+          const rows = document.querySelectorAll('tbody tr');
+          rows.forEach(function(row) {
+            const link = row.querySelector('td a');
+            if (link && link.textContent === '#' + String(pendingDeleteId).padStart(3, '0')) {
+              row.style.display = 'none';
+            }
+          });
+
+          pendingDeleteId = null;
+          $('#deleteInvoiceModal').modal('hide');
+        }
+      });
+
+      // View appointment modal
+      window.viewAppointment = function(id) {
+        // Mock appointment data - in a real app, this would fetch from an API
+        const appointment = {
+          id: id,
+          customer: 'Sarah Johnson',
+          stylist: 'Ahmed Khan',
+          date: 'Jan 15, 2024',
+          time: '10:30 AM - 12:00 PM',
+          serviceCategory: 'Hair Coloring',
+          service: 'Hair Styling, Hair Coloring +2 more',
+          status: 'Completed',
+          source: 'Online',
+          notes: 'Customer requested specific color treatment'
+        };
+
+        // Populate the appointment modal
+        document.getElementById('viewAppointmentId').value = appointment.id;
+        document.getElementById('viewAppointmentDate').value = appointment.date;
+        document.getElementById('viewAppointmentTime').value = appointment.time;
+        document.getElementById('viewAppointmentStatus').value = appointment.status;
+        document.getElementById('viewAppointmentCustomer').value = appointment.customer;
+        document.getElementById('viewAppointmentStylist').value = appointment.stylist;
+        document.getElementById('viewAppointmentCategory').value = appointment.serviceCategory;
+        document.getElementById('viewAppointmentService').value = appointment.service;
+        document.getElementById('viewAppointmentSource').value = appointment.source;
+        document.getElementById('viewAppointmentNotes').value = appointment.notes || 'No notes available';
+
+        // Show the modal
+        $('#viewAppointmentModal').modal('show');
+      };
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag()
+      {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-56159088-1');
+    </script>
+  </body>
+</html>

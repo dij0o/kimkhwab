@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>KimKhawb Hair Studio - Roles & Permissions</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="css/simplebar.css">
+    <!-- Fonts CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="css/feather.css">
+    <link rel="stylesheet" href="css/select2.css">
+    <link rel="stylesheet" href="css/dropzone.css">
+    <link rel="stylesheet" href="css/uppy.min.css">
+    <link rel="stylesheet" href="css/jquery.steps.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="css/quill.snow.css">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="css/daterangepicker.css">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/app-light.css" id="lightTheme">
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled>
+  </head>
+  <body class="vertical  light  ">
+    <div class="wrapper">
+      <nav class="topnav navbar navbar-light">
+        <div class="d-flex flex-grow-1"></div>
+        <ul class="nav">
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-bell fe-16"></span>
+              <span class="dot dot-md bg-success"></span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="avatar avatar-sm mt-2">
+                <img src="./assets/avatars/face-1.jpg" alt="..." class="avatar-img rounded-circle">
+              </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Activities</a>
+              <a class="dropdown-item" href="#">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+        <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+          <i class="fe fe-x"><span class="sr-only"></span></i>
+        </a>
+        <nav class="vertnav navbar navbar-light">
+          <!-- nav bar -->
+          <div class="w-100 mb-4 d-flex">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+              <img src="assets/images/logo.png" id="logo" class="navbar-brand-img brand-md" alt="Logo" style="width: 8rem; height: auto;">
+            </a>
+          </div>
+          <ul class="navbar-nav flex-fill w-100 mb-2">
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Overview</span>
+            </p>
+            <!-- Overview -->
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_dashboard.html">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- Customer Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Customer Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_customers.html">
+                <i class="fe fe-users fe-16"></i>
+                <span class="ml-3 item-text">Customers</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_calendar.html">
+                <i class="fe fe-calendar fe-16"></i>
+                <span class="ml-3 item-text">Appointments</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_gallery.html">
+                <i class="fe fe-image fe-16"></i>
+                <span class="ml-3 item-text">Gallery</span>
+              </a>
+            </li>
+             <!-- Financial -->
+             <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Service Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services_categories.html">
+                <i class="fe fe-folder fe-16"></i>
+                <span class="ml-3 item-text">Service Categories</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services.html">
+                <i class="fe fe-settings fe-16"></i>
+                <span class="ml-3 item-text">Services</span>
+              </a>
+            </li>
+
+            <!-- Financial -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Financials</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_bookkeeping.html">
+                <i class="fe fe-book fe-16"></i>
+                <span class="ml-3 item-text">Ledger</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_invoices.html">
+                <i class="fe fe-file-text fe-16"></i>
+                <span class="ml-3 item-text">Invoices</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_payslips.html">
+                <i class="fe fe-dollar-sign fe-16"></i>
+                <span class="ml-3 item-text">Payslips</span>
+              </a>
+            </li>
+
+            <!-- Staff -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Staff Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_employees.html">
+                <i class="fe fe-user fe-16"></i>
+                <span class="ml-3 item-text">Employees</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link active" href="kk_roles_permissions.html">
+                <i class="fe fe-shield fe-16"></i>
+                <span class="ml-3 item-text">Roles & Permissions</span>
+              </a>
+            </li>
+
+            <!-- Reports -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Reports</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_reports.html">
+                <i class="fe fe-clipboard fe-16"></i>
+                <span class="ml-3 item-text">Reports</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="card shadow mb-4 border-0">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h2 class="h3 mb-0 page-title">Roles & Permissions</h2>
+                    </div>
+                    <div class="col-auto">
+                      <div class="input-group mr-2 d-inline-flex w-auto">
+                        <input type="text" class="form-control" placeholder="Search roles...">
+                        <div class="input-group-append">
+                          <button class="btn btn-primary" type="button">
+                            <span class="fe fe-search fe-12"></span>
+                          </button>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addRoleModal"><span class="fe fe-plus fe-12 mr-2"></span>Create New Role</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- table -->
+              <div class="card shadow mb-4 border-0">
+                <div class="card-body">
+                  <table class="table table-borderless table-hover">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Role Name</th>
+                        <th>Description</th>
+                        <th>Number of Employees</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>Administrator</td>
+                        <td>Full system access with all permissions</td>
+                        <td>2</td>
+                        <td><span class="badge badge-pill badge-primary">Active</span></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editRoleModal">Edit Role</a>
+                              <a class="dropdown-item" href="#" onclick="viewRolePermissions(1)">View Permissions</a>
+                              <a class="dropdown-item" href="#" onclick="deactivateRole(1)">Deactivate</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td>Manager</td>
+                        <td>Management level access for daily operations</td>
+                        <td>3</td>
+                        <td><span class="badge badge-pill badge-primary">Active</span></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editRoleModal">Edit Role</a>
+                              <a class="dropdown-item" href="#" onclick="viewRolePermissions(2)">View Permissions</a>
+                              <a class="dropdown-item" href="#" onclick="deactivateRole(2)">Deactivate</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>3</td>
+                        <td>Stylist</td>
+                        <td>Basic access for service providers</td>
+                        <td>5</td>
+                        <td><span class="badge badge-pill badge-primary">Active</span></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editRoleModal">Edit Role</a>
+                              <a class="dropdown-item" href="#" onclick="viewRolePermissions(3)">View Permissions</a>
+                              <a class="dropdown-item" href="#" onclick="deactivateRole(3)">Deactivate</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>4</td>
+                        <td>Receptionist</td>
+                        <td>Front desk and customer service access</td>
+                        <td>2</td>
+                        <td><span class="badge badge-pill badge-primary">Active</span></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editRoleModal">Edit Role</a>
+                              <a class="dropdown-item" href="#" onclick="viewRolePermissions(4)">View Permissions</a>
+                              <a class="dropdown-item" href="#" onclick="deactivateRole(4)">Deactivate</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>5</td>
+                        <td>Intern</td>
+                        <td>Limited access for training purposes</td>
+                        <td>1</td>
+                        <td><span class="badge badge-pill badge-secondary">Inactive</span></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editRoleModal">Edit Role</a>
+                              <a class="dropdown-item" href="#" onclick="viewRolePermissions(5)">View Permissions</a>
+                              <a class="dropdown-item" href="#" onclick="activateRole(5)">Activate</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <nav aria-label="Table Paging" class="my-3">
+                <ul class="pagination justify-content-end mb-0">
+                  <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+              </nav>
+            </div> <!-- .col-12 -->
+          </div> <!-- .row -->
+
+
+        </div> <!-- .container-fluid -->
+        <!-- Add Role Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="addRoleModal" tabindex="-1" role="dialog" aria-labelledby="addRoleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addRoleModalLabel">Create New Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="addRoleForm">
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="roleName">Role Name</label>
+                      <input type="text" class="form-control" id="roleName" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="roleStatus">Status</label>
+                      <select class="form-control" id="roleStatus">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="roleDescription">Description</label>
+                    <textarea class="form-control" id="roleDescription" rows="3" placeholder="Describe the role's purpose and responsibilities"></textarea>
+                  </div>
+
+                  <hr>
+                  <h6 class="mb-3">Assign Permissions</h6>
+
+                  <!-- Customer Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-primary mb-2">Customer Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_customers">
+                          <label class="custom-control-label" for="can_view_customers">View Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_create_customers">
+                          <label class="custom-control-label" for="can_create_customers">Create Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_edit_customers">
+                          <label class="custom-control-label" for="can_edit_customers">Edit Customers</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_delete_customers">
+                          <label class="custom-control-label" for="can_delete_customers">Delete Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_appointments">
+                          <label class="custom-control-label" for="can_view_appointments">View Appointments</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_manage_appointments">
+                          <label class="custom-control-label" for="can_manage_appointments">Manage Appointments</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Service Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-success mb-2">Service Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_services">
+                          <label class="custom-control-label" for="can_view_services">View Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_create_services">
+                          <label class="custom-control-label" for="can_create_services">Create Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_edit_services">
+                          <label class="custom-control-label" for="can_edit_services">Edit Services</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_delete_services">
+                          <label class="custom-control-label" for="can_delete_services">Delete Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_manage_categories">
+                          <label class="custom-control-label" for="can_manage_categories">Manage Categories</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Financial Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-warning mb-2">Financial Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_ledger">
+                          <label class="custom-control-label" for="can_view_ledger">View Ledger</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_create_invoice">
+                          <label class="custom-control-label" for="can_create_invoice">Create Invoices</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_invoices">
+                          <label class="custom-control-label" for="can_view_invoices">View Invoices</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_manage_payslips">
+                          <label class="custom-control-label" for="can_manage_payslips">Manage Payslips</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_reports">
+                          <label class="custom-control-label" for="can_view_reports">View Reports</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Staff Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-info mb-2">Staff Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_employees">
+                          <label class="custom-control-label" for="can_view_employees">View Employees</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_create_employees">
+                          <label class="custom-control-label" for="can_create_employees">Create Employees</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_edit_employees">
+                          <label class="custom-control-label" for="can_edit_employees">Edit Employees</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_manage_roles">
+                          <label class="custom-control-label" for="can_manage_roles">Manage Roles & Permissions</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_service_history">
+                          <label class="custom-control-label" for="can_view_service_history">View Service History</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- System Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-danger mb-2">System Administration</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_access_settings">
+                          <label class="custom-control-label" for="can_access_settings">Access Settings</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_manage_system">
+                          <label class="custom-control-label" for="can_manage_system">Manage System</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="can_view_audit_logs">
+                          <label class="custom-control-label" for="can_view_audit_logs">View Audit Logs</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveRole()">Create Role</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Role Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="editRoleModal" tabindex="-1" role="dialog" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="editRoleForm">
+                  <input type="hidden" id="editRoleId">
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="editRoleName">Role Name</label>
+                      <input type="text" class="form-control" id="editRoleName" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="editRoleStatus">Status</label>
+                      <select class="form-control" id="editRoleStatus">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="editRoleDescription">Description</label>
+                    <textarea class="form-control" id="editRoleDescription" rows="3" placeholder="Describe the role's purpose and responsibilities"></textarea>
+                  </div>
+
+                  <hr>
+                  <h6 class="mb-3">Manage Permissions</h6>
+
+                  <!-- Customer Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-primary mb-2">Customer Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_customers">
+                          <label class="custom-control-label" for="edit_can_view_customers">View Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_create_customers">
+                          <label class="custom-control-label" for="edit_can_create_customers">Create Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_edit_customers">
+                          <label class="custom-control-label" for="edit_can_edit_customers">Edit Customers</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_delete_customers">
+                          <label class="custom-control-label" for="edit_can_delete_customers">Delete Customers</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_appointments">
+                          <label class="custom-control-label" for="edit_can_view_appointments">View Appointments</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_manage_appointments">
+                          <label class="custom-control-label" for="edit_can_manage_appointments">Manage Appointments</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Service Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-success mb-2">Service Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_services">
+                          <label class="custom-control-label" for="edit_can_view_services">View Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_create_services">
+                          <label class="custom-control-label" for="edit_can_create_services">Create Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_edit_services">
+                          <label class="custom-control-label" for="edit_can_edit_services">Edit Services</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_delete_services">
+                          <label class="custom-control-label" for="edit_can_delete_services">Delete Services</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_manage_categories">
+                          <label class="custom-control-label" for="edit_can_manage_categories">Manage Categories</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Financial Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-warning mb-2">Financial Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_ledger">
+                          <label class="custom-control-label" for="edit_can_view_ledger">View Ledger</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_create_invoice">
+                          <label class="custom-control-label" for="edit_can_create_invoice">Create Invoices</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_invoices">
+                          <label class="custom-control-label" for="edit_can_view_invoices">View Invoices</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_manage_payslips">
+                          <label class="custom-control-label" for="edit_can_manage_payslips">Manage Payslips</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_reports">
+                          <label class="custom-control-label" for="edit_can_view_reports">View Reports</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Staff Management Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-info mb-2">Staff Management</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_employees">
+                          <label class="custom-control-label" for="edit_can_view_employees">View Employees</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_create_employees">
+                          <label class="custom-control-label" for="edit_can_create_employees">Create Employees</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_edit_employees">
+                          <label class="custom-control-label" for="edit_can_edit_employees">Edit Employees</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_manage_roles">
+                          <label class="custom-control-label" for="edit_can_manage_roles">Manage Roles & Permissions</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_service_history">
+                          <label class="custom-control-label" for="edit_can_view_service_history">View Service History</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- System Permissions -->
+                  <div class="permission-group mb-4">
+                    <h6 class="text-danger mb-2">System Administration</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_access_settings">
+                          <label class="custom-control-label" for="edit_can_access_settings">Access Settings</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_manage_system">
+                          <label class="custom-control-label" for="edit_can_manage_system">Manage System</label>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="edit_can_view_audit_logs">
+                          <label class="custom-control-label" for="edit_can_view_audit_logs">View Audit Logs</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateRole()">Update Role</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Role Permissions Modal -->
+        <div class="modal fade modal-shortcut modal-slide" id="viewPermissionsModal" tabindex="-1" role="dialog" aria-labelledby="viewPermissionsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewPermissionsModalLabel">Role Permissions</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">Role Information</h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <td><strong>Role Name:</strong></td>
+                        <td id="viewRoleName">-</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Description:</strong></td>
+                        <td id="viewRoleDescription">-</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Status:</strong></td>
+                        <td id="viewRoleStatus">-</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Total Permissions:</strong></td>
+                        <td id="viewRolePermissionCount">-</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="text-success mb-3">Assigned Permissions</h6>
+                    <div id="viewPermissionsList" class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                      <!-- Permissions will be populated here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editRoleFromView()">Edit Role</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="list-group list-group-flush my-n3">
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-box fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Package has uploaded successfull</strong></small>
+                        <div class="my-0 text-muted small">Package is zipped and uploaded</div>
+                        <small class="badge badge-pill badge-light text-muted">1m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-download fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Widgets are updated successfull</strong></small>
+                        <div class="my-0 text-muted small">Just create new layout Index, form, table</div>
+                        <small class="badge badge-pill badge-light text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-inbox fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Notifications have been sent</strong></small>
+                        <div class="my-0 text-muted small">Fusce dapibus, tellus ac cursus commodo</div>
+                        <small class="badge badge-pill badge-light text-muted">30m ago</small>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-link fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Link was attached to menu</strong></small>
+                        <div class="my-0 text-muted small">New layout has been attached to the menu</div>
+                        <small class="badge badge-pill badge-light text-muted">1h ago</small>
+                      </div>
+                    </div>
+                  </div> <!-- / .row -->
+                </div> <!-- / .list-group -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Clear All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src='js/daterangepicker.js'></script>
+    <script src='js/jquery.stickOnScroll.js'></script>
+    <script src="js/tinycolor-min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    <script src="js/datamaps-zoomto.js"></script>
+    <script src="js/datamaps.custom.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script>
+      /* defind global options */
+      Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+      Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+    <script src="js/gauge.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/apexcharts.custom.js"></script>
+    <script src='js/jquery.mask.min.js'></script>
+    <script src='js/select2.min.js'></script>
+    <script src='js/jquery.steps.min.js'></script>
+    <script src='js/jquery.validate.min.js'></script>
+    <script src='js/jquery.timepicker.js'></script>
+    <script src='js/dropzone.min.js'></script>
+    <script src='js/uppy.min.js'></script>
+    <script src='js/quill.min.js'></script>
+    <script>
+      $('.select2').select2(
+      {
+        theme: 'bootstrap4',
+      });
+      $('.select2-multi').select2(
+      {
+        multiple: true,
+        theme: 'bootstrap4',
+      });
+      $('.drgpicker').daterangepicker(
+      {
+        singleDatePicker: true,
+        timePicker: false,
+        showDropdowns: true,
+        locale:
+        {
+          format: 'MM/DD/YYYY'
+        }
+      });
+      $('.time-input').timepicker(
+      {
+        'scrollDefault': 'now',
+        'zindex': '9999' /* fix modal open */
+      });
+      /** date range picker */
+      if ($('.datetimes').length)
+      {
+        $('.datetimes').daterangepicker(
+        {
+          timePicker: true,
+          startDate: moment().startOf('hour'),
+          endDate: moment().startOf('hour').add(32, 'hour'),
+          locale:
+          {
+            format: 'M/DD hh:mm A'
+          }
+        });
+      }
+      var start = moment().subtract(29, 'days');
+      var end = moment();
+
+      function cb(start, end)
+      {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      }
+      $('#reportrange').daterangepicker(
+      {
+        startDate: start,
+        endDate: end,
+        ranges:
+        {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+      }, cb);
+      cb(start, end);
+      $('.input-placeholder').mask("00/00/0000",
+      {
+        placeholder: "__/__/____"
+      });
+      $('.input-zip').mask('00000-000',
+      {
+        placeholder: "____-___"
+      });
+      $('.input-money').mask("#.##0,00",
+      {
+        reverse: true
+      });
+      $('.input-phoneus').mask('(000) 000-0000');
+      $('.input-mixed').mask('AAA 000-S0S');
+      $('.input-ip').mask('0ZZ.0ZZ.0ZZ.0ZZ',
+      {
+        translation:
+        {
+          'Z':
+          {
+            pattern: /[0-9]/,
+            optional: true
+          }
+        },
+        placeholder: "___.___.___.___"
+      });
+      // editor
+      var editor = document.getElementById('editor');
+      if (editor)
+      {
+        var toolbarOptions = [
+          [
+          {
+            'font': []
+          }],
+          [
+          {
+            'header': [1, 2, 3, 4, 5, 6, false]
+          }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [
+          {
+            'header': 1
+          },
+          {
+            'header': 2
+          }],
+          [
+          {
+            'list': 'ordered'
+          },
+          {
+            'list': 'bullet'
+          }],
+          [
+          {
+            'script': 'sub'
+          },
+          {
+            'script': 'super'
+          }],
+          [
+          {
+            'indent': '-1'
+          },
+          {
+            'indent': '+1'
+          }], // outdent/indent
+          [
+          {
+            'direction': 'rtl'
+          }], // text direction
+          [
+          {
+            'color': []
+          },
+          {
+            'background': []
+          }], // dropdown with defaults from theme
+          [
+          {
+            'align': []
+          }],
+          ['clean'] // remove formatting button
+        ];
+        var quill = new Quill(editor,
+        {
+          modules:
+          {
+            toolbar: toolbarOptions
+          },
+          theme: 'snow'
+        });
+      }
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function()
+      {
+        'use strict';
+        window.addEventListener('load', function()
+        {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form)
+          {
+            form.addEventListener('submit', function(event)
+            {
+              if (form.checkValidity() === false)
+              {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
+    <script>
+      var uptarg = document.getElementById('drag-drop-area');
+      if (uptarg)
+      {
+        var uppy = Uppy.Core().use(Uppy.Dashboard,
+        {
+          inline: true,
+          target: uptarg,
+          proudlyDisplayPoweredByUppy: false,
+          theme: 'dark',
+          width: 770,
+          height: 210,
+          plugins: ['Webcam']
+        }).use(Uppy.Tus,
+        {
+          endpoint: 'https://master.tus.io/files/'
+        });
+        uppy.on('complete', (result) =>
+        {
+          console.log('Upload complete! We’ve uploaded these files:', result.successful)
+        });
+      }
+    </script>
+    <script src="js/apps.js"></script>
+
+    <!-- Roles and Permissions Management JavaScript -->
+    <script>
+      // Sample role data (in real application, this would come from the database)
+      const rolesData = {
+        1: {
+          id: 1,
+          name: 'Administrator',
+          description: 'Full system access with all permissions',
+          status: 'active',
+          permissions: ['can_view_customers', 'can_create_customers', 'can_edit_customers', 'can_delete_customers',
+                       'can_view_appointments', 'can_manage_appointments', 'can_view_services', 'can_create_services',
+                       'can_edit_services', 'can_delete_services', 'can_manage_categories', 'can_view_ledger',
+                       'can_create_invoice', 'can_view_invoices', 'can_manage_payslips', 'can_view_reports',
+                       'can_view_employees', 'can_create_employees', 'can_edit_employees', 'can_manage_roles',
+                       'can_view_service_history', 'can_access_settings', 'can_manage_system', 'can_view_audit_logs']
+        },
+        2: {
+          id: 2,
+          name: 'Manager',
+          description: 'Management level access for daily operations',
+          status: 'active',
+          permissions: ['can_view_customers', 'can_create_customers', 'can_edit_customers', 'can_view_appointments',
+                       'can_manage_appointments', 'can_view_services', 'can_create_services', 'can_edit_services',
+                       'can_manage_categories', 'can_view_ledger', 'can_create_invoice', 'can_view_invoices',
+                       'can_view_reports', 'can_view_employees', 'can_edit_employees', 'can_view_service_history']
+        },
+        3: {
+          id: 3,
+          name: 'Stylist',
+          description: 'Basic access for service providers',
+          status: 'active',
+          permissions: ['can_view_customers', 'can_view_appointments', 'can_manage_appointments', 'can_view_services',
+                       'can_view_ledger', 'can_create_invoice', 'can_view_service_history']
+        },
+        4: {
+          id: 4,
+          name: 'Receptionist',
+          description: 'Front desk and customer service access',
+          status: 'active',
+          permissions: ['can_view_customers', 'can_create_customers', 'can_edit_customers', 'can_view_appointments',
+                       'can_manage_appointments', 'can_view_services']
+        },
+        5: {
+          id: 5,
+          name: 'Intern',
+          description: 'Limited access for training purposes',
+          status: 'inactive',
+          permissions: ['can_view_customers', 'can_view_appointments', 'can_view_services']
+        }
+      };
+
+      // Permission descriptions mapping
+      const permissionDescriptions = {
+        'can_view_customers': 'View customer information and profiles',
+        'can_create_customers': 'Create new customer records',
+        'can_edit_customers': 'Modify existing customer information',
+        'can_delete_customers': 'Remove customer records from the system',
+        'can_view_appointments': 'View appointment schedules and details',
+        'can_manage_appointments': 'Create, edit, and cancel appointments',
+        'can_view_services': 'View available services and pricing',
+        'can_create_services': 'Add new services to the system',
+        'can_edit_services': 'Modify existing service information',
+        'can_delete_services': 'Remove services from the system',
+        'can_manage_categories': 'Manage service categories and organization',
+        'can_view_ledger': 'View financial ledger and transactions',
+        'can_create_invoice': 'Generate invoices for customers',
+        'can_view_invoices': 'View invoice history and details',
+        'can_manage_payslips': 'Create and manage employee payslips',
+        'can_view_reports': 'Access system reports and analytics',
+        'can_view_employees': 'View employee information and profiles',
+        'can_create_employees': 'Add new employees to the system',
+        'can_edit_employees': 'Modify employee information',
+        'can_manage_roles': 'Manage roles and permissions for other users',
+        'can_view_service_history': 'View customer service history',
+        'can_access_settings': 'Access system configuration settings',
+        'can_manage_system': 'Perform system administration tasks',
+        'can_view_audit_logs': 'View system audit logs and activity history'
+      };
+
+      // Function to save a new role
+      function saveRole() {
+        const roleName = document.getElementById('roleName').value;
+        const roleStatus = document.getElementById('roleStatus').value;
+        const roleDescription = document.getElementById('roleDescription').value;
+
+        if (!roleName.trim()) {
+          alert('Please enter a role name');
+          return;
+        }
+
+        // Collect selected permissions
+        const selectedPermissions = [];
+        const permissionCheckboxes = document.querySelectorAll('#addRoleForm input[type="checkbox"]:checked');
+        permissionCheckboxes.forEach(checkbox => {
+          selectedPermissions.push(checkbox.id);
+        });
+
+        // In a real application, you would send this data to your backend
+        console.log('Creating new role:', {
+          name: roleName,
+          status: roleStatus,
+          description: roleDescription,
+          permissions: selectedPermissions
+        });
+
+        // Show success message
+        alert('Role created successfully!');
+
+        // Close modal and reset form
+        $('#addRoleModal').modal('hide');
+        document.getElementById('addRoleForm').reset();
+
+        // In a real application, you would refresh the table or add the new role to the list
+      }
+
+      // Function to update an existing role
+      function updateRole() {
+        const roleId = document.getElementById('editRoleId').value;
+        const roleName = document.getElementById('editRoleName').value;
+        const roleStatus = document.getElementById('editRoleStatus').value;
+        const roleDescription = document.getElementById('editRoleDescription').value;
+
+        if (!roleName.trim()) {
+          alert('Please enter a role name');
+          return;
+        }
+
+        // Collect selected permissions
+        const selectedPermissions = [];
+        const permissionCheckboxes = document.querySelectorAll('#editRoleForm input[type="checkbox"]:checked');
+        permissionCheckboxes.forEach(checkbox => {
+          selectedPermissions.push(checkbox.id.replace('edit_', ''));
+        });
+
+        // In a real application, you would send this data to your backend
+        console.log('Updating role:', {
+          id: roleId,
+          name: roleName,
+          status: roleStatus,
+          description: roleDescription,
+          permissions: selectedPermissions
+        });
+
+        // Show success message
+        alert('Role updated successfully!');
+
+        // Close modal
+        $('#editRoleModal').modal('hide');
+      }
+
+      // Function to view role permissions
+      function viewRolePermissions(roleId) {
+        const role = rolesData[roleId];
+        if (!role) {
+          alert('Role not found');
+          return;
+        }
+
+        // Populate modal with role information
+        document.getElementById('viewRoleName').textContent = role.name;
+        document.getElementById('viewRoleDescription').textContent = role.description;
+        document.getElementById('viewRoleStatus').textContent = role.status.charAt(0).toUpperCase() + role.status.slice(1);
+        document.getElementById('viewRolePermissionCount').textContent = role.permissions.length;
+
+        // Populate permissions list
+        const permissionsList = document.getElementById('viewPermissionsList');
+        permissionsList.innerHTML = '';
+
+        role.permissions.forEach(permission => {
+          const permissionDiv = document.createElement('div');
+          permissionDiv.className = 'mb-2';
+          permissionDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+              <span class="fe fe-check-circle text-success mr-2"></span>
+              <div>
+                <strong>${permission.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>
+                <br>
+                <small class="text-muted">${permissionDescriptions[permission] || 'No description available'}</small>
+              </div>
+            </div>
+          `;
+          permissionsList.appendChild(permissionDiv);
+        });
+
+        // Show modal
+        $('#viewPermissionsModal').modal('show');
+      }
+
+      // Function to edit role from view modal
+      function editRoleFromView() {
+        $('#viewPermissionsModal').modal('hide');
+        // You would typically load the role data into the edit modal here
+        setTimeout(() => {
+          $('#editRoleModal').modal('show');
+        }, 500);
+      }
+
+      // Function to deactivate a role
+      function deactivateRole(roleId) {
+        if (confirm('Are you sure you want to deactivate this role?')) {
+          // In a real application, you would send this request to your backend
+          console.log('Deactivating role:', roleId);
+          alert('Role deactivated successfully!');
+          // Refresh the page or update the table
+        }
+      }
+
+      // Function to activate a role
+      function activateRole(roleId) {
+        if (confirm('Are you sure you want to activate this role?')) {
+          // In a real application, you would send this request to your backend
+          console.log('Activating role:', roleId);
+          alert('Role activated successfully!');
+          // Refresh the page or update the table
+        }
+      }
+
+      // Function to load role data into edit modal
+      function loadRoleForEdit(roleId) {
+        const role = rolesData[roleId];
+        if (!role) {
+          alert('Role not found');
+          return;
+        }
+
+        // Populate form fields
+        document.getElementById('editRoleId').value = role.id;
+        document.getElementById('editRoleName').value = role.name;
+        document.getElementById('editRoleStatus').value = role.status;
+        document.getElementById('editRoleDescription').value = role.description;
+
+        // Reset all checkboxes
+        const checkboxes = document.querySelectorAll('#editRoleForm input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+        });
+
+        // Check the permissions that the role has
+        role.permissions.forEach(permission => {
+          const checkbox = document.getElementById('edit_' + permission);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+        });
+      }
+
+      // Add event listeners for edit buttons
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add click handlers for edit buttons
+        const editButtons = document.querySelectorAll('[data-toggle="modal"][data-target="#editRoleModal"]');
+        editButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            // Extract role ID from the button or its parent row
+            const row = this.closest('tr');
+            const roleId = row.querySelector('td:first-child').textContent;
+            loadRoleForEdit(parseInt(roleId));
+          });
+        });
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag()
+      {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-56159088-1');
+    </script>
+  </body>
+</html>

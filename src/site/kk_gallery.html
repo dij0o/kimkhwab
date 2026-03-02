@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>KimKhawb Hair Studio - Gallery</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="css/simplebar.css">
+    <!-- Fonts CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="css/feather.css">
+    <link rel="stylesheet" href="css/select2.css">
+    <link rel="stylesheet" href="css/dropzone.css">
+    <link rel="stylesheet" href="css/uppy.min.css">
+    <link rel="stylesheet" href="css/jquery.steps.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="css/quill.snow.css">
+    <link rel="stylesheet" href="css/gallery.css">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="css/daterangepicker.css">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/app-light.css" id="lightTheme">
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled>
+  </head>
+  <body class="vertical  light  ">
+    <div class="wrapper">
+      <nav class="topnav navbar navbar-light">
+        <div class="d-flex flex-grow-1"></div>
+        <ul class="nav">
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-bell fe-16"></span>
+              <span class="dot dot-md bg-success"></span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="avatar avatar-sm mt-2">
+                <img src="./assets/avatars/face-1.jpg" alt="..." class="avatar-img rounded-circle">
+              </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Activities</a>
+              <a class="dropdown-item" href="#">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+        <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+          <i class="fe fe-x"><span class="sr-only"></span></i>
+        </a>
+        <nav class="vertnav navbar navbar-light">
+          <!-- nav bar -->
+          <div class="w-100 mb-4 d-flex">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+              <img src="assets/images/logo.png" id="logo" class="navbar-brand-img brand-md" alt="Logo" style="width: 8rem; height: auto;">
+            </a>
+          </div>
+          <ul class="navbar-nav flex-fill w-100 mb-2">
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Overview</span>
+            </p>
+            <!-- Overview -->
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_dashboard.html">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- Customer Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Customer Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_customers.html">
+                <i class="fe fe-users fe-16"></i>
+                <span class="ml-3 item-text">Customers</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_calendar.html">
+                <i class="fe fe-calendar fe-16"></i>
+                <span class="ml-3 item-text">Appointments</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link active" href="kk_gallery.html">
+                <i class="fe fe-image fe-16"></i>
+                <span class="ml-3 item-text">Gallery</span>
+              </a>
+            </li>
+            <!-- Service Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Service Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services_categories.html">
+                <i class="fe fe-folder fe-16"></i>
+                <span class="ml-3 item-text">Service Categories</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services.html">
+                <i class="fe fe-settings fe-16"></i>
+                <span class="ml-3 item-text">Services</span>
+              </a>
+            </li>
+
+            <!-- Financial -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Financials</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_bookkeeping.html">
+                <i class="fe fe-book fe-16"></i>
+                <span class="ml-3 item-text">Ledger</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_invoices.html">
+                <i class="fe fe-file-text fe-16"></i>
+                <span class="ml-3 item-text">Invoices</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_payslips.html">
+                <i class="fe fe-dollar-sign fe-16"></i>
+                <span class="ml-3 item-text">Payslips</span>
+              </a>
+            </li>
+
+            <!-- Staff -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Staff Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_employees.html">
+                <i class="fe fe-user fe-16"></i>
+                <span class="ml-3 item-text">Employees</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_roles_permissions.html">
+                <i class="fe fe-shield fe-16"></i>
+                <span class="ml-3 item-text">Roles & Permissions</span>
+              </a>
+            </li>
+
+            <!-- Reports -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Reports</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_reports.html">
+                <i class="fe fe-clipboard fe-16"></i>
+                <span class="ml-3 item-text">Reports</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="card shadow mb-4 border-0">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h2 class="h3 mb-0 page-title">Gallery</h2>
+                    </div>
+                    <div class="col-auto">
+                      <div class="input-group mr-2 d-inline-flex w-auto">
+                        <input type="text" class="form-control" placeholder="Search gallery...">
+                        <div class="input-group-append">
+                          <button class="btn btn-primary" type="button">
+                            <span class="fe fe-search fe-12"></span>
+                          </button>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".modal-shortcut"><span class="fe fe-upload fe-12 mr-2"></span>Upload Media</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+                             <!-- Gallery Grid -->
+               <div class="tz-gallery">
+                 <div class="row">
+                     <div class="col-sm-12 col-md-4">
+                       <a class="lightbox" href="assets/products/p1.jpg" data-type="image">
+                         <img src="assets/products/p1.jpg" alt="Product 1">
+                         <div class="customer-tag">Sarah Johnson</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p2.jpg" data-type="image">
+                         <img src="assets/products/p2.jpg" alt="Product 2">
+                         <div class="customer-tag">Michael Chen</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p3.jpg" data-type="image">
+                         <img src="assets/products/p3.jpg" alt="Product 3">
+                         <div class="customer-tag">Emily Davis</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-12 col-md-8">
+                       <a class="lightbox" href="assets/products/p4.jpg" data-type="image">
+                         <img src="assets/products/p4.jpg" alt="Product 4">
+                         <div class="customer-tag">David Wilson</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p1.jpg" data-type="image">
+                         <img src="assets/products/p1.jpg" alt="Product 5">
+                         <div class="customer-tag">Lisa Anderson</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p2.jpg" data-type="image">
+                         <img src="assets/products/p2.jpg" alt="Product 6">
+                         <div class="customer-tag">Robert Brown</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-12 col-md-4">
+                       <a class="lightbox" href="assets/products/p3.jpg" data-type="image">
+                         <img src="assets/products/p3.jpg" alt="Product 7">
+                         <div class="customer-tag">Jennifer Lee</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p4.jpg" data-type="image">
+                         <img src="assets/products/p4.jpg" alt="Product 8">
+                         <div class="customer-tag">Thomas Garcia</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p1.jpg" data-type="image">
+                         <img src="assets/products/p1.jpg" alt="Product 9">
+                         <div class="customer-tag">Amanda Taylor</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-12 col-md-8">
+                       <a class="lightbox" href="assets/products/p2.jpg" data-type="image">
+                         <img src="assets/products/p2.jpg" alt="Product 10">
+                         <div class="customer-tag">Christopher Martinez</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p3.jpg" data-type="image">
+                         <img src="assets/products/p3.jpg" alt="Product 11">
+                         <div class="customer-tag">Jessica Rodriguez</div>
+                       </a>
+                     </div>
+                     <div class="col-sm-6 col-md-4">
+                       <a class="lightbox" href="assets/products/p4.jpg" data-type="image">
+                         <img src="assets/products/p4.jpg" alt="Product 12">
+                         <div class="customer-tag">Daniel Thompson</div>
+                       </a>
+                     </div>
+                     <!-- Video Example -->
+                     <div class="col-sm-12 col-md-8">
+                       <a class="lightbox" href="assets/products/sample-video.mp4" data-type="video">
+                         <video src="assets/products/sample-video.mp4" poster="assets/products/p1.jpg" muted>
+                           <source src="assets/products/sample-video.mp4" type="video/mp4">
+                         </video>
+                         <div class="customer-tag">Video Example</div>
+                       </a>
+                     </div>
+                 </div>
+               </div>
+            </div> <!-- .col-12 -->
+          </div> <!-- .row -->
+
+                 </div> <!-- .container-fluid -->
+
+         <!-- Custom Lightbox Modal -->
+         <div class="modal fade" id="customLightbox" tabindex="-1" role="dialog" aria-labelledby="lightboxModalLabel" aria-hidden="true">
+           <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+             <div class="modal-content bg-transparent border-0">
+               <div class="modal-header border-0 bg-transparent">
+                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>
+               <div class="modal-body text-center p-0">
+                 <div id="lightboxContent">
+                   <!-- Content will be dynamically inserted here -->
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+
+         <!-- Upload Media Modal -->
+        <div class="modal fade modal-shortcut modal-slide" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Media</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body p-4">
+                <div class="form-group mb-4">
+                  <label for="uploadCustomerSelect" class="form-label">Customer</label>
+                  <select id="uploadCustomerSelect" class="form-control select2" style="width: 100%;">
+                    <option value="">Select a customer...</option>
+                    <option value="1">Sarah Johnson</option>
+                    <option value="2">Michael Chen</option>
+                    <option value="3">Emily Davis</option>
+                    <option value="4">David Wilson</option>
+                    <option value="5">Lisa Anderson</option>
+                    <option value="6">Robert Brown</option>
+                    <option value="7">Jennifer Lee</option>
+                    <option value="8">Thomas Garcia</option>
+                    <option value="9">Amanda Taylor</option>
+                    <option value="10">Christopher Martinez</option>
+                    <option value="11">Jessica Rodriguez</option>
+                    <option value="12">Daniel Thompson</option>
+                  </select>
+                  <small class="form-text text-muted">All media uploaded in this session will be tagged with the selected customer.</small>
+                </div>
+
+                <div class="alert alert-info mb-4">
+                  <div class="d-flex align-items-center">
+                    <i class="fe fe-info fe-16 mr-3"></i>
+                    <div>
+                      <strong>Important:</strong> All media uploaded at once can only be tagged with one customer at a time. If you need to tag media for different customers, please upload their media separately and repeat the process.
+                    </div>
+                  </div>
+                </div>
+
+                  <div class="form-group">
+                   <label class="form-label">Upload Images/Videos</label>
+                   <div id="drag-drop-area" class="border-2 border-dashed border-light rounded p-4" style="min-height: 200px; background-color: #f8f9fa;"></div>
+                   <small class="form-text text-muted">Supported formats: JPG, PNG, GIF, MP4, MOV, AVI. Maximum file size: 50MB per file.</small>
+                 </div>
+               </div>
+               <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                 <button type="button" class="btn btn-primary" id="uploadBtn">Upload Files</button>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="list-group list-group-flush my-n3">
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-box fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Package has uploaded successfull</strong></small>
+                        <div class="my-0 text-muted small">Package is zipped and uploaded</div>
+                        <small class="badge badge-pill badge-light text-muted">1m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-download fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Widgets are updated successfull</strong></small>
+                        <div class="my-0 text-muted small">Just create new layout Index, form, table</div>
+                        <small class="badge badge-pill badge-light text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-inbox fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Notifications have been sent</strong></small>
+                        <div class="my-0 text-muted small">Fusce dapibus, tellus ac cursus commodo</div>
+                        <small class="badge badge-pill badge-light text-muted">30m ago</small>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-link fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Link was attached to menu</strong></small>
+                        <div class="my-0 text-muted small">New layout has been attached to the menu</div>
+                        <small class="badge badge-pill badge-light text-muted">1h ago</small>
+                      </div>
+                    </div>
+                  </div> <!-- / .row -->
+                </div> <!-- / .list-group -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Clear All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src='js/daterangepicker.js'></script>
+    <script src='js/jquery.stickOnScroll.js'></script>
+    <script src="js/tinycolor-min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    <script src="js/datamaps-zoomto.js"></script>
+    <script src="js/datamaps.custom.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script>
+      /* defind global options */
+      Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+      Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+    <script src="js/gauge.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/apexcharts.custom.js"></script>
+    <script src='js/jquery.mask.min.js'></script>
+    <script src='js/select2.min.js'></script>
+    <script src='js/jquery.steps.min.js'></script>
+    <script src='js/jquery.validate.min.js'></script>
+    <script src='js/jquery.timepicker.js'></script>
+    <script src='js/dropzone.min.js'></script>
+    <script src='js/uppy.min.js'></script>
+    <script src='js/quill.min.js'></script>
+    <script>
+      $('.select2').select2(
+      {
+        theme: 'bootstrap4',
+      });
+      $('.select2-multi').select2(
+      {
+        multiple: true,
+        theme: 'bootstrap4',
+      });
+
+      // Initialize Select2 when modal is shown
+      $(document).on('shown.bs.modal', '.modal-shortcut', function() {
+        $('#uploadCustomerSelect').select2({
+          theme: 'bootstrap4',
+          placeholder: 'Select a customer...',
+          allowClear: true
+        });
+      });
+      $('.drgpicker').daterangepicker(
+      {
+        singleDatePicker: true,
+        timePicker: false,
+        showDropdowns: true,
+        locale:
+        {
+          format: 'MM/DD/YYYY'
+        }
+      });
+      $('.time-input').timepicker(
+      {
+        'scrollDefault': 'now',
+        'zindex': '9999' /* fix modal open */
+      });
+      /** date range picker */
+      if ($('.datetimes').length)
+      {
+        $('.datetimes').daterangepicker(
+        {
+          timePicker: true,
+          startDate: moment().startOf('hour'),
+          endDate: moment().startOf('hour').add(32, 'hour'),
+          locale:
+          {
+            format: 'M/DD hh:mm A'
+          }
+        });
+      }
+      var start = moment().subtract(29, 'days');
+      var end = moment();
+
+      function cb(start, end)
+      {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      }
+      $('#reportrange').daterangepicker(
+      {
+        startDate: start,
+        endDate: end,
+        ranges:
+        {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+      }, cb);
+      cb(start, end);
+      $('.input-placeholder').mask("00/00/0000",
+      {
+        placeholder: "__/__/____"
+      });
+      $('.input-zip').mask('00000-000',
+      {
+        placeholder: "____-___"
+      });
+      $('.input-money').mask("#.##0,00",
+      {
+        reverse: true
+      });
+      $('.input-phoneus').mask('(000) 000-0000');
+      $('.input-mixed').mask('AAA 000-S0S');
+      $('.input-ip').mask('0ZZ.0ZZ.0ZZ.0ZZ',
+      {
+        translation:
+        {
+          'Z':
+          {
+            pattern: /[0-9]/,
+            optional: true
+          }
+        },
+        placeholder: "___.___.___.___"
+      });
+      // editor
+      var editor = document.getElementById('editor');
+      if (editor)
+      {
+        var toolbarOptions = [
+          [
+          {
+            'font': []
+          }],
+          [
+          {
+            'header': [1, 2, 3, 4, 5, 6, false]
+          }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [
+          {
+            'header': 1
+          },
+          {
+            'header': 2
+          }],
+          [
+          {
+            'list': 'ordered'
+          },
+          {
+            'list': 'bullet'
+          }],
+          [
+          {
+            'script': 'sub'
+          },
+          {
+            'script': 'super'
+          }],
+          [
+          {
+            'indent': '-1'
+          },
+          {
+            'indent': '+1'
+          }], // outdent/indent
+          [
+          {
+            'direction': 'rtl'
+          }], // text direction
+          [
+          {
+            'color': []
+          },
+          {
+            'background': []
+          }], // dropdown with defaults from theme
+          [
+          {
+            'align': []
+          }],
+          ['clean'] // remove formatting button
+        ];
+        var quill = new Quill(editor,
+        {
+          modules:
+          {
+            toolbar: toolbarOptions
+          },
+          theme: 'snow'
+        });
+      }
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function()
+      {
+        'use strict';
+        window.addEventListener('load', function()
+        {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form)
+          {
+            form.addEventListener('submit', function(event)
+            {
+              if (form.checkValidity() === false)
+              {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
+    <script>
+      var uptarg = document.getElementById('drag-drop-area');
+      if (uptarg)
+      {
+        var uppy = Uppy.Core().use(Uppy.Dashboard,
+        {
+          inline: true,
+          target: uptarg,
+          proudlyDisplayPoweredByUppy: false,
+          theme: 'dark',
+          width: 770,
+          height: 210,
+          plugins: ['Webcam']
+        }).use(Uppy.Tus,
+        {
+          endpoint: 'https://master.tus.io/files/'
+        });
+        uppy.on('complete', (result) =>
+        {
+          console.log('Upload complete! We’ve uploaded these files:', result.successful)
+        });
+      }
+    </script>
+
+    <!-- Custom Lightbox JavaScript -->
+    <script>
+      $(document).ready(function() {
+        // Handle lightbox clicks
+        $('.lightbox').on('click', function(e) {
+          e.preventDefault();
+
+          var href = $(this).attr('href');
+          var type = $(this).data('type');
+          var content = '';
+
+          if (type === 'video') {
+            content = '<video controls autoplay style="max-width: 100%; max-height: 80vh;">' +
+                     '<source src="' + href + '" type="video/mp4">' +
+                     'Your browser does not support the video tag.' +
+                     '</video>';
+          } else {
+            content = '<img src="' + href + '" style="max-width: 100%; max-height: 80vh; object-fit: contain;">';
+          }
+
+          $('#lightboxContent').html(content);
+          $('#customLightbox').modal('show');
+        });
+
+        // Stop video when modal is closed
+        $('#customLightbox').on('hidden.bs.modal', function() {
+          $('#lightboxContent video').each(function() {
+            this.pause();
+            this.currentTime = 0;
+          });
+        });
+
+        // Close modal on escape key
+        $(document).on('keydown', function(e) {
+          if (e.key === 'Escape') {
+            $('#customLightbox').modal('hide');
+          }
+        });
+      });
+    </script>
+
+    <script src="js/apps.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag()
+      {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-56159088-1');
+    </script>
+  </body>
+</html>

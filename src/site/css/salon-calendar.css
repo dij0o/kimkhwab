@@ -1,0 +1,83 @@
+/* Salon Calendar Custom Styles */
+
+/* Curly Haircut Events */
+.fc-event-curly-haircut {
+  background-color: #f7bed5 !important;
+  border-color: #f7bed5 !important;
+  color: #ffffff !important;
+}
+
+.fc-event-curly-haircut:hover {
+  background-color: #e8a8c3 !important;
+  border-color: #e8a8c3 !important;
+}
+
+/* Simple Haircut Events */
+.fc-event-simple-haircut {
+  background-color: #b8ddd1 !important;
+  border-color: #b8ddd1 !important;
+  color: #ffffff !important;
+}
+
+.fc-event-simple-haircut:hover {
+  background-color: #a7d4c7 !important;
+  border-color: #a7d4c7 !important;
+}
+
+/* Hair Dye Events */
+.fc-event-hair-dye {
+  background-color: #ffb6c1 !important;
+  border-color: #ffb6c1 !important;
+  color: #ffffff !important;
+}
+
+.fc-event-hair-dye:hover {
+  background-color: #ffa5b3 !important;
+  border-color: #ffa5b3 !important;
+}
+
+/* Other Services Events */
+.fc-event-other {
+  background-color: #dda0dd !important;
+  border-color: #dda0dd !important;
+  color: #ffffff !important;
+}
+
+.fc-event-other:hover {
+  background-color: #cc8fcc !important;
+  border-color: #cc8fcc !important;
+}
+
+/* Event tooltip styling */
+.fc-event {
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Event content styling */
+.fc-event .fc-content {
+  padding: 2px 6px;
+}
+
+/* Today's events highlight */
+.fc-day-today .fc-event {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Event selection styling */
+.fc-event.fc-selected {
+  box-shadow: 0 0 0 2px #007bff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .fc-event {
+    font-size: 0.75rem;
+  }
+
+  .fc-event .fc-content {
+    padding: 1px 4px;
+  }
+}

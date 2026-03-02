@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>KimKhawb Hair Studio - Dashboard</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="css/simplebar.css">
+    <!-- Fonts CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="css/feather.css">
+    <link rel="stylesheet" href="css/select2.css">
+    <link rel="stylesheet" href="css/dropzone.css">
+    <link rel="stylesheet" href="css/uppy.min.css">
+    <link rel="stylesheet" href="css/jquery.steps.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="css/quill.snow.css">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="css/daterangepicker.css">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/app-light.css" id="lightTheme">
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled>
+  </head>
+  <body class="vertical  light  ">
+    <div class="wrapper">
+      <nav class="topnav navbar navbar-light">
+        <div class="d-flex flex-grow-1"></div>
+        <ul class="nav">
+          <li class="nav-item nav-notif">
+            <a class="nav-link text-muted my-2" href="./#" data-toggle="modal" data-target=".modal-notif">
+              <span class="fe fe-bell fe-16"></span>
+              <span class="dot dot-md bg-success"></span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted pr-0" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="avatar avatar-sm mt-2">
+                <img src="./assets/avatars/face-1.jpg" alt="..." class="avatar-img rounded-circle">
+              </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Activities</a>
+              <a class="dropdown-item" href="#">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+        <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+          <i class="fe fe-x"><span class="sr-only"></span></i>
+        </a>
+        <nav class="vertnav navbar navbar-light">
+          <!-- nav bar -->
+          <div class="w-100 mb-4 d-flex">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+              <img src="assets/images/logo.png" id="logo" class="navbar-brand-img brand-md" alt="Logo" style="width: 8rem; height: auto;">
+            </a>
+          </div>
+          <ul class="navbar-nav flex-fill w-100 mb-2">
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Overview</span>
+            </p>
+            <!-- Overview -->
+            <li class="nav-item w-100">
+              <a class="nav-link active" href="kk_dashboard.html">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- Customer Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Customer Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_customers.html">
+                <i class="fe fe-users fe-16"></i>
+                <span class="ml-3 item-text">Customers</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_calendar.html">
+                <i class="fe fe-calendar fe-16"></i>
+                <span class="ml-3 item-text">Appointments</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_gallery.html">
+                <i class="fe fe-image fe-16"></i>
+                <span class="ml-3 item-text">Gallery</span>
+              </a>
+            </li>
+            <!-- Service Management -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Service Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services_categories.html">
+                <i class="fe fe-folder fe-16"></i>
+                <span class="ml-3 item-text">Service Categories</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_services.html">
+                <i class="fe fe-settings fe-16"></i>
+                <span class="ml-3 item-text">Services</span>
+              </a>
+            </li>
+
+            <!-- Financial -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Financials</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_bookkeeping.html">
+                <i class="fe fe-book fe-16"></i>
+                <span class="ml-3 item-text">Ledger</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_invoices.html">
+                <i class="fe fe-file-text fe-16"></i>
+                <span class="ml-3 item-text">Invoices</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_payslips.html">
+                <i class="fe fe-dollar-sign fe-16"></i>
+                <span class="ml-3 item-text">Payslips</span>
+              </a>
+            </li>
+            <!-- Staff -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Staff Management</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_employees.html">
+                <i class="fe fe-user fe-16"></i>
+                <span class="ml-3 item-text">Employees</span>
+              </a>
+            </li>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_roles_permissions.html">
+                <i class="fe fe-shield fe-16"></i>
+                <span class="ml-3 item-text">Roles & Permissions</span>
+              </a>
+            </li>
+
+            <!-- Reports -->
+            <p class="text-muted nav-heading mt-4 mb-1">
+              <span>Reports</span>
+            </p>
+            <li class="nav-item w-100">
+              <a class="nav-link" href="kk_reports.html">
+                <i class="fe fe-clipboard fe-16"></i>
+                <span class="ml-3 item-text">Reports</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="row">
+                <div class="col-md-6 col-xl-3 mb-4">
+                  <div class="card shadow border-0">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                          <span class="circle circle-sm bg-primary">
+                            <i class="fe fe-16 fe-download text-white mb-0"></i>
+                          </span>
+                        </div>
+                        <div class="col pr-0">
+                          <p class="small text-muted mb-0">Monthly Income</p>
+                          <span class="h3 mb-0">Rs. 12,500</span>
+                          <span class="small text-success">+5.5%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3 mb-4">
+                  <div class="card shadow border-0">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                          <span class="circle circle-sm bg-primary">
+                            <i class="fe fe-16 fe-upload text-white mb-0"></i>
+                          </span>
+                        </div>
+                        <div class="col pr-0">
+                          <p class="small text-muted mb-0">Monthly Expenses</p>
+                          <span class="h3 mb-0">Rs. 12,500</span>
+                          <span class="small text-danger">+16.5%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3 mb-4">
+                  <div class="card shadow border-0">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                          <span class="circle circle-sm bg-primary">
+                            <i class="fe fe-16 fe-dollar-sign text-white mb-0"></i>
+                          </span>
+                        </div>
+                        <div class="col">
+                          <p class="small text-muted mb-0">Total Monthly Revenue</p>
+                          <div class="row align-items-center no-gutters">
+                            <div class="col-auto">
+                              <span class="h3 mb-0">Rs. 12,500</span>
+                              <span class="small text-success">+5.5%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-3 mb-4">
+                  <div class="card shadow border-0">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-3 text-center">
+                          <span class="circle circle-sm bg-primary">
+                            <i class="fe fe-16 fe-calendar text-white mb-0"></i>
+                          </span>
+                        </div>
+                        <div class="col">
+                          <p class="small text-muted mb-0">Upcoming Appointments</p>
+                          <span class="h3 mb-0">12</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- end section -->
+              <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0 h-100" style="cursor: pointer; transition: all 0.3s ease;" onclick="addNewCustomer()">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center" style="background: linear-gradient(135deg, var(--primary) 0%, #e8a8c3 100%); min-height: 120px;">
+                      <i class="fe fe-user-plus fe-32 text-white mb-2"></i>
+                      <h4 class="card-title text-white mb-0 font-weight-bold">Add Customer</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                  <div class="card shadow-sm border-0 h-100" style="cursor: pointer; transition: all 0.3s ease;" onclick="addNewAppointment()">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center" style="background: linear-gradient(135deg, var(--primary) 0%, #e8a8c3 100%); min-height: 120px;">
+                      <i class="fe fe-calendar fe-32 text-white mb-2"></i>
+                      <h4 class="card-title text-white mb-0 font-weight-bold">New Appointment</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                  <div class="card shadow-sm border-0 h-100" style="cursor: pointer; transition: all 0.3s ease;" onclick="addNewExpense()">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center" style="background: linear-gradient(135deg, var(--primary) 0%, #e8a8c3 100%); min-height: 120px;">
+                      <i class="fe fe-minus-circle fe-32 text-white mb-2"></i>
+                      <h4 class="card-title text-white mb-0 font-weight-bold">Add Expense</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                  <div class="card shadow-sm border-0 h-100" style="cursor: pointer; transition: all 0.3s ease;" onclick="addNewIncome()">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center" style="background: linear-gradient(135deg, var(--primary) 0%, #e8a8c3 100%); min-height: 120px;">
+                      <i class="fe fe-plus-circle fe-32 text-white mb-2"></i>
+                      <h4 class="card-title text-white mb-0 font-weight-bold">Add Income</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row align-items-center my-2">
+                <div class="col-auto ml-auto">
+                  <form class="form-inline">
+                    <div class="form-group">
+                      <label for="reportrange" class="sr-only">Date Ranges</label>
+                      <div id="reportrange" class="px-2 py-2 text-muted">
+                        <i class="fe fe-calendar fe-16 mx-2"></i>
+                        <span class="small"></span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button type="button" class="btn btn-sm"><span class="fe fe-refresh-ccw fe-12 text-muted"></span></button>
+                      <button type="button" class="btn btn-sm"><span class="fe fe-filter fe-12 text-muted"></span></button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- charts-->
+              <div class="row my-4">
+                <div class="col-md-12">
+                  <div class="chart-box">
+                    <div id="columnChart"></div>
+                  </div>
+                </div> <!-- .col -->
+              </div> <!-- end section -->
+              <!-- info small box -->
+
+              <div class="row">
+                <!-- Recent orders -->
+                <div class="col-md-12">
+                  <h6 class="mb-3">Upcoming Appointments</h6>
+                  <table class="table table-borderless table-striped">
+                    <thead>
+                      <tr role="row">
+                        <th>Customer Name</th>
+                        <th>Service Category</th>
+                        <th>Appointment Time</th>
+                        <th>Stylist</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr data-appointment-id="1" data-customer="Kasimir Lindsey" data-service="Hair Coloring" data-stylist="Sarah Johnson" data-date="2025-07-15" data-time="14:00">
+                        <td>Kasimir Lindsey</td>
+                        <td>Hair Coloring</td>
+                        <td>Today 2:00 PM</td>
+                        <td>Sarah Johnson</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="editAppointment(1, 'Kasimir Lindsey', 'Hair Coloring', 'Sarah Johnson', '2025-07-15', '14:00')">Edit</a>
+                              <a class="dropdown-item" href="#" onclick="cancelAppointment(1)">Cancel</a>
+                              <a class="dropdown-item" href="#" onclick="rescheduleAppointment(1, 'Kasimir Lindsey', 'Hair Coloring', 'Sarah Johnson', '2025-07-15', '14:00')">Reschedule</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr data-appointment-id="2" data-customer="Melinda Levy" data-service="Haircut" data-stylist="Michael Chen" data-date="2025-07-15" data-time="15:30">
+                        <td>Melinda Levy</td>
+                        <td>Haircut</td>
+                        <td>Today 3:30 PM</td>
+                        <td>Michael Chen</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="editAppointment(2, 'Melinda Levy', 'Haircut', 'Michael Chen', '2025-07-15', '15:30')">Edit</a>
+                              <a class="dropdown-item" href="#" onclick="cancelAppointment(2)">Cancel</a>
+                              <a class="dropdown-item" href="#" onclick="rescheduleAppointment(2, 'Melinda Levy', 'Haircut', 'Michael Chen', '2025-07-15', '15:30')">Reschedule</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr data-appointment-id="3" data-customer="Aubrey Sweeney" data-service="Hair Treatment" data-stylist="Emily Davis" data-date="2025-07-16" data-time="10:00">
+                        <td>Aubrey Sweeney</td>
+                        <td>Hair Treatment</td>
+                        <td>Tomorrow 10:00 AM</td>
+                        <td>Emily Davis</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="editAppointment(3, 'Aubrey Sweeney', 'Hair Treatment', 'Emily Davis', '2025-07-16', '10:00')">Edit</a>
+                              <a class="dropdown-item" href="#" onclick="cancelAppointment(3)">Cancel</a>
+                              <a class="dropdown-item" href="#" onclick="rescheduleAppointment(3, 'Aubrey Sweeney', 'Hair Treatment', 'Emily Davis', '2025-07-16', '10:00')">Reschedule</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr data-appointment-id="4" data-customer="Timon Bauer" data-service="Hair Coloring" data-stylist="Sarah Johnson" data-date="2025-07-16" data-time="11:30">
+                        <td>Timon Bauer</td>
+                        <td>Hair Coloring</td>
+                        <td>Tomorrow 11:30 AM</td>
+                        <td>Sarah Johnson</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="editAppointment(4, 'Timon Bauer', 'Hair Coloring', 'Sarah Johnson', '2025-07-16', '11:30')">Edit</a>
+                              <a class="dropdown-item" href="#" onclick="cancelAppointment(4)">Cancel</a>
+                              <a class="dropdown-item" href="#" onclick="rescheduleAppointment(4, 'Timon Bauer', 'Hair Coloring', 'Sarah Johnson', '2025-07-16', '11:30')">Reschedule</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr data-appointment-id="5" data-customer="Kelly Barrera" data-service="Styling" data-stylist="Michael Chen" data-date="2025-07-16" data-time="14:00">
+                        <td>Kelly Barrera</td>
+                        <td>Styling</td>
+                        <td>Tomorrow 2:00 PM</td>
+                        <td>Michael Chen</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="text-muted sr-only">Action</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#" onclick="editAppointment(5, 'Kelly Barrera', 'Styling', 'Michael Chen', '2025-07-16', '14:00')">Edit</a>
+                              <a class="dropdown-item" href="#" onclick="cancelAppointment(5)">Cancel</a>
+                              <a class="dropdown-item" href="#" onclick="rescheduleAppointment(5, 'Kelly Barrera', 'Styling', 'Michael Chen', '2025-07-16', '14:00')">Reschedule</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> <!-- / .col-md-12 -->
+              </div> <!-- end section -->
+            </div>
+          </div> <!-- .row -->
+        </div> <!-- .container-fluid -->
+        <div class="modal fade modal-notif modal-slide" tabindex="-1" role="dialog" aria-labelledby="defaultModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="defaultModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="list-group list-group-flush my-n3">
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-box fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Package has uploaded successfull</strong></small>
+                        <div class="my-0 text-muted small">Package is zipped and uploaded</div>
+                        <small class="badge badge-pill badge-light text-muted">1m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-download fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Widgets are updated successfull</strong></small>
+                        <div class="my-0 text-muted small">Just create new layout Index, form, table</div>
+                        <small class="badge badge-pill badge-light text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-inbox fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Notifications have been sent</strong></small>
+                        <div class="my-0 text-muted small">Fusce dapibus, tellus ac cursus commodo</div>
+                        <small class="badge badge-pill badge-light text-muted">30m ago</small>
+                      </div>
+                    </div> <!-- / .row -->
+                  </div>
+                  <div class="list-group-item bg-transparent">
+                    <div class="row align-items-center">
+                      <div class="col-auto">
+                        <span class="fe fe-link fe-24"></span>
+                      </div>
+                      <div class="col">
+                        <small><strong>Link was attached to menu</strong></small>
+                        <div class="my-0 text-muted small">New layout has been attached to the menu</div>
+                        <small class="badge badge-pill badge-light text-muted">1h ago</small>
+                      </div>
+                    </div>
+                  </div> <!-- / .row -->
+                </div> <!-- / .list-group -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Clear All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Themed Confirmation Modal -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p id="confirmationMessage">Are you sure you want to proceed?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmAction">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Themed Notification Modal -->
+        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">Notification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p id="notificationMessage">Operation completed successfully.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src='js/daterangepicker.js'></script>
+    <script src='js/jquery.stickOnScroll.js'></script>
+    <script src="js/tinycolor-min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    <script src="js/datamaps-zoomto.js"></script>
+    <script src="js/datamaps.custom.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script>
+      /* defind global options */
+      Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+      Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+    <script src="js/gauge.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/apexcharts.custom.js"></script>
+    <script src='js/jquery.mask.min.js'></script>
+    <script src='js/select2.min.js'></script>
+    <script src='js/jquery.steps.min.js'></script>
+    <script src='js/jquery.validate.min.js'></script>
+    <script src='js/jquery.timepicker.js'></script>
+    <script src='js/dropzone.min.js'></script>
+    <script src='js/uppy.min.js'></script>
+    <script src='js/quill.min.js'></script>
+    <script>
+      $('.select2').select2(
+      {
+        theme: 'bootstrap4',
+      });
+      $('.select2-multi').select2(
+      {
+        multiple: true,
+        theme: 'bootstrap4',
+      });
+      $('.drgpicker').daterangepicker(
+      {
+        singleDatePicker: true,
+        timePicker: false,
+        showDropdowns: true,
+        locale:
+        {
+          format: 'MM/DD/YYYY'
+        }
+      });
+      $('.time-input').timepicker(
+      {
+        'scrollDefault': 'now',
+        'zindex': '9999' /* fix modal open */
+      });
+      /** date range picker */
+      if ($('.datetimes').length)
+      {
+        $('.datetimes').daterangepicker(
+        {
+          timePicker: true,
+          startDate: moment().startOf('hour'),
+          endDate: moment().startOf('hour').add(32, 'hour'),
+          locale:
+          {
+            format: 'M/DD hh:mm A'
+          }
+        });
+      }
+      var start = moment().subtract(29, 'days');
+      var end = moment();
+
+      function cb(start, end)
+      {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      }
+      $('#reportrange').daterangepicker(
+      {
+        startDate: start,
+        endDate: end,
+        ranges:
+        {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+      }, cb);
+      cb(start, end);
+      $('.input-placeholder').mask("00/00/0000",
+      {
+        placeholder: "__/__/____"
+      });
+      $('.input-zip').mask('00000-000',
+      {
+        placeholder: "____-___"
+      });
+      $('.input-money').mask("#.##0,00",
+      {
+        reverse: true
+      });
+      $('.input-phoneus').mask('(000) 000-0000');
+      $('.input-mixed').mask('AAA 000-S0S');
+      $('.input-ip').mask('0ZZ.0ZZ.0ZZ.0ZZ',
+      {
+        translation:
+        {
+          'Z':
+          {
+            pattern: /[0-9]/,
+            optional: true
+          }
+        },
+        placeholder: "___.___.___.___"
+      });
+      // editor
+      var editor = document.getElementById('editor');
+      if (editor)
+      {
+        var toolbarOptions = [
+          [
+          {
+            'font': []
+          }],
+          [
+          {
+            'header': [1, 2, 3, 4, 5, 6, false]
+          }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [
+          {
+            'header': 1
+          },
+          {
+            'header': 2
+          }],
+          [
+          {
+            'list': 'ordered'
+          },
+          {
+            'list': 'bullet'
+          }],
+          [
+          {
+            'script': 'sub'
+          },
+          {
+            'script': 'super'
+          }],
+          [
+          {
+            'indent': '-1'
+          },
+          {
+            'indent': '+1'
+          }], // outdent/indent
+          [
+          {
+            'direction': 'rtl'
+          }], // text direction
+          [
+          {
+            'color': []
+          },
+          {
+            'background': []
+          }], // dropdown with defaults from theme
+          [
+          {
+            'align': []
+          }],
+          ['clean'] // remove formatting button
+        ];
+        var quill = new Quill(editor,
+        {
+          modules:
+          {
+            toolbar: toolbarOptions
+          },
+          theme: 'snow'
+        });
+      }
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function()
+      {
+        'use strict';
+        window.addEventListener('load', function()
+        {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form)
+          {
+            form.addEventListener('submit', function(event)
+            {
+              if (form.checkValidity() === false)
+              {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
+    <script>
+      var uptarg = document.getElementById('drag-drop-area');
+      if (uptarg)
+      {
+        var uppy = Uppy.Core().use(Uppy.Dashboard,
+        {
+          inline: true,
+          target: uptarg,
+          proudlyDisplayPoweredByUppy: false,
+          theme: 'dark',
+          width: 770,
+          height: 210,
+          plugins: ['Webcam']
+        }).use(Uppy.Tus,
+        {
+          endpoint: 'https://master.tus.io/files/'
+        });
+        uppy.on('complete', (result) =>
+        {
+          console.log('Upload complete! We’ve uploaded these files:', result.successful)
+        });
+      }
+    </script>
+    <script>
+      // Themed modal functions
+      function showConfirmation(message, onConfirm) {
+        document.getElementById('confirmationMessage').textContent = message;
+        const confirmBtn = document.getElementById('confirmAction');
+
+        // Remove existing event listeners
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        // Add new event listener
+        newConfirmBtn.addEventListener('click', function() {
+          $('#confirmationModal').modal('hide');
+          if (onConfirm) onConfirm();
+        });
+
+        $('#confirmationModal').modal('show');
+      }
+
+      function showNotification(message, type = 'success') {
+        document.getElementById('notificationMessage').textContent = message;
+        const modal = $('#notificationModal');
+
+        // Update modal styling based on type
+        const modalContent = modal.find('.modal-content');
+        modalContent.removeClass('border-success border-danger border-warning border-info');
+
+        switch(type) {
+          case 'success':
+            modalContent.addClass('border-success');
+            break;
+          case 'error':
+            modalContent.addClass('border-danger');
+            break;
+          case 'warning':
+            modalContent.addClass('border-warning');
+            break;
+          case 'info':
+            modalContent.addClass('border-info');
+            break;
+        }
+
+        modal.modal('show');
+      }
+
+      // Add Customer Card functionality
+      function addNewCustomer() {
+        // You can redirect to customer creation page or open a modal
+        window.location.href = 'kk_customer_create.html';
+      }
+
+      // Add Appointment Card functionality
+      function addNewAppointment() {
+        // Redirect to calendar page and open the new appointment modal
+        window.location.href = 'kk_calendar.html#new-appointment';
+      }
+
+      // Add Expense Card functionality
+      function addNewExpense() {
+        // You can redirect to expense page or open a modal
+        showNotification('Expense management feature coming soon!', 'info');
+        // window.location.href = 'expenses.html';
+      }
+
+      // Add Income Card functionality
+      function addNewIncome() {
+        // You can redirect to income page or open a modal
+        showNotification('Income management feature coming soon!', 'info');
+        // window.location.href = 'income.html';
+      }
+
+      // Appointment action functions
+      function editAppointment(id, customer, service, stylist, date, time) {
+        // Redirect to calendar page with edit parameters
+        const params = new URLSearchParams({
+          action: 'edit',
+          id: id,
+          customer: customer,
+          service: service,
+          stylist: stylist,
+          date: date,
+          time: time
+        });
+        window.location.href = 'kk_calendar.html?' + params.toString();
+      }
+
+      function cancelAppointment(id) {
+        showConfirmation('Are you sure you want to cancel this appointment?', function() {
+          // Redirect to calendar page with cancel parameters
+          const params = new URLSearchParams({
+            action: 'cancel',
+            id: id
+          });
+          window.location.href = 'kk_calendar.html?' + params.toString();
+        });
+      }
+
+      function rescheduleAppointment(id, customer, service, stylist, date, time) {
+        // Redirect to calendar page with reschedule parameters
+        const params = new URLSearchParams({
+          action: 'reschedule',
+          id: id,
+          customer: customer,
+          service: service,
+          stylist: stylist,
+          date: date,
+          time: time
+        });
+        window.location.href = 'kk_calendar.html?' + params.toString();
+      }
+
+            // Add hover effects to all action cards
+      document.addEventListener('DOMContentLoaded', function() {
+        const actionCards = document.querySelectorAll('[onclick^="addNew"]');
+        actionCards.forEach(function(card) {
+          card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+          });
+
+          card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+          });
+        });
+      });
+    </script>
+    <script src="js/apps.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag()
+      {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-56159088-1');
+    </script>
+  </body>
+</html>

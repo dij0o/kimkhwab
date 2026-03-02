@@ -1,0 +1,242 @@
+[
+  {
+    "id": "1",
+    "title": "Kasimir Lindsey - Hair Coloring",
+    "start": "2024-01-15T14:00:00",
+    "end": "2024-01-15T15:30:00",
+    "backgroundColor": "#ffb6c1",
+    "borderColor": "#ffb6c1",
+    "textColor": "#ffffff",
+    "className": "fc-event-hair-dye",
+    "extendedProps": {
+      "customerName": "Kasimir Lindsey",
+      "serviceCategory": "Hair Coloring",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Hair Dye"
+    }
+  },
+  {
+    "id": "2",
+    "title": "Melinda Levy - Haircut",
+    "start": "2024-01-15T15:30:00",
+    "end": "2024-01-15T16:30:00",
+    "backgroundColor": "#b8ddd1",
+    "borderColor": "#b8ddd1",
+    "textColor": "#ffffff",
+    "className": "fc-event-simple-haircut",
+    "extendedProps": {
+      "customerName": "Melinda Levy",
+      "serviceCategory": "Haircut",
+      "stylist": "Michael Chen",
+      "serviceType": "Simple Haircut"
+    }
+  },
+  {
+    "id": "3",
+    "title": "Aubrey Sweeney - Hair Treatment",
+    "start": "2024-01-16T10:00:00",
+    "end": "2024-01-16T11:30:00",
+    "backgroundColor": "#dda0dd",
+    "borderColor": "#dda0dd",
+    "textColor": "#ffffff",
+    "className": "fc-event-other",
+    "extendedProps": {
+      "customerName": "Aubrey Sweeney",
+      "serviceCategory": "Hair Treatment",
+      "stylist": "Emily Davis",
+      "serviceType": "Other"
+    }
+  },
+  {
+    "id": "4",
+    "title": "Timon Bauer - Hair Coloring",
+    "start": "2024-01-16T11:30:00",
+    "end": "2024-01-16T13:00:00",
+    "backgroundColor": "#ffb6c1",
+    "borderColor": "#ffb6c1",
+    "textColor": "#ffffff",
+    "className": "fc-event-hair-dye",
+    "extendedProps": {
+      "customerName": "Timon Bauer",
+      "serviceCategory": "Hair Coloring",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Hair Dye"
+    }
+  },
+  {
+    "id": "5",
+    "title": "Kelly Barrera - Styling",
+    "start": "2024-01-16T14:00:00",
+    "end": "2024-01-16T15:00:00",
+    "backgroundColor": "#dda0dd",
+    "borderColor": "#dda0dd",
+    "textColor": "#ffffff",
+    "className": "fc-event-other",
+    "extendedProps": {
+      "customerName": "Kelly Barrera",
+      "serviceCategory": "Styling",
+      "stylist": "Michael Chen",
+      "serviceType": "Other"
+    }
+  },
+  {
+    "id": "6",
+    "title": "Emma Wilson - Curly Haircut",
+    "start": "2024-01-17T09:00:00",
+    "end": "2024-01-17T10:30:00",
+    "backgroundColor": "#f7bed5",
+    "borderColor": "#f7bed5",
+    "textColor": "#ffffff",
+    "className": "fc-event-curly-haircut",
+    "extendedProps": {
+      "customerName": "Emma Wilson",
+      "serviceCategory": "Curly Haircut",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Curly Haircut"
+    }
+  },
+  {
+    "id": "7",
+    "title": "James Rodriguez - Simple Haircut",
+    "start": "2024-01-17T11:00:00",
+    "end": "2024-01-17T12:00:00",
+    "backgroundColor": "#b8ddd1",
+    "borderColor": "#b8ddd1",
+    "textColor": "#ffffff",
+    "className": "fc-event-simple-haircut",
+    "extendedProps": {
+      "customerName": "James Rodriguez",
+      "serviceCategory": "Simple Haircut",
+      "stylist": "Michael Chen",
+      "serviceType": "Simple Haircut"
+    }
+  },
+  {
+    "id": "8",
+    "title": "Sophia Chen - Hair Dye",
+    "start": "2024-01-17T13:00:00",
+    "end": "2024-01-17T14:30:00",
+    "backgroundColor": "#ffb6c1",
+    "borderColor": "#ffb6c1",
+    "textColor": "#ffffff",
+    "className": "fc-event-hair-dye",
+    "extendedProps": {
+      "customerName": "Sophia Chen",
+      "serviceCategory": "Hair Dye",
+      "stylist": "Emily Davis",
+      "serviceType": "Hair Dye"
+    }
+  },
+  {
+    "id": "9",
+    "title": "David Thompson - Curly Haircut",
+    "start": "2024-01-18T10:00:00",
+    "end": "2024-01-18T11:30:00",
+    "backgroundColor": "#f7bed5",
+    "borderColor": "#f7bed5",
+    "textColor": "#ffffff",
+    "className": "fc-event-curly-haircut",
+    "extendedProps": {
+      "customerName": "David Thompson",
+      "serviceCategory": "Curly Haircut",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Curly Haircut"
+    }
+  },
+  {
+    "id": "10",
+    "title": "Maria Garcia - Hair Treatment",
+    "start": "2024-01-18T14:00:00",
+    "end": "2024-01-18T15:30:00",
+    "backgroundColor": "#dda0dd",
+    "borderColor": "#dda0dd",
+    "textColor": "#ffffff",
+    "className": "fc-event-other",
+    "extendedProps": {
+      "customerName": "Maria Garcia",
+      "serviceCategory": "Hair Treatment",
+      "stylist": "Emily Davis",
+      "serviceType": "Other"
+    }
+  },
+  {
+    "id": "11",
+    "title": "Alex Johnson - Simple Haircut",
+    "start": "2024-01-19T09:30:00",
+    "end": "2024-01-19T10:30:00",
+    "backgroundColor": "#b8ddd1",
+    "borderColor": "#b8ddd1",
+    "textColor": "#ffffff",
+    "className": "fc-event-simple-haircut",
+    "extendedProps": {
+      "customerName": "Alex Johnson",
+      "serviceCategory": "Simple Haircut",
+      "stylist": "Michael Chen",
+      "serviceType": "Simple Haircut"
+    }
+  },
+  {
+    "id": "12",
+    "title": "Lisa Wang - Hair Coloring",
+    "start": "2024-01-19T11:00:00",
+    "end": "2024-01-19T12:30:00",
+    "backgroundColor": "#ffb6c1",
+    "borderColor": "#ffb6c1",
+    "textColor": "#ffffff",
+    "className": "fc-event-hair-dye",
+    "extendedProps": {
+      "customerName": "Lisa Wang",
+      "serviceCategory": "Hair Coloring",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Hair Dye"
+    }
+  },
+  {
+    "id": "13",
+    "title": "Robert Kim - Curly Haircut",
+    "start": "2024-01-20T10:00:00",
+    "end": "2024-01-20T11:30:00",
+    "backgroundColor": "#f7bed5",
+    "borderColor": "#f7bed5",
+    "textColor": "#ffffff",
+    "className": "fc-event-curly-haircut",
+    "extendedProps": {
+      "customerName": "Robert Kim",
+      "serviceCategory": "Curly Haircut",
+      "stylist": "Sarah Johnson",
+      "serviceType": "Curly Haircut"
+    }
+  },
+  {
+    "id": "14",
+    "title": "Jennifer Lee - Styling",
+    "start": "2024-01-20T13:00:00",
+    "end": "2024-01-20T14:00:00",
+    "backgroundColor": "#dda0dd",
+    "borderColor": "#dda0dd",
+    "textColor": "#ffffff",
+    "className": "fc-event-other",
+    "extendedProps": {
+      "customerName": "Jennifer Lee",
+      "serviceCategory": "Styling",
+      "stylist": "Michael Chen",
+      "serviceType": "Other"
+    }
+  },
+  {
+    "id": "15",
+    "title": "Michael Brown - Hair Treatment",
+    "start": "2024-01-21T09:00:00",
+    "end": "2024-01-21T10:30:00",
+    "backgroundColor": "#dda0dd",
+    "borderColor": "#dda0dd",
+    "textColor": "#ffffff",
+    "className": "fc-event-other",
+    "extendedProps": {
+      "customerName": "Michael Brown",
+      "serviceCategory": "Hair Treatment",
+      "stylist": "Emily Davis",
+      "serviceType": "Other"
+    }
+  }
+]
