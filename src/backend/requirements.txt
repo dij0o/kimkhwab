@@ -1,0 +1,16 @@
+# Core Web Framework
+fastapi
+uvicorn[standard]
+
+# Database & ORM
+sqlalchemy
+psycopg2-binary
+
+# Configuration & Validation
+pydantic
+pydantic-settings[dotenv]
+
+# Security & Authentication
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
