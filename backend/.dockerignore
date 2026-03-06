@@ -1,0 +1,19 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables (Don't hardcode secrets into the image)
+.env
+
+# Git
+.git/
+.gitignore
+
+# Uploads/Media
+uploads/
