@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
 
-// 1. Define the TypeScript interfaces based on our FastAPI Schemas
+// Map to our FastAPI Backend Schema
 interface Customer {
     id: number;
     full_name: string;
@@ -22,30 +22,26 @@ interface PaginationMeta {
 }
 
 export const Customers: React.FC = () => {
-    // 2. Setup React State
+    const navigate = useNavigate();
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [meta, setMeta] = useState<PaginationMeta | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>('');
+    const [search, setSearch] = useState<string>('');
 
-    // 3. Fetch Data Function (with pagination support)
     const fetchCustomers = async (skip: number = 0, limit: number = 10) => {
         setLoading(true);
         try {
+            // In a real app, you'd pass the search term to the backend here too
             const response = await apiClient.get(`/customers/?skip=${skip}&limit=${limit}`);
-            // Because we used the JSend standard, we always know where 'data' and 'meta' are!
             setCustomers(response.data.data);
             setMeta(response.data.meta);
-            setError('');
-        } catch (err: any) {
-            setError('Failed to load customers. Please check your connection.');
-            console.error(err);
+        } catch (err) {
+            console.error('Failed to fetch customers', err);
         } finally {
             setLoading(false);
         }
     };
 
-    // 4. Run on component mount
     useEffect(() => {
         fetchCustomers(0, 10);
     }, []);
@@ -55,111 +51,191 @@ export const Customers: React.FC = () => {
             <div className="row justify-content-center">
                 <div className="col-12">
 
-                    {/* Header Row */}
-                    <div className="row align-items-center mb-2">
-                        <div className="col">
-                            <h2 className="h5 page-title">Customers</h2>
-                            <p className="mb-3">Manage your salon's client base, view history, and book appointments.</p>
-                        </div>
-                        <div className="col-auto">
-                            <button className="btn btn-primary" onClick={() => alert('Add Customer Modal Coming Soon!')}>
-                                <i className="fe fe-plus fe-16 mr-2"></i> Add Customer
-                            </button>
+                    {/* HEADER CARD (Exactly as in prototype) */}
+                    <div className="card shadow mb-4 border-0">
+                        <div className="card-body">
+                            <div className="row align-items-center">
+                                <div className="col">
+                                    <h2 className="h3 mb-0 page-title">Customers</h2>
+                                </div>
+                                <div className="col-auto">
+                                    <div className="input-group mr-2 d-inline-flex w-auto">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Search customers..."
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                        />
+                                        <div className="input-group-append">
+                                            <button className="btn btn-primary" type="button">
+                                                <span className="fe fe-search fe-12"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={() => navigate('/customers/new')}
+                                    >
+                                        <span className="fe fe-user-plus fe-12 mr-2"></span>Create Customer
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Error State */}
-                    {error && <div className="alert alert-danger">{error}</div>}
-
-                    {/* Data Table Card */}
-                    <div className="card shadow border-0">
+                    {/* TABLE CARD */}
+                    <div className="card shadow mb-4 border-0">
                         <div className="card-body">
                             {loading ? (
                                 <div className="text-center py-5">
-                                    <div className="spinner-border text-primary" role="status">
-                                        <span className="sr-only">Loading...</span>
-                                    </div>
+                                    <div className="spinner-border text-primary" role="status"></div>
                                 </div>
                             ) : (
-                                <>
-                                    <table className="table table-borderless table-hover mb-0">
-                                        <thead className="thead-dark">
+                                <table className="table table-borderless table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Preferred Stylist</th>
+                                            <th>Primary Contact</th>
+                                            <th>Media Consent</th>
+                                            <th>Number of Visits</th>
+                                            <th>Flagged</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {customers.length === 0 ? (
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Full Name</th>
-                                                <th>Phone Number</th>
-                                                <th>Email</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
+                                                <td colSpan={8} className="text-center py-4 text-muted">
+                                                    No customers found.
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            {customers.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan={6} className="text-center text-muted py-4">
-                                                        No customers found. Click "Add Customer" to get started.
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                customers.map((customer) => (
+                                        ) : (
+                                            customers.map((customer) => {
+                                                // Mocking visual assets to match prototype UI
+                                                const avatarId = (customer.id % 8) + 1; // Cycles through face-1.jpg to face-8.jpg
+                                                const mockVisits = (customer.id * 3) % 20;
+
+                                                return (
                                                     <tr key={customer.id}>
-                                                        <td><span className="text-muted">#{customer.id}</span></td>
-                                                        <td><strong>{customer.full_name}</strong></td>
-                                                        <td>{customer.phone_number || 'N/A'}</td>
-                                                        <td>{customer.email || 'N/A'}</td>
+                                                        <td>{customer.id}</td>
+
+                                                        {/* Complex Customer Details Cell */}
                                                         <td>
-                                                            {customer.is_active ? (
-                                                                <span className="badge badge-success">Active</span>
+                                                            <div className="d-flex align-items-center">
+                                                                <div className="avatar avatar-sm mr-3">
+                                                                    <img src={`/assets/avatars/face-${avatarId}.jpg`} alt="avatar" className="avatar-img rounded-circle" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="mb-0 text-muted"><strong>{customer.full_name}</strong></p>
+                                                                    <small className="mb-0 text-muted">
+                                                                        @{customer.full_name.split(' ')[0].toLowerCase()}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        {/* Preferred Stylist (Mocked for now) */}
+                                                        <td>
+                                                            <div className="d-flex align-items-center">
+                                                                <div>
+                                                                    <p className="mb-0 text-muted"><strong>Sanaa Ali Awan</strong></p>
+                                                                    <small className="mb-0 text-muted">Senior Stylist</small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        {/* Primary Contact */}
+                                                        <td>
+                                                            {customer.phone_number ? (
+                                                                <><i className="fe fe-phone fe-16 mr-2"></i>{customer.phone_number}</>
                                                             ) : (
-                                                                <span className="badge badge-danger">Inactive</span>
+                                                                <><i className="fe fe-mail fe-16 mr-2"></i>{customer.email}</>
                                                             )}
                                                         </td>
+
+                                                        {/* Media Consent & Status */}
+                                                        <td>
+                                                            {customer.is_active ? (
+                                                                <span className="badge badge-pill badge-primary">Yes</span>
+                                                            ) : (
+                                                                <span className="badge badge-pill badge-secondary">No</span>
+                                                            )}
+                                                        </td>
+
+                                                        {/* Visits */}
+                                                        <td>{mockVisits}</td>
+
+                                                        {/* Flagged (Just showing one condition based on visits for UI testing) */}
+                                                        <td>
+                                                            {mockVisits === 0 ? (
+                                                                <span className="badge badge-pill badge-danger">No Appointments</span>
+                                                            ) : null}
+                                                        </td>
+
+                                                        {/* Actions Dropdown */}
                                                         <td>
                                                             <div className="dropdown">
                                                                 <button className="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown">
                                                                     <span className="text-muted sr-only">Action</span>
                                                                 </button>
                                                                 <div className="dropdown-menu dropdown-menu-right">
-                                                                    <a className="dropdown-item" href="#!">Edit Profile</a>
-                                                                    <a className="dropdown-item" href="#!">Book Appointment</a>
-                                                                    <a className="dropdown-item" href="#!">View Gallery</a>
+                                                                    <a className="dropdown-item" href="#!">Edit</a>
+                                                                    <a className="dropdown-item" href="#!">Service History</a>
+                                                                    <a className="dropdown-item" href="#!">Appointments</a>
+                                                                    <a className="dropdown-item" href="#!">Gallery</a>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-
-                                    {/* Pagination Controls */}
-                                    {meta && meta.total_pages > 1 && (
-                                        <nav className="mt-4">
-                                            <ul className="pagination justify-content-center">
-                                                <li className={`page-item ${!meta.has_prev ? 'disabled' : ''}`}>
-                                                    <button
-                                                        className="page-link"
-                                                        onClick={() => fetchCustomers((meta.current_page - 2) * meta.limit, meta.limit)}
-                                                    >
-                                                        Previous
-                                                    </button>
-                                                </li>
-                                                <li className="page-item active"><span className="page-link">{meta.current_page} of {meta.total_pages}</span></li>
-                                                <li className={`page-item ${!meta.has_next ? 'disabled' : ''}`}>
-                                                    <button
-                                                        className="page-link"
-                                                        onClick={() => fetchCustomers((meta.current_page) * meta.limit, meta.limit)}
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    )}
-                                </>
+                                                );
+                                            })
+                                        )}
+                                    </tbody>
+                                </table>
                             )}
                         </div>
                     </div>
+
+                    {/* PAGINATION (Exactly matching prototype) */}
+                    {meta && meta.total_pages > 1 && (
+                        <nav aria-label="Table Paging" className="my-3">
+                            <ul className="pagination justify-content-end mb-0">
+                                <li className={`page-item ${!meta.has_prev ? 'disabled' : ''}`}>
+                                    <button
+                                        className="page-link"
+                                        onClick={() => fetchCustomers((meta.current_page - 2) * meta.limit, meta.limit)}
+                                    >
+                                        Previous
+                                    </button>
+                                </li>
+
+                                {/* Dynamically build page numbers */}
+                                {[...Array(meta.total_pages)].map((_, i) => (
+                                    <li key={i} className={`page-item ${meta.current_page === i + 1 ? 'active' : ''}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => fetchCustomers(i * meta.limit, meta.limit)}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    </li>
+                                ))}
+
+                                <li className={`page-item ${!meta.has_next ? 'disabled' : ''}`}>
+                                    <button
+                                        className="page-link"
+                                        onClick={() => fetchCustomers(meta.current_page * meta.limit, meta.limit)}
+                                    >
+                                        Next
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    )}
 
                 </div>
             </div>

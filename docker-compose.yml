@@ -1,9 +1,9 @@
-version: '3.8'
+
 
 services:
   db:
     build:
-      context: ./src/db
+      context: ./db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -25,7 +25,7 @@ services:
 
   backend:
     build:
-      context: ./src/backend
+      context: ./backend
     restart: always
     environment:
       POSTGRES_SERVER: db
@@ -43,7 +43,7 @@ services:
 
   frontend:
     build:
-      context: ./src/frontend
+      context: ./frontend
     restart: always
     ports:
       - "5173:5173"
