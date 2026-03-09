@@ -226,6 +226,7 @@ CREATE TABLE gallery_images (
     employee_id INTEGER,                    -- optional: who performed/uploaded
     file_path TEXT,                         -- path or URL to storage
     taken_at TIMESTAMP,
+    is_profile_picture BOOLEAN DEFAULT FALSE,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id),
     FOREIGN KEY (employee_id) REFERENCES employees(id)

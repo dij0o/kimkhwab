@@ -1,0 +1,278 @@
+import React, { useState, useEffect } from 'react';
+import apiClient from '../api/client';
+
+import { PageHeader } from '../components/PageHeader';
+import { Spinner } from '../components/Spinner';
+import { Modal } from '../components/Modal';
+import { Pagination, type PaginationMeta } from '../components/Pagination';
+import { Dropdown } from '../components/Dropdown';
+
+// Interface matching the backend ServiceResponse
+interface Service {
+    id: number;
+    category_id: number;
+    name: string;
+    price: number;
+    is_active: boolean;
+    created_at: string;
+}
+
+interface ServiceCategory {
+    id: number;
+    name: string;
+}
+
+export const Services: React.FC = () => {
+    const [loading, setLoading] = useState(true);
+    const [services, setServices] = useState<Service[]>([]);
+    const [categories, setCategories] = useState<ServiceCategory[]>([]);
+    const [meta, setMeta] = useState<PaginationMeta | null>(null);
+    const [search, setSearch] = useState('');
+
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        id: 0,
+        name: '',
+        category_id: 0,
+        price: 0,
+        is_active: true
+    });
+
+    const fetchCategories = async () => {
+        try {
+            const response = await apiClient.get('/services/categories?limit=100');
+            setCategories(response.data.data);
+        } catch (err) {
+            console.error("Failed to load categories", err);
+        }
+    };
+
+    const fetchServices = async (page: number = 1, limit: number = 10) => {
+        setLoading(true);
+        try {
+            const skip = (page - 1) * limit;
+            const response = await apiClient.get(`/services/?skip=${skip}&limit=${limit}`);
+            const { data, meta } = response.data;
+
+            setServices(data);
+            setMeta(meta);
+        } catch (err) {
+            console.error("Failed to load services", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+        fetchServices(1, 10);
+    }, []);
+
+    const handleOpenModal = (service?: Service) => {
+        if (service) {
+            setFormData({
+                id: service.id,
+                name: service.name,
+                category_id: service.category_id,
+                price: service.price,
+                is_active: service.is_active
+            });
+            setIsEditing(true);
+        } else {
+            setFormData({ id: 0, name: '', category_id: categories[0]?.id || 0, price: 0, is_active: true });
+            setIsEditing(false);
+        }
+        setIsModalOpen(true);
+    };
+
+    const handleSave = async () => {
+        try {
+            if (isEditing) {
+                // apiClient.put(`/services/${formData.id}`, formData);
+                console.log("Updating service:", formData);
+            } else {
+                await apiClient.post('/services/', formData);
+            }
+            setIsModalOpen(false);
+            fetchServices(meta?.current_page || 1, 10);
+        } catch (err) {
+            console.error("Failed to save service", err);
+        }
+    };
+
+    return (
+        <div className="container-fluid">
+            <div className="row justify-content-center">
+                <div className="col-12">
+
+                    <PageHeader title="Services">
+                        <div className="input-group mr-2 d-inline-flex w-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search services..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                            />
+                            <div className="input-group-append">
+                                <button className="btn btn-primary" type="button">
+                                    <span className="fe fe-search fe-12"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" className="btn btn-primary" onClick={() => handleOpenModal()}>
+                            <span className="fe fe-plus fe-12 mr-2"></span>Create Service
+                        </button>
+                    </PageHeader>
+
+                    {/* TABLE CARD */}
+                    <div className="card shadow mb-4 border-0">
+                        <div className="card-body">
+                            {loading ? (
+                                <Spinner text="Loading services..." />
+                            ) : (
+                                <table className="table table-borderless table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Service</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {services.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={6} className="text-center py-4 text-muted">
+                                                    No services found.
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            services.map((service) => (
+                                                <tr key={service.id}>
+                                                    <td>{service.id}</td>
+                                                    <td>{service.name}</td>
+                                                    <td>{categories.find(c => c.id === service.category_id)?.name || `Category ${service.category_id}`}</td>
+                                                    <td>Rs. {Number(service.price).toFixed(2)}</td>
+                                                    <td>
+                                                        {/* Note: using the exact text-dark class from your prototype */}
+                                                        {service.is_active ? (
+                                                            <span className="badge badge-primary text-dark">Active</span>
+                                                        ) : (
+                                                            <span className="badge badge-secondary text-dark">Inactive</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        <Dropdown>
+                                                            <button className="dropdown-item" onClick={() => handleOpenModal(service)}>Edit</button>
+                                                            <button className="dropdown-item">View Details</button>
+                                                            <button className="dropdown-item">
+                                                                {service.is_active ? "Deactivate" : "Activate"}
+                                                            </button>
+                                                        </Dropdown>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* PAGINATION */}
+                    <Pagination
+                        meta={meta}
+                        onPageChange={fetchServices}
+                    />
+
+                </div>
+            </div>
+
+            {/* --- ADD / EDIT SERVICE SLIDE MODAL --- */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={isEditing ? "Edit Service" : "Add New Service"}
+                isSlide={true}
+                footer={
+                    <>
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Close</button>
+                        <button type="button" className="btn btn-primary" onClick={handleSave}>
+                            {isEditing ? "Save Changes" : "Save Service"}
+                        </button>
+                    </>
+                }
+            >
+                <form>
+                    <div className="form-group">
+                        <label htmlFor="serviceName">Service Name</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="serviceName"
+                            value={formData.name}
+                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="serviceCategory">Category</label>
+                        <select
+                            className="form-control"
+                            id="serviceCategory"
+                            value={formData.category_id}
+                            onChange={e => setFormData({ ...formData, category_id: parseInt(e.target.value) })}
+                            required
+                        >
+                            <option value="">Select a category</option>
+                            {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="servicePrice">Price</label>
+                        <div className="input-group">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text">Rs. </span>
+                            </div>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="servicePrice"
+                                step="0.01"
+                                min="0"
+                                value={formData.price || ''}
+                                onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="serviceStatus">Status</label>
+                        <select
+                            className="form-control"
+                            id="serviceStatus"
+                            value={formData.is_active ? 'true' : 'false'}
+                            onChange={e => setFormData({ ...formData, is_active: e.target.value === 'true' })}
+                        >
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </form>
+            </Modal>
+
+        </div>
+    );
+};

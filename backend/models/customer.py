@@ -20,11 +20,11 @@ class Customer(Base):
     
     whatsapp_number = Column(String)
     whatsapp_is_primary = Column(Boolean, default=False)
-    mobile_number = Column(String)
-    mobile_is_primary = Column(Boolean, default=False)
+    phone_number = Column(String, name="mobile_number") # Maps to 'mobile_number' in DB
+    phone_is_primary = Column(Boolean, default=False)
     email = Column(String)
     email_is_primary = Column(Boolean, default=False)
-    media_permission = Column(Boolean, default=True)
+    media_consent = Column(Boolean, name="media_permission", default=True) # Maps to 'media_permission'
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     preferred_employee = relationship("Employee")
@@ -35,8 +35,8 @@ class CustomerProfile(Base):
     __tablename__ = "customer_profiles"
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
-    preferences = Column(String)
-    notes = Column(String)
+    preferences = Column(String) # Reverted from preferred_stylist_id
+    notes = Column(String) # Reverted from allergies_notes
     last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     customer = relationship("Customer", back_populates="profile")

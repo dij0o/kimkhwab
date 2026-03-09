@@ -6,11 +6,13 @@ export const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false); // <-- Added loading state
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setIsSubmitting(true); // <-- Lock the form
 
         try {
             const formData = new URLSearchParams();
@@ -27,6 +29,8 @@ export const Login: React.FC = () => {
             navigate('/dashboard');
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Invalid username or password');
+        } finally {
+            setIsSubmitting(false); // <-- Unlock the form whether it succeeds or fails
         }
     };
 
@@ -51,7 +55,6 @@ export const Login: React.FC = () => {
 
                     <div className="form-group mb-3">
                         <label htmlFor="inputEmail" className="sr-only">Username</label>
-                        {/* Note: FastApi needs 'username', so we label it as such even if they type an email */}
                         <input
                             type="text"
                             id="inputEmail"
@@ -61,6 +64,7 @@ export const Login: React.FC = () => {
                             autoFocus
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            disabled={isSubmitting} // <-- Disable while loading
                         />
                     </div>
 
@@ -74,10 +78,17 @@ export const Login: React.FC = () => {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            disabled={isSubmitting} // <-- Disable while loading
                         />
                     </div>
 
-                    <button className="btn btn-lg btn-primary btn-block w-100" type="submit">Let me in</button>
+                    <button
+                        className="btn btn-lg btn-primary btn-block w-100"
+                        type="submit"
+                        disabled={isSubmitting} // <-- Prevent double-clicks
+                    >
+                        {isSubmitting ? 'Signing in...' : 'Let me in'}
+                    </button>
                     <p className="mt-5 mb-3 text-muted">© KimKhawb Hair Studio 2025</p>
 
                 </form>

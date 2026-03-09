@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
+
+// Import our new Reusable Components
+import { PageHeader } from '../components/PageHeader';
+import { Pagination, type PaginationMeta } from '../components/Pagination';
+import { Spinner } from '../components/Spinner';
+
+import { Dropdown } from '../components/Dropdown';
 
 // Map to our FastAPI Backend Schema
 interface Customer {
@@ -8,17 +15,10 @@ interface Customer {
     full_name: string;
     phone_number: string;
     email: string | null;
+    media_consent: boolean;
+    visit_count: number;
     is_active: boolean;
     created_at: string;
-}
-
-interface PaginationMeta {
-    total_records: number;
-    total_pages: number;
-    current_page: number;
-    limit: number;
-    has_next: boolean;
-    has_prev: boolean;
 }
 
 export const Customers: React.FC = () => {
@@ -31,7 +31,6 @@ export const Customers: React.FC = () => {
     const fetchCustomers = async (skip: number = 0, limit: number = 10) => {
         setLoading(true);
         try {
-            // In a real app, you'd pass the search term to the backend here too
             const response = await apiClient.get(`/customers/?skip=${skip}&limit=${limit}`);
             setCustomers(response.data.data);
             setMeta(response.data.meta);
@@ -51,47 +50,38 @@ export const Customers: React.FC = () => {
             <div className="row justify-content-center">
                 <div className="col-12">
 
-                    {/* HEADER CARD (Exactly as in prototype) */}
-                    <div className="card shadow mb-4 border-0">
-                        <div className="card-body">
-                            <div className="row align-items-center">
-                                <div className="col">
-                                    <h2 className="h3 mb-0 page-title">Customers</h2>
-                                </div>
-                                <div className="col-auto">
-                                    <div className="input-group mr-2 d-inline-flex w-auto">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Search customers..."
-                                            value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                        />
-                                        <div className="input-group-append">
-                                            <button className="btn btn-primary" type="button">
-                                                <span className="fe fe-search fe-12"></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary"
-                                        onClick={() => navigate('/customers/new')}
-                                    >
-                                        <span className="fe fe-user-plus fe-12 mr-2"></span>Create Customer
-                                    </button>
-                                </div>
+                    {/* 1. REUSABLE PAGE HEADER */}
+                    <PageHeader title="Customers">
+                        {/* Anything placed inside here automatically aligns to the right! */}
+                        <div className="input-group mr-2 d-inline-flex w-auto">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search customers..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <div className="input-group-append">
+                                <button className="btn btn-primary" type="button">
+                                    <span className="fe fe-search fe-12"></span>
+                                </button>
                             </div>
                         </div>
-                    </div>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => navigate('/customers/create')}
+                        >
+                            <span className="fe fe-user-plus fe-12 mr-2"></span>Create Customer
+                        </button>
+                    </PageHeader>
 
                     {/* TABLE CARD */}
                     <div className="card shadow mb-4 border-0">
                         <div className="card-body">
                             {loading ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary" role="status"></div>
-                                </div>
+                                // 2. REUSABLE SPINNER
+                                <Spinner text="Loading customers..." />
                             ) : (
                                 <table className="table table-borderless table-hover">
                                     <thead>
@@ -116,14 +106,12 @@ export const Customers: React.FC = () => {
                                         ) : (
                                             customers.map((customer) => {
                                                 // Mocking visual assets to match prototype UI
-                                                const avatarId = (customer.id % 8) + 1; // Cycles through face-1.jpg to face-8.jpg
-                                                const mockVisits = (customer.id * 3) % 20;
+                                                const avatarId = (customer.id % 8) + 1;
 
                                                 return (
                                                     <tr key={customer.id}>
                                                         <td>{customer.id}</td>
 
-                                                        {/* Complex Customer Details Cell */}
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div className="avatar avatar-sm mr-3">
@@ -138,7 +126,6 @@ export const Customers: React.FC = () => {
                                                             </div>
                                                         </td>
 
-                                                        {/* Preferred Stylist (Mocked for now) */}
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div>
@@ -148,47 +135,49 @@ export const Customers: React.FC = () => {
                                                             </div>
                                                         </td>
 
-                                                        {/* Primary Contact */}
-                                                        <td>
-                                                            {customer.phone_number ? (
-                                                                <><i className="fe fe-phone fe-16 mr-2"></i>{customer.phone_number}</>
-                                                            ) : (
-                                                                <><i className="fe fe-mail fe-16 mr-2"></i>{customer.email}</>
-                                                            )}
-                                                        </td>
+                                                        <td>{customer.phone_number}</td>
 
-                                                        {/* Media Consent & Status */}
                                                         <td>
-                                                            {customer.is_active ? (
+                                                            {customer.media_consent ? (
                                                                 <span className="badge badge-pill badge-primary">Yes</span>
                                                             ) : (
                                                                 <span className="badge badge-pill badge-secondary">No</span>
                                                             )}
                                                         </td>
 
-                                                        {/* Visits */}
-                                                        <td>{mockVisits}</td>
+                                                        <td>{customer.visit_count}</td>
 
-                                                        {/* Flagged (Just showing one condition based on visits for UI testing) */}
                                                         <td>
-                                                            {mockVisits === 0 ? (
-                                                                <span className="badge badge-pill badge-danger">No Appointments</span>
-                                                            ) : null}
+                                                            <span className="text-muted">-</span>
                                                         </td>
 
-                                                        {/* Actions Dropdown */}
                                                         <td>
-                                                            <div className="dropdown">
-                                                                <button className="btn btn-sm dropdown-toggle more-vertical" type="button" data-toggle="dropdown">
-                                                                    <span className="text-muted sr-only">Action</span>
-                                                                </button>
-                                                                <div className="dropdown-menu dropdown-menu-right">
-                                                                    <a className="dropdown-item" href="#!">Edit</a>
-                                                                    <a className="dropdown-item" href="#!">Service History</a>
-                                                                    <a className="dropdown-item" href="#!">Appointments</a>
-                                                                    <a className="dropdown-item" href="#!">Gallery</a>
-                                                                </div>
-                                                            </div>
+                                                            <Dropdown>
+                                                                {/* 1. View Details */}
+                                                                <Link className="dropdown-item" to={`/customers/${customer.id}`}>
+                                                                    <i className="fe fe-user mr-2"></i> View Profile
+                                                                </Link>
+
+                                                                {/* 2. Edit */}
+                                                                <Link className="dropdown-item" to={`/customers/${customer.id}/edit`}>
+                                                                    <i className="fe fe-edit mr-2"></i> Edit
+                                                                </Link>
+
+                                                                {/* 3. Service History (Will build this soon) */}
+                                                                <Link className="dropdown-item" to={`/customers/${customer.id}/history`}>
+                                                                    <i className="fe fe-clock mr-2"></i> Service History
+                                                                </Link>
+
+                                                                {/* 4. Appointments */}
+                                                                <Link className="dropdown-item" to={`/customers/${customer.id}/appointments`}>
+                                                                    <i className="fe fe-calendar mr-2"></i> Appointments
+                                                                </Link>
+
+                                                                {/* 5. Gallery Filter */}
+                                                                <Link className="dropdown-item" to={`/gallery?customerId=${customer.id}`}>
+                                                                    <i className="fe fe-image mr-2"></i> Gallery
+                                                                </Link>
+                                                            </Dropdown>
                                                         </td>
                                                     </tr>
                                                 );
@@ -200,42 +189,11 @@ export const Customers: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* PAGINATION (Exactly matching prototype) */}
-                    {meta && meta.total_pages > 1 && (
-                        <nav aria-label="Table Paging" className="my-3">
-                            <ul className="pagination justify-content-end mb-0">
-                                <li className={`page-item ${!meta.has_prev ? 'disabled' : ''}`}>
-                                    <button
-                                        className="page-link"
-                                        onClick={() => fetchCustomers((meta.current_page - 2) * meta.limit, meta.limit)}
-                                    >
-                                        Previous
-                                    </button>
-                                </li>
-
-                                {/* Dynamically build page numbers */}
-                                {[...Array(meta.total_pages)].map((_, i) => (
-                                    <li key={i} className={`page-item ${meta.current_page === i + 1 ? 'active' : ''}`}>
-                                        <button
-                                            className="page-link"
-                                            onClick={() => fetchCustomers(i * meta.limit, meta.limit)}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    </li>
-                                ))}
-
-                                <li className={`page-item ${!meta.has_next ? 'disabled' : ''}`}>
-                                    <button
-                                        className="page-link"
-                                        onClick={() => fetchCustomers(meta.current_page * meta.limit, meta.limit)}
-                                    >
-                                        Next
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
-                    )}
+                    {/* 3. REUSABLE PAGINATION */}
+                    <Pagination
+                        meta={meta}
+                        onPageChange={fetchCustomers}
+                    />
 
                 </div>
             </div>

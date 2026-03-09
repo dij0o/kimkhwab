@@ -25,6 +25,7 @@ async def upload_image(
     file: UploadFile = File(...),
     customer_id: Optional[int] = Form(None),  # Form() is required to parse multipart/form-data from TS
     taken_at: Optional[datetime] = Form(None),
+    is_profile_picture: bool = Form(False),
     db: Session = Depends(get_db),
     current_user: Employee = Depends(get_current_user)
 ):
@@ -37,6 +38,14 @@ async def upload_image(
     file_ext = os.path.splitext(file.filename)[1].lower()
     if file_ext not in allowed_extensions:
         raise HTTPException(status_code=400, detail="Invalid file type. Only JPG, PNG, and WEBP are allowed.")
+
+    # SMART UPDATE: If this is a new profile pic, unset any old ones for this customer
+    if is_profile_picture and customer_id:
+        db.query(GalleryImage).filter(
+            GalleryImage.customer_id == customer_id, 
+            GalleryImage.is_profile_picture == True
+        ).update({"is_profile_picture": False})
+        db.commit()
 
     # 2. Validate Customer if provided
     if customer_id:
@@ -66,7 +75,8 @@ async def upload_image(
         customer_id=customer_id,
         employee_id=current_user.id,
         file_path=relative_url_path,
-        taken_at=taken_at
+        taken_at=taken_at,
+        is_profile_picture=is_profile_picture
     )
     db.add(db_image)
     db.commit()

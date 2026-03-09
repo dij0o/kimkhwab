@@ -3,25 +3,49 @@ import { Login } from './pages/Login';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Customers } from './pages/Customers';
+import { CustomerCreate } from './pages/CustomerCreate';
+import { CustomerProfile } from './pages/CustomerProfile';
+import { CustomerAppointments } from './pages/CustomerAppointments';
+import { CustomerServiceHistory } from './pages/CustomerServiceHistory';
+import { Appointments } from './pages/Appointments';
+import { Gallery } from './pages/Gallery';
+import { ServiceCategories } from './pages/ServiceCategories';
+import { Services } from './pages/Services';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Standalone Login Page */}
+        {/* --- Public Routes --- */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Dashboard Layout */}
+        {/* --- Protected Routes (Requires Authentication) --- */}
         <Route element={<Layout />}>
-          {/* This renders INSIDE the Layout's <Outlet /> */}
+
+          {/* Dashboard Hub */}
           <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* Future Routes will go here, like: */}
-          {/* <Route path="/customers" element={<Customers />} /> */}
+          {/* Customer Management */}
           <Route path="/customers" element={<Customers />} />
+          <Route path="/customers/create" element={<CustomerCreate />} />
+          <Route path="/customers/:id/edit" element={<CustomerCreate />} />
+          <Route path="/customers/:id/appointments" element={<CustomerAppointments />} />
+          <Route path="/customers/:id/history" element={<CustomerServiceHistory />} />
+          {/* The catch-all dynamic :id route must be at the bottom of the customer list */}
+          <Route path="/customers/:id" element={<CustomerProfile />} />
+
+          {/* Appointment Management */}
+          <Route path="/appointments" element={<Appointments />} />
+
+          {/* Gallery */}
+          <Route path="/gallery" element={<Gallery />} />
+
+          {/* Services */}
+          <Route path="/service-categories" element={<ServiceCategories />} />
+          <Route path="/services" element={<Services />} />
         </Route>
 
-        {/* Fallback redirect */}
+        {/* --- Fallback Route --- */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
