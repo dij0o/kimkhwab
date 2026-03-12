@@ -60,12 +60,13 @@ def get_customers(
     )
 
     # 2. Get TOTAL count
-    total_records = db.query(Customer).count()
+    total_records = db.query(Customer).filter(Customer.is_active == True).count()
     
     # 3. Get sliced data with counts
     customers_with_counts = (
         db.query(Customer, func.coalesce(visit_count_subquery.c.visit_count, 0).label("visit_count"))
         .outerjoin(visit_count_subquery, Customer.id == visit_count_subquery.c.customer_id)
+        .filter(Customer.is_active == True)
         .offset(skip).limit(limit).all()
     )
     
@@ -172,7 +173,7 @@ def delete_customer(
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
-    db.delete(db_customer) # Hard delete since is_active doesn't exist
+    db_customer.is_active = False
     db.commit()
     
     return APIResponse(

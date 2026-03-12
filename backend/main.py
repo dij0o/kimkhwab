@@ -45,6 +45,7 @@ app = FastAPI(
 # ==========================================
 # Ensure the directory exists so FastAPI doesn't crash on startup
 os.makedirs("uploads/gallery", exist_ok=True)
+os.makedirs("uploads/employees", exist_ok=True)
 # Mount the directory to the /static URL path
 app.mount("/static", StaticFiles(directory="uploads"), name="static")
 

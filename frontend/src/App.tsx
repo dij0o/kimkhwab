@@ -7,6 +7,8 @@ import { CustomerCreate } from './pages/CustomerCreate';
 import { CustomerProfile } from './pages/CustomerProfile';
 import { CustomerAppointments } from './pages/CustomerAppointments';
 import { CustomerServiceHistory } from './pages/CustomerServiceHistory';
+import { Employees } from './pages/Employees';
+import { EmployeeCreate } from './pages/EmployeeCreate';
 import { Appointments } from './pages/Appointments';
 import { Gallery } from './pages/Gallery';
 import { ServiceCategories } from './pages/ServiceCategories';
@@ -36,6 +38,11 @@ function App() {
 
           {/* Appointment Management */}
           <Route path="/appointments" element={<Appointments />} />
+
+          {/* Employee Management */}
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/employees/create" element={<EmployeeCreate />} />
+          <Route path="/employees/:id/edit" element={<EmployeeCreate />} />
 
           {/* Gallery */}
           <Route path="/gallery" element={<Gallery />} />

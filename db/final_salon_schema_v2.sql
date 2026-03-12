@@ -56,6 +56,7 @@ CREATE TABLE roles (
 CREATE TABLE employees (
     id SERIAL PRIMARY KEY,
     full_name TEXT NOT NULL,
+    designation TEXT,
     username TEXT NOT NULL UNIQUE,            -- login username
     password TEXT NOT NULL,                   -- store hashed in backend
     role_id INTEGER REFERENCES roles(id),
@@ -99,11 +100,12 @@ CREATE TABLE customers (
     -- Fixed primary contact fields
     whatsapp_number TEXT,
     whatsapp_is_primary BOOLEAN DEFAULT FALSE,
-    mobile_number TEXT,
-    mobile_is_primary BOOLEAN DEFAULT FALSE,
+    phone_number TEXT,
+    phone_is_primary BOOLEAN DEFAULT FALSE,
     email TEXT,
     email_is_primary BOOLEAN DEFAULT FALSE,
-    media_permission BOOLEAN DEFAULT TRUE,
+    media_consent BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (preferred_employee_id) REFERENCES employees(id),

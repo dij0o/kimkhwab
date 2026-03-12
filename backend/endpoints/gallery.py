@@ -68,7 +68,6 @@ async def upload_image(
         file.file.close()
 
     # 5. Save the record to PostgreSQL
-    # We store a relative URL path. In the TS frontend, they will append this to their VITE_API_BASE_URL
     relative_url_path = f"/static/gallery/{unique_filename}"
     
     db_image = GalleryImage(
@@ -79,6 +78,11 @@ async def upload_image(
         is_profile_picture=is_profile_picture
     )
     db.add(db_image)
+
+    # NEW: Update the Customer's profile table if this is their new avatar
+    if is_profile_picture and customer_id and customer:
+        customer.profile_image_url = relative_url_path
+
     db.commit()
     db.refresh(db_image)
 

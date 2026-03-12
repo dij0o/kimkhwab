@@ -7,8 +7,8 @@ import { Spinner } from '../components/Spinner';
 
 export const CustomerCreate: React.FC = () => {
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>(); // <-- 1. Catch the ID from the URL
-    const isEditing = Boolean(id); // <-- 2. Flag to determine our mode
+    const { id } = useParams<{ id: string }>(); // Catch the ID from the URL
+    const isEditing = Boolean(id); // Flag to determine our mode
 
     // Text Form State
     const [fullName, setFullName] = useState('');
@@ -30,43 +30,52 @@ export const CustomerCreate: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
-    // --- 3. FETCH EXISTING DATA IF EDITING ---
+    // Employee Data State (For the Dropdown)
+    const [employees, setEmployees] = useState<{ id: number, full_name: string, designation?: string }[]>([]);
+
+    // --- FETCH INITIAL DATA ---
     useEffect(() => {
-        const fetchCustomer = async () => {
-            if (!isEditing) return;
-
+        const loadInitialData = async () => {
             try {
-                const response = await apiClient.get(`/customers/${id}`);
-                const data = response.data.data;
+                // 1. Fetch the list of employees for the dropdown
+                const empResponse = await apiClient.get('/employees/');
+                // Filter to only show active employees
+                setEmployees(empResponse.data.data.filter((emp: any) => emp.is_active));
 
-                // Pre-fill the form
-                setFullName(data.full_name || '');
-                setPhone(data.phone_number || '');
-                setWhatsapp(data.whatsapp_number || '');
-                setEmail(data.email || '');
-                setInstagram(data.instagram_handle || '');
-                setMediaConsent(data.media_consent || false);
+                // 2. If editing, fetch the existing customer data
+                if (isEditing) {
+                    const custResponse = await apiClient.get(`/customers/${id}`);
+                    const data = custResponse.data.data;
 
-                if (data.profile) {
-                    setPreferredStylistId(data.profile.preferred_stylist_id || '');
-                    setBio(data.profile.allergies_notes || '');
+                    // Pre-fill the form
+                    setFullName(data.full_name || '');
+                    setPhone(data.phone_number || '');
+                    setWhatsapp(data.whatsapp_number || '');
+                    setEmail(data.email || '');
+                    setInstagram(data.instagram_handle || '');
+                    setMediaConsent(data.media_consent || false);
+
+                    if (data.profile) {
+                        setPreferredStylistId(data.profile.preferences ? Number(data.profile.preferences) : '');
+                        setBio(data.profile.notes || '');
+                    }
+
+                    if (data.profile_image_url) {
+                        setProfilePicPreview(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.profile_image_url}`);
+                    }
                 }
-
-                // If they have a profile picture in the gallery, we would set the preview here
-                // For now, we leave the placeholder unless they upload a new one
-
             } catch (err: any) {
-                console.error("Failed to fetch customer", err);
-                setError("Failed to load customer data for editing.");
+                console.error("Failed to load initial data", err);
+                setError("Failed to load necessary data.");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchCustomer();
+        loadInitialData();
     }, [id, isEditing]);
 
-    // Dropzone setup
+    // Dropzone setup for Gallery Uploads
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setUploadFiles(prev => [...prev, ...acceptedFiles]);
     }, []);
@@ -106,12 +115,10 @@ export const CustomerCreate: React.FC = () => {
 
             let targetCustomerId = id;
 
-            // --- 4. SMART SAVE: POST if new, PUT/PATCH if editing ---
+            // --- SMART SAVE: POST if new, PUT if editing ---
             if (isEditing) {
-                // Update existing customer
                 await apiClient.put(`/customers/${id}`, customerPayload);
             } else {
-                // Create new customer
                 const customerRes = await apiClient.post('/customers/', customerPayload);
                 targetCustomerId = customerRes.data.data.id.toString();
             }
@@ -216,7 +223,11 @@ export const CustomerCreate: React.FC = () => {
                                             <div className="form-group col-md-6 mb-3">
                                                 <select className="form-control" value={preferredStylistId} onChange={(e) => setPreferredStylistId(Number(e.target.value) || '')} disabled={isSubmitting}>
                                                     <option value="">Select Preferred Stylist</option>
-                                                    <option value="1">Sanaa Ali Awan</option>
+                                                    {employees.map(emp => (
+                                                        <option key={emp.id} value={emp.id}>
+                                                            {emp.full_name} {emp.designation ? `(${emp.designation})` : ''}
+                                                        </option>
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>

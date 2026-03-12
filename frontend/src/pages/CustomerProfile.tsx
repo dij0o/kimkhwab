@@ -14,6 +14,7 @@ interface CustomerProfileData {
     is_active: boolean;
     media_consent: boolean;
     visit_count: number;
+    profile_image_url?: string | null;
     profile?: {
         notes: string | null;
         preferences: string | null;
@@ -72,7 +73,12 @@ export const CustomerProfile: React.FC = () => {
                             <div className="card shadow border-0 text-center h-100">
                                 <div className="card-body d-flex flex-column align-items-center justify-content-center">
                                     <div className="avatar avatar-xl mb-4">
-                                        <img src="/assets/avatars/placeholder.svg" alt="Profile" className="avatar-img rounded-circle border shadow-sm" style={{ width: '120px', height: '120px', objectFit: 'cover' }} />
+                                        <img
+                                            src={customer.profile_image_url ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${customer.profile_image_url}` : '/assets/avatars/placeholder.svg'}
+                                            alt="Profile"
+                                            className="avatar-img rounded-circle border shadow-sm"
+                                            style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+                                        />
                                     </div>
                                     <h3 className="h4 mb-1">{customer.full_name}</h3>
                                     {customer.instagram_handle && <p className="text-muted mb-2">@{customer.instagram_handle}</p>}
@@ -90,15 +96,17 @@ export const CustomerProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Right Column: Details & Quick Actions */}
+                        {/* Right Column: Details */}
                         <div className="col-md-8 mb-4">
-                            <div className="card shadow border-0 mb-4">
+                            <div className="card shadow border-0 h-100">
                                 <div className="card-header">
                                     <strong>Bio & Preferences</strong>
                                 </div>
                                 <div className="card-body">
                                     <p><strong>Notes / Allergies:</strong></p>
-                                    <p className="text-muted bg-light p-3 rounded">{customer.profile?.notes || 'No notes available.'}</p>
+                                    <p className="text-muted bg-light p-3 rounded" style={{ minHeight: '100px' }}>
+                                        {customer.profile?.notes || 'No notes available.'}
+                                    </p>
 
                                     <div className="row mt-4">
                                         <div className="col-md-6">
@@ -108,43 +116,42 @@ export const CustomerProfile: React.FC = () => {
                                         <div className="col-md-6">
                                             <p className="mb-1"><strong>Media Consent:</strong></p>
                                             {customer.media_consent ? (
-                                                <span className="badge badge-pill badge-success">Consented</span>
+                                                <span className="badge badge-pill badge-primary">Yes</span>
                                             ) : (
-                                                <span className="badge badge-pill badge-secondary">Not Consented</span>
+                                                <span className="badge badge-pill badge-secondary">No</span>
                                             )}
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            {/* Action Cards Grid */}
-                            <div className="row">
-                                <div className="col-md-4 mb-4">
-                                    <Link to={`/customers/${id}/appointments`} style={{ textDecoration: 'none' }}>
-                                        <div className="card shadow-sm border-0 bg-primary text-white text-center h-100 p-3" style={{ transition: 'transform 0.2s' }}>
-                                            <i className="fe fe-calendar fe-32 mb-2"></i>
-                                            <h5 className="text-white mb-0">Appointments</h5>
-                                        </div>
-                                    </Link>
+                    {/* New Row: Action Cards Grid (Uniform Primary Colors) */}
+                    <div className="row">
+                        <div className="col-md-4 mb-4">
+                            <Link to={`/customers/${id}/appointments`} style={{ textDecoration: 'none' }}>
+                                <div className="card shadow-sm border-0 bg-primary text-white text-center h-100 p-4" style={{ transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+                                    <i className="fe fe-calendar fe-32 mb-3"></i>
+                                    <h5 className="text-white mb-0">Appointments</h5>
                                 </div>
-                                <div className="col-md-4 mb-4">
-                                    <Link to={`/customers/${id}/history`} style={{ textDecoration: 'none' }}>
-                                        <div className="card shadow-sm border-0 text-center h-100 p-3" style={{ backgroundColor: '#b8ddd1', color: '#fff', transition: 'transform 0.2s' }}>
-                                            <i className="fe fe-clock fe-32 mb-2"></i>
-                                            <h5 className="text-white mb-0">Service History</h5>
-                                        </div>
-                                    </Link>
+                            </Link>
+                        </div>
+                        <div className="col-md-4 mb-4">
+                            <Link to={`/customers/${id}/history`} style={{ textDecoration: 'none' }}>
+                                <div className="card shadow-sm border-0 bg-primary text-white text-center h-100 p-4" style={{ transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+                                    <i className="fe fe-clock fe-32 mb-3"></i>
+                                    <h5 className="text-white mb-0">Service History</h5>
                                 </div>
-                                <div className="col-md-4 mb-4">
-                                    <Link to={`/gallery?customerId=${id}`} style={{ textDecoration: 'none' }}>
-                                        <div className="card shadow-sm border-0 text-center h-100 p-3" style={{ backgroundColor: '#dda0dd', color: '#fff', transition: 'transform 0.2s' }}>
-                                            <i className="fe fe-image fe-32 mb-2"></i>
-                                            <h5 className="text-white mb-0">Gallery</h5>
-                                        </div>
-                                    </Link>
+                            </Link>
+                        </div>
+                        <div className="col-md-4 mb-4">
+                            <Link to={`/gallery?customerId=${id}`} style={{ textDecoration: 'none' }}>
+                                <div className="card shadow-sm border-0 bg-primary text-white text-center h-100 p-4" style={{ transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+                                    <i className="fe fe-image fe-32 mb-3"></i>
+                                    <h5 className="text-white mb-0">Gallery</h5>
                                 </div>
-                            </div>
-
+                            </Link>
                         </div>
                     </div>
 

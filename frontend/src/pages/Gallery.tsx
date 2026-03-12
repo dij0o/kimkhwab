@@ -36,42 +36,43 @@ export const Gallery: React.FC = () => {
     const [selectedCustomerId, setSelectedCustomerId] = useState('');
     const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
-    // 1. Fetch Actual Media & Customers
-    const fetchGallery = async () => {
+    // 1. Fetch Actual Media & Customers together
+    const loadGalleryData = async () => {
         setLoading(true);
         try {
-            const response = await apiClient.get('/gallery/');
-            const apiData = response.data.data; // Based on APIPaginatedResponse
-            
-            // Map backend GalleryImageResponse to our GalleryItem interface
-            const mappedMedia: GalleryItem[] = apiData.map((img: any) => ({
-                id: img.id,
-                url: `${import.meta.env.VITE_API_BASE_URL || ''}${img.file_path}`,
-                type: 'image', // Backend only supports images for now
-                customerName: `Customer #${img.customer_id}`, // In a real app, join or fetch names
-                isProfilePicture: img.is_profile_picture
-            }));
-            
+            // Fetch both at the same time
+            const [galleryRes, customersRes] = await Promise.all([
+                apiClient.get('/gallery/'),
+                apiClient.get('/customers/')
+            ]);
+
+            const fetchedCustomers = customersRes.data.data;
+            setCustomers(fetchedCustomers);
+
+            // Map gallery with correct API URL and Real Customer Name
+            const mappedMedia: GalleryItem[] = galleryRes.data.data.map((img: any) => {
+                const customer = fetchedCustomers.find((c: any) => c.id === img.customer_id);
+                const customerName = customer ? customer.full_name : `Customer #${img.customer_id}`;
+
+                return {
+                    id: img.id,
+                    url: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${img.file_path}`,
+                    type: 'image',
+                    customerName: customerName,
+                    isProfilePicture: img.is_profile_picture
+                };
+            });
+
             setMedia(mappedMedia);
         } catch (error) {
-            console.error("Failed to fetch gallery:", error);
+            console.error("Failed to load gallery data:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchCustomers = async () => {
-        try {
-            const response = await apiClient.get('/customers/');
-            setCustomers(response.data.data); // Based on APIPaginatedResponse
-        } catch (error) {
-            console.error("Failed to fetch customers:", error);
-        }
-    };
-
     useEffect(() => {
-        fetchGallery();
-        fetchCustomers();
+        loadGalleryData();
     }, []);
 
     // 2. Handle Lightbox Interactions
@@ -121,7 +122,7 @@ export const Gallery: React.FC = () => {
             setUploadFiles([]);
             setIsUploadModalOpen(false);
             // Refetch the gallery list to show the new image
-            await fetchGallery(); 
+            await loadGalleryData();
         } catch (error) {
             console.error("Upload failed:", error);
             alert("One or more files failed to upload.");
@@ -179,7 +180,7 @@ export const Gallery: React.FC = () => {
                                                 style={{ height: '250px', objectFit: 'cover' }}
                                             />
                                             {item.isProfilePicture && (
-                                                <div 
+                                                <div
                                                     className="position-absolute"
                                                     style={{ top: '10px', right: '10px', background: 'var(--primary, #e8a8c3)', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}
                                                 >
@@ -269,10 +270,10 @@ export const Gallery: React.FC = () => {
 
                 <div className="form-group mb-4">
                     <div className="custom-control custom-checkbox">
-                        <input 
-                            type="checkbox" 
-                            className="custom-control-input" 
-                            id="isProfilePicCheck" 
+                        <input
+                            type="checkbox"
+                            className="custom-control-input"
+                            id="isProfilePicCheck"
                             checked={isProfilePic}
                             onChange={(e) => setIsProfilePic(e.target.checked)}
                         />

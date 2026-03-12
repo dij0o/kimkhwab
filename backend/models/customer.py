@@ -20,11 +20,12 @@ class Customer(Base):
     
     whatsapp_number = Column(String)
     whatsapp_is_primary = Column(Boolean, default=False)
-    phone_number = Column(String, name="mobile_number") # Maps to 'mobile_number' in DB
+    phone_number = Column(String)
     phone_is_primary = Column(Boolean, default=False)
     email = Column(String)
     email_is_primary = Column(Boolean, default=False)
-    media_consent = Column(Boolean, name="media_permission", default=True) # Maps to 'media_permission'
+    media_consent = Column(Boolean, default=True) 
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     preferred_employee = relationship("Employee")

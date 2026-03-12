@@ -35,6 +35,7 @@ class Employee(Base):
     __tablename__ = "employees"
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String, nullable=False)
+    designation = Column(String)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False) # Hashed
     role_id = Column(Integer, ForeignKey("roles.id"))

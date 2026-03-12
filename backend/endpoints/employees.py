@@ -1,5 +1,8 @@
 import math
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+import shutil
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,7 +11,7 @@ from core.security import get_password_hash
 from core.deps import get_current_user
 from models.employee import Employee
 from models.financial import EmployeePayslip, LedgerEntry
-from schemas.employee import EmployeeCreate, EmployeeResponse
+from schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate
 from schemas.payslip import EmployeePayslipCreate, EmployeePayslipResponse
 from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
 
@@ -72,6 +75,101 @@ def get_employees(
         status="success", status_code=status.HTTP_200_OK,
         message="Employees retrieved successfully.",
         data=employees, meta=meta
+    )
+
+@router.get("/{id}", response_model=APIResponse[EmployeeResponse])
+def get_employee(
+    id: int, 
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    employee = db.query(Employee).filter(Employee.id == id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+        
+    return APIResponse(
+        status="success", status_code=status.HTTP_200_OK,
+        message="Employee retrieved successfully.", data=employee
+    )
+
+@router.post("/{id}/avatar", response_model=APIResponse[EmployeeResponse])
+async def upload_employee_avatar(
+    id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    """Saves an employee profile picture completely separate from the customer gallery."""
+    db_employee = db.query(Employee).filter(Employee.id == id).first()
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    allowed_extensions = [".jpg", ".jpeg", ".png", ".webp"]
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_extensions:
+        raise HTTPException(status_code=400, detail="Invalid file type.")
+
+    # Save to the private employee folder
+    upload_dir = "uploads/employees"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"emp_{id}_{timestamp_str}{file_ext}"
+    file_location = os.path.join(upload_dir, unique_filename)
+
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Update employee database record
+    relative_url_path = f"/static/employees/{unique_filename}"
+    db_employee.profile_image_path = relative_url_path
+    db.commit()
+    db.refresh(db_employee)
+
+    return APIResponse(
+        status="success", status_code=status.HTTP_200_OK,
+        message="Avatar uploaded successfully.", data=db_employee
+    )
+
+@router.put("/{id}", response_model=APIResponse[EmployeeResponse])
+def update_employee(
+    id: int, 
+    employee_in: EmployeeUpdate, 
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    db_employee = db.query(Employee).filter(Employee.id == id).first()
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+        
+    update_data = employee_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_employee, field, value)
+        
+    db.commit()
+    db.refresh(db_employee)
+    
+    return APIResponse(
+        status="success", status_code=status.HTTP_200_OK,
+        message="Employee updated successfully.", data=db_employee
+    )
+
+@router.delete("/{id}", response_model=APIResponse[dict])
+def deactivate_employee(
+    id: int, 
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    db_employee = db.query(Employee).filter(Employee.id == id).first()
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    db_employee.is_active = False # Soft delete / Deactivate
+    db.commit()
+    
+    return APIResponse(
+        status="success", status_code=status.HTTP_200_OK,
+        message="Employee deactivated successfully.", data={"id": id}
     )
 
 # ==========================================

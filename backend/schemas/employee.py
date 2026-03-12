@@ -28,6 +28,7 @@ class EmployeeTypeResponse(BaseModel):
 # --- Employees ---
 class EmployeeBase(BaseModel):
     full_name: str
+    designation: Optional[str] = None
     username: str
     role_id: Optional[int] = None
     type_id: int
@@ -47,6 +48,25 @@ class EmployeeBase(BaseModel):
 
 class EmployeeCreate(EmployeeBase):
     password: str  # Only required when creating
+
+class EmployeeUpdate(BaseModel):
+    full_name: Optional[str] = None
+    username: Optional[str] = None
+    role_id: Optional[int] = None
+    type_id: Optional[int] = None
+    specialties: Optional[str] = None
+    profile_image_path: Optional[str] = None
+    id_card_number: Optional[str] = None
+    email: Optional[EmailStr] = None
+    mobile_number: Optional[str] = None
+    telephone_number: Optional[str] = None
+    address_line: Optional[str] = None
+    city: Optional[str] = None
+    province: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    salary: Optional[int] = None
+    is_active: Optional[bool] = None
 
 class EmployeeResponse(EmployeeBase):
     id: int

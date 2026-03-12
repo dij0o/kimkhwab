@@ -13,6 +13,7 @@ import { Dropdown } from '../components/Dropdown';
 interface Customer {
     id: number;
     full_name: string;
+    profile_image_url?: string | null;
     phone_number: string;
     email: string | null;
     media_consent: boolean;
@@ -105,8 +106,9 @@ export const Customers: React.FC = () => {
                                             </tr>
                                         ) : (
                                             customers.map((customer) => {
-                                                // Mocking visual assets to match prototype UI
-                                                const avatarId = (customer.id % 8) + 1;
+                                                const avatarUrl = customer.profile_image_url
+                                                    ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${customer.profile_image_url}`
+                                                    : '/assets/avatars/placeholder.svg';
 
                                                 return (
                                                     <tr key={customer.id}>
@@ -115,7 +117,7 @@ export const Customers: React.FC = () => {
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div className="avatar avatar-sm mr-3">
-                                                                    <img src={`/assets/avatars/face-${avatarId}.jpg`} alt="avatar" className="avatar-img rounded-circle" />
+                                                                    <img src={avatarUrl} alt="avatar" className="avatar-img rounded-circle" style={{ objectFit: 'cover' }} />
                                                                 </div>
                                                                 <div>
                                                                     <p className="mb-0 text-muted"><strong>{customer.full_name}</strong></p>
@@ -124,6 +126,10 @@ export const Customers: React.FC = () => {
                                                                     </small>
                                                                 </div>
                                                             </div>
+                                                        </td>
+
+                                                        <td>
+                                                            <span className="text-muted">-</span>
                                                         </td>
 
                                                         <td>
