@@ -4,13 +4,14 @@ import { useDropzone } from 'react-dropzone';
 import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
 import { Spinner } from '../components/Spinner';
+import { Card } from '../components/Card';
+import { Avatar } from '../components/Avatar';
 
 export const CustomerCreate: React.FC = () => {
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>(); // Catch the ID from the URL
-    const isEditing = Boolean(id); // Flag to determine our mode
+    const { id } = useParams<{ id: string }>();
+    const isEditing = Boolean(id);
 
-    // Text Form State
     const [fullName, setFullName] = useState('');
     const [instagram, setInstagram] = useState('');
     const [phone, setPhone] = useState('');
@@ -20,34 +21,25 @@ export const CustomerCreate: React.FC = () => {
     const [bio, setBio] = useState('');
     const [mediaConsent, setMediaConsent] = useState(false);
 
-    // File Upload State
     const [uploadFiles, setUploadFiles] = useState<File[]>([]);
     const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
-    const [profilePicPreview, setProfilePicPreview] = useState<string>('/assets/avatars/placeholder.svg');
+    const [profilePicPreview, setProfilePicPreview] = useState<string>('');
 
-    // UI State
-    const [isLoading, setIsLoading] = useState(isEditing); // Load immediately if editing
+    const [isLoading, setIsLoading] = useState(isEditing);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-
-    // Employee Data State (For the Dropdown)
     const [employees, setEmployees] = useState<{ id: number, full_name: string, designation?: string }[]>([]);
 
-    // --- FETCH INITIAL DATA ---
     useEffect(() => {
         const loadInitialData = async () => {
             try {
-                // 1. Fetch the list of employees for the dropdown
                 const empResponse = await apiClient.get('/employees/');
-                // Filter to only show active employees
                 setEmployees(empResponse.data.data.filter((emp: any) => emp.is_active));
 
-                // 2. If editing, fetch the existing customer data
                 if (isEditing) {
                     const custResponse = await apiClient.get(`/customers/${id}`);
                     const data = custResponse.data.data;
 
-                    // Pre-fill the form
                     setFullName(data.full_name || '');
                     setPhone(data.phone_number || '');
                     setWhatsapp(data.whatsapp_number || '');
@@ -59,38 +51,26 @@ export const CustomerCreate: React.FC = () => {
                         setPreferredStylistId(data.profile.preferences ? Number(data.profile.preferences) : '');
                         setBio(data.profile.notes || '');
                     }
-
-                    if (data.profile_image_url) {
-                        setProfilePicPreview(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.profile_image_url}`);
-                    }
+                    if (data.profile_image_url) setProfilePicPreview(data.profile_image_url);
                 }
             } catch (err: any) {
-                console.error("Failed to load initial data", err);
                 setError("Failed to load necessary data.");
             } finally {
                 setIsLoading(false);
             }
         };
-
         loadInitialData();
     }, [id, isEditing]);
 
-    // Dropzone setup for Gallery Uploads
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        setUploadFiles(prev => [...prev, ...acceptedFiles]);
-    }, []);
-
+    const onDrop = useCallback((acceptedFiles: File[]) => setUploadFiles(prev => [...prev, ...acceptedFiles]), []);
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
-        maxSize: 52428800 // 50MB
+        onDrop, accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] }, maxSize: 52428800
     });
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setProfilePicFile(file);
-            setProfilePicPreview(URL.createObjectURL(file));
+            setProfilePicFile(e.target.files[0]);
+            setProfilePicPreview(URL.createObjectURL(e.target.files[0]));
         }
     };
 
@@ -101,21 +81,13 @@ export const CustomerCreate: React.FC = () => {
 
         try {
             const customerPayload = {
-                full_name: fullName,
-                phone_number: phone,
-                whatsapp_number: whatsapp || null,
-                email: email || null,
-                instagram_handle: instagram || null,
-                media_consent: mediaConsent,
-                profile: {
-                    preferences: preferredStylistId ? preferredStylistId.toString() : null,
-                    notes: bio || null
-                }
+                full_name: fullName, phone_number: phone, whatsapp_number: whatsapp || null,
+                email: email || null, instagram_handle: instagram || null, media_consent: mediaConsent,
+                profile: { preferences: preferredStylistId ? preferredStylistId.toString() : null, notes: bio || null }
             };
 
             let targetCustomerId = id;
 
-            // --- SMART SAVE: POST if new, PUT if editing ---
             if (isEditing) {
                 await apiClient.put(`/customers/${id}`, customerPayload);
             } else {
@@ -123,7 +95,6 @@ export const CustomerCreate: React.FC = () => {
                 targetCustomerId = customerRes.data.data.id.toString();
             }
 
-            // --- UPLOAD PROFILE PICTURE ---
             if (profilePicFile && targetCustomerId) {
                 const formData = new FormData();
                 formData.append('file', profilePicFile);
@@ -132,186 +103,116 @@ export const CustomerCreate: React.FC = () => {
                 await apiClient.post('/gallery/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
             }
 
-            // --- UPLOAD GALLERY FILES ---
             if (uploadFiles.length > 0 && targetCustomerId) {
-                const uploadPromises = uploadFiles.map(file => {
+                await Promise.all(uploadFiles.map(file => {
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('customer_id', targetCustomerId as string);
                     formData.append('is_profile_picture', 'false');
                     return apiClient.post('/gallery/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-                });
-                await Promise.all(uploadPromises);
+                }));
             }
 
             navigate('/customers');
-
         } catch (err: any) {
-            console.error(err);
             setError(err.response?.data?.detail || 'An error occurred while saving.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const removeFile = (indexToRemove: number) => {
-        setUploadFiles(files => files.filter((_, idx) => idx !== indexToRemove));
-    };
+    const removeFile = (idx: number) => setUploadFiles(files => files.filter((_, i) => i !== idx));
 
-    if (isLoading) {
-        return <Spinner text="Loading customer data..." />;
-    }
+    if (isLoading) return <Spinner text="Loading customer data..." />;
 
     return (
         <div className="container-fluid">
-            <div className="row justify-content-center">
-                <div className="col-12">
+            <PageHeader title={isEditing ? "Edit Customer" : "Add New Customer"} />
+            {error && <div className="alert alert-danger shadow-sm">{error}</div>}
 
-                    {/* Dynamic Page Header */}
-                    <PageHeader title={isEditing ? "Edit Customer" : "Add New Customer"} />
-
-                    {error && <div className="alert alert-danger shadow-sm">{error}</div>}
-
-                    <form onSubmit={handleSubmit}>
-
-                        {/* ROW 1: Customer Details & Avatar */}
-                        <div className="row">
-                            <div className="col-md-8">
-                                <div className="card shadow mb-4 border-0 h-100">
-                                    <div className="card-header"><strong>Customer Details</strong></div>
-                                    <div className="card-body">
-                                        <div className="form-row">
-                                            <div className="form-group col-md-6 mb-3">
-                                                <input type="text" className="form-control" placeholder="Customer Name" required value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={isSubmitting} />
-                                            </div>
-                                            <div className="form-group col-md-6 mb-3">
-                                                <div className="input-group">
-                                                    <div className="input-group-prepend"><span className="input-group-text">@</span></div>
-                                                    <input type="text" className="form-control" placeholder="Instagram Handle" value={instagram} onChange={(e) => setInstagram(e.target.value)} disabled={isSubmitting} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="form-row">
-                                            <div className="form-group col-md-10 mb-3">
-                                                <div className="input-group">
-                                                    <div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-phone fe-16 mx-1"></i></span></div>
-                                                    <input type="tel" className="form-control" placeholder="Telephone Number" required value={phone} onChange={(e) => setPhone(e.target.value)} disabled={isSubmitting} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="form-row">
-                                            <div className="form-group col-md-10 mb-3">
-                                                <div className="input-group">
-                                                    <div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-message-circle fe-16 mx-1"></i></span></div>
-                                                    <input type="tel" className="form-control" placeholder="Whatsapp Number" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} disabled={isSubmitting} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="form-row">
-                                            <div className="form-group col-md-10 mb-3">
-                                                <div className="input-group">
-                                                    <div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-mail fe-16 mx-1"></i></span></div>
-                                                    <input type="email" className="form-control" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting} />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="form-row">
-                                            <div className="form-group col-md-6 mb-3">
-                                                <select className="form-control" value={preferredStylistId} onChange={(e) => setPreferredStylistId(Number(e.target.value) || '')} disabled={isSubmitting}>
-                                                    <option value="">Select Preferred Stylist</option>
-                                                    {employees.map(emp => (
-                                                        <option key={emp.id} value={emp.id}>
-                                                            {emp.full_name} {emp.designation ? `(${emp.designation})` : ''}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+            <form onSubmit={handleSubmit}>
+                <div className="row">
+                    <div className="col-md-8">
+                        <Card title="Customer Details" className="h-100">
+                            <div className="form-row">
+                                <div className="form-group col-md-6 mb-3"><input type="text" className="form-control" placeholder="Customer Name" required value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={isSubmitting} /></div>
+                                <div className="form-group col-md-6 mb-3"><div className="input-group"><div className="input-group-prepend"><span className="input-group-text">@</span></div><input type="text" className="form-control" placeholder="Instagram Handle" value={instagram} onChange={(e) => setInstagram(e.target.value)} disabled={isSubmitting} /></div></div>
+                            </div>
+                            <div className="form-row"><div className="form-group col-md-10 mb-3"><div className="input-group"><div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-phone mx-1"></i></span></div><input type="tel" className="form-control" placeholder="Telephone Number" required value={phone} onChange={(e) => setPhone(e.target.value)} disabled={isSubmitting} /></div></div></div>
+                            <div className="form-row"><div className="form-group col-md-10 mb-3"><div className="input-group"><div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-message-circle mx-1"></i></span></div><input type="tel" className="form-control" placeholder="Whatsapp Number" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} disabled={isSubmitting} /></div></div></div>
+                            <div className="form-row"><div className="form-group col-md-10 mb-3"><div className="input-group"><div className="input-group-prepend"><span className="input-group-text"><i className="fe fe-mail mx-1"></i></span></div><input type="email" className="form-control" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting} /></div></div></div>
+                            <div className="form-row">
+                                <div className="form-group col-md-6 mb-3">
+                                    <select className="form-control" value={preferredStylistId} onChange={(e) => setPreferredStylistId(Number(e.target.value) || '')} disabled={isSubmitting}>
+                                        <option value="">Select Preferred Stylist</option>
+                                        {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.full_name} {emp.designation ? `(${emp.designation})` : ''}</option>)}
+                                    </select>
                                 </div>
                             </div>
+                        </Card>
+                    </div>
 
-                            <div className="col-md-4">
-                                <div className="card shadow mb-4 border-0 h-100">
-                                    <div className="card-header"><strong>Profile Picture</strong></div>
-                                    <div className="card-body d-flex align-items-center justify-content-center" style={{ padding: '2rem' }}>
-                                        <div className="position-relative">
-                                            <input type="file" id="avatarUpload" className="d-none" accept="image/*" onChange={handleAvatarChange} disabled={isSubmitting} />
-                                            <label htmlFor="avatarUpload" style={{ cursor: 'pointer', margin: 0 }}>
-                                                <div className="avatar" style={{ width: '230px', height: '230px' }}>
-                                                    <img src={profilePicPreview} alt="Profile" className="avatar-img rounded-circle w-100 h-100 shadow-sm" style={{ objectFit: 'cover', border: '4px solid #fff' }} />
-                                                </div>
-                                                <div className="position-absolute bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style={{ bottom: '10px', right: '10px', width: '45px', height: '45px' }}>
-                                                    <i className="fe fe-camera fe-20"></i>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div className="col-md-4">
+                        <Card title="Profile Picture" className="h-100" bodyClassName="d-flex align-items-center justify-content-center">
+                            <div className="position-relative">
+                                <input type="file" id="avatarUpload" className="d-none" accept="image/*" onChange={handleAvatarChange} disabled={isSubmitting} />
+                                <label htmlFor="avatarUpload" style={{ cursor: 'pointer', margin: 0 }}>
+                                    <Avatar src={profilePicPreview} size="xxl" className="shadow-sm" />
+                                    <div className="position-absolute bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style={{ bottom: '10px', right: '10px', width: '45px', height: '45px' }}><i className="fe fe-camera fe-20"></i></div>
+                                </label>
                             </div>
-                        </div>
-
-                        <div className="row mt-4">
-                            <div className="col-12">
-                                <div className="card shadow mb-4 border-0">
-                                    <div className="card-header"><strong>Upload Customer Gallery Photos (Optional)</strong></div>
-                                    <div className="card-body">
-                                        <div {...getRootProps()} className={`border-2 rounded p-4 text-center ${isDragActive ? 'border-primary bg-light' : 'border-light'}`} style={{ borderStyle: 'dashed', borderWidth: '2px', minHeight: '150px', backgroundColor: isDragActive ? '#e9ecef' : '#f8f9fa', cursor: 'pointer', transition: 'all 0.2s ease', opacity: isSubmitting ? 0.5 : 1 }}>
-                                            <input {...getInputProps()} disabled={isSubmitting} />
-                                            <i className="fe fe-upload-cloud fe-32 text-muted mb-3 d-block"></i>
-                                            {isDragActive ? <p className="text-primary m-0">Drop the files here ...</p> : <p className="text-muted m-0">Drag 'n' drop before/after photos here, or click to browse</p>}
-                                        </div>
-                                        {uploadFiles.length > 0 && (
-                                            <div className="mt-3">
-                                                <h6 className="small text-muted text-uppercase">Queued for upload:</h6>
-                                                <ul className="list-group">
-                                                    {uploadFiles.map((file, idx) => (
-                                                        <li key={idx} className="list-group-item d-flex justify-content-between align-items-center p-2 border-0 bg-light mb-1 rounded">
-                                                            <span className="small text-truncate"><i className="fe fe-image mr-2 text-muted"></i>{file.name}</span>
-                                                            <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => removeFile(idx)} disabled={isSubmitting}><i className="fe fe-x"></i></button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row mt-4">
-                            <div className="col-12">
-                                <div className="card shadow mb-4 border-0">
-                                    <div className="card-header"><strong>Additional Bio Information</strong></div>
-                                    <div className="card-body">
-                                        <div className="form-group mb-3">
-                                            <textarea className="form-control" rows={4} placeholder="Enter any additional information..." value={bio} onChange={(e) => setBio(e.target.value)} disabled={isSubmitting}></textarea>
-                                        </div>
-                                        <div className="custom-control custom-checkbox">
-                                            <input type="checkbox" className="custom-control-input" id="mediaConsent" checked={mediaConsent} onChange={(e) => setMediaConsent(e.target.checked)} disabled={isSubmitting} />
-                                            <label className="custom-control-label" htmlFor="mediaConsent">Customer consents to having their photos and videos used on the salon's social media pages</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 text-right mb-5">
-                                <button type="button" className="btn btn-secondary mr-2" onClick={() => navigate('/customers')} disabled={isSubmitting}>Cancel</button>
-                                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                                    {isSubmitting ? <><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Saving...</> : (isEditing ? 'Update Customer' : 'Save Customer & Upload Media')}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
+                        </Card>
+                    </div>
                 </div>
-            </div>
+
+                <div className="row mt-4">
+                    <div className="col-12">
+                        <Card title="Upload Customer Gallery Photos (Optional)">
+                            <div {...getRootProps()} className={`border-2 rounded p-4 text-center ${isDragActive ? 'border-primary bg-light' : 'border-light'}`} style={{ borderStyle: 'dashed', borderWidth: '2px', minHeight: '150px', cursor: 'pointer', transition: 'all 0.2s ease', opacity: isSubmitting ? 0.5 : 1 }}>
+                                <input {...getInputProps()} disabled={isSubmitting} />
+                                <i className="fe fe-upload-cloud fe-32 text-muted mb-3 d-block"></i>
+                                {isDragActive ? <p className="text-primary m-0">Drop the files here ...</p> : <p className="text-muted m-0">Drag 'n' drop before/after photos here, or click to browse</p>}
+                            </div>
+                            {uploadFiles.length > 0 && (
+                                <div className="mt-3">
+                                    <h6 className="small text-muted text-uppercase">Queued for upload:</h6>
+                                    <ul className="list-group">
+                                        {uploadFiles.map((file, idx) => (
+                                            <li key={idx} className="list-group-item d-flex justify-content-between align-items-center p-2 border-0 bg-light mb-1 rounded">
+                                                <span className="small text-truncate"><i className="fe fe-image mr-2 text-muted"></i>{file.name}</span>
+                                                <button type="button" className="btn btn-sm btn-link text-danger p-0" onClick={() => removeFile(idx)} disabled={isSubmitting}><i className="fe fe-x"></i></button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </Card>
+                    </div>
+                </div>
+
+                <div className="row mt-4">
+                    <div className="col-12">
+                        <Card title="Additional Bio Information">
+                            <div className="form-group mb-3">
+                                <textarea className="form-control" rows={4} placeholder="Enter any additional information..." value={bio} onChange={(e) => setBio(e.target.value)} disabled={isSubmitting}></textarea>
+                            </div>
+                            <div className="custom-control custom-checkbox">
+                                <input type="checkbox" className="custom-control-input" id="mediaConsent" checked={mediaConsent} onChange={(e) => setMediaConsent(e.target.checked)} disabled={isSubmitting} />
+                                <label className="custom-control-label" htmlFor="mediaConsent">Customer consents to having their photos and videos used on social media</label>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-12 text-right mb-5">
+                        <button type="button" className="btn btn-secondary mr-2" onClick={() => navigate('/customers')} disabled={isSubmitting}>Cancel</button>
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : (isEditing ? 'Update Customer' : 'Save Customer & Upload Media')}
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     );
 };

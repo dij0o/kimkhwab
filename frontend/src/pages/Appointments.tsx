@@ -4,309 +4,319 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import type { EventClickArg } from '@fullcalendar/core';
+import type { EventClickArg, EventDropArg } from '@fullcalendar/core';
 
+import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
 import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
+import { Card } from '../components/Card';
 
 export const Appointments: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
 
+    // Dropdown Data States
+    const [customers, setCustomers] = useState<any[]>([]);
+    const [employees, setEmployees] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+
+    // Modal States
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetchAppointments = async () => {
+    // Form States
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const [formData, setFormData] = useState({
+        customer_id: '',
+        employee_id: '',
+        service_category_id: '',
+        start_date: '',
+        start_time: '',
+        end_date: '',
+        end_time: '',
+        status: 'booked'
+    });
+
+    // 1. Fetch Everything on Load
+    const fetchAllData = async () => {
         setLoading(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Exact events and colors from your prototype
-            setEvents([
-                { id: "1", title: "Kasimir Lindsey - Hair Coloring", start: "2025-07-15T14:00:00", end: "2025-07-15T15:30:00", backgroundColor: "#ffb6c1", borderColor: "#ffb6c1", textColor: "#ffffff", extendedProps: { customerName: "Kasimir Lindsey", serviceCategory: "Hair Coloring", stylist: "Sarah Johnson", serviceType: "Hair Dye" } },
-                { id: "2", title: "Melinda Levy - Haircut", start: "2025-07-15T15:30:00", end: "2025-07-15T16:30:00", backgroundColor: "#b8ddd1", borderColor: "#b8ddd1", textColor: "#ffffff", extendedProps: { customerName: "Melinda Levy", serviceCategory: "Haircut", stylist: "Michael Chen", serviceType: "Simple Haircut" } },
-                { id: "3", title: "Aubrey Sweeney - Hair Treatment", start: "2025-07-16T10:00:00", end: "2025-07-16T11:30:00", backgroundColor: "#dda0dd", borderColor: "#dda0dd", textColor: "#ffffff", extendedProps: { customerName: "Aubrey Sweeney", serviceCategory: "Hair Treatment", stylist: "Emily Davis", serviceType: "Other" } },
-                { id: "4", title: "Timon Bauer - Hair Coloring", start: "2025-07-16T11:30:00", end: "2025-07-16T13:00:00", backgroundColor: "#ffb6c1", borderColor: "#ffb6c1", textColor: "#ffffff", extendedProps: { customerName: "Timon Bauer", serviceCategory: "Hair Coloring", stylist: "Sarah Johnson", serviceType: "Hair Dye" } },
-                { id: "5", title: "Kelly Barrera - Styling", start: "2025-07-16T14:00:00", end: "2025-07-16T15:00:00", backgroundColor: "#dda0dd", borderColor: "#dda0dd", textColor: "#ffffff", extendedProps: { customerName: "Kelly Barrera", serviceCategory: "Styling", stylist: "Michael Chen", serviceType: "Other" } }
+            const [apptRes, custRes, empRes, catRes] = await Promise.all([
+                apiClient.get('/appointments/?limit=500'),
+                apiClient.get('/customers/?limit=500'),
+                apiClient.get('/employees/?limit=100'),
+                apiClient.get('/services/categories?limit=100')
             ]);
+
+            // Filter Dropdown Data
+            setCustomers(custRes.data.data.filter((c: any) => c.is_active !== false));
+            setEmployees(empRes.data.data.filter((e: any) => e.is_active));
+            setCategories(catRes.data.data.filter((c: any) => c.is_active));
+
+            // Map Appointments to FullCalendar Format
+            const mappedEvents = apptRes.data.data.map((appt: any) => {
+                // If the appointment is cancelled, fade it out visually
+                const isCancelled = appt.status === 'cancelled';
+                const bgColor = isCancelled ? '#e9ecef' : (appt.category?.background_color || '#3788d8');
+                const txtColor = isCancelled ? '#6c757d' : (appt.category?.text_color || '#ffffff');
+
+                return {
+                    id: appt.id.toString(),
+                    title: `${appt.customer?.full_name || 'Walk-in'} - ${appt.category?.name || 'Service'}`,
+                    start: appt.start_time,
+                    end: appt.end_time,
+                    backgroundColor: bgColor,
+                    borderColor: bgColor,
+                    textColor: txtColor,
+                    extendedProps: {
+                        status: appt.status,
+                        customerName: appt.customer?.full_name || 'Walk-in',
+                        stylist: appt.employee?.full_name,
+                        serviceCategory: appt.category?.name,
+                        raw: appt // Store the raw data for editing
+                    }
+                };
+            });
+
+            setEvents(mappedEvents);
+        } catch (error) {
+            console.error("Failed to load calendar data:", error);
+            alert("Failed to connect to server.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAppointments();
+        fetchAllData();
     }, []);
 
-    const handleEventClick = (info: EventClickArg) => {
-        const ev = info.event;
-        setSelectedEvent({
-            id: ev.id,
-            customerName: ev.extendedProps.customerName,
-            serviceCategory: ev.extendedProps.serviceCategory,
-            service: ev.extendedProps.serviceType,
-            stylist: ev.extendedProps.stylist,
-            startDate: ev.start?.toISOString().split('T')[0],
-            startTime: ev.start?.toISOString().split('T')[1].substring(0, 5),
-            endDate: ev.end?.toISOString().split('T')[0],
-            endTime: ev.end?.toISOString().split('T')[1].substring(0, 5),
+    // 2. Open Modals and Pre-fill Forms
+    const handleOpenNewModal = () => {
+        const today = new Date().toISOString().split('T')[0];
+        setFormData({
+            customer_id: '', employee_id: '', service_category_id: '',
+            start_date: today, start_time: '10:00', end_date: today, end_time: '11:00', status: 'booked'
         });
+        setIsNewModalOpen(true);
+    };
+
+    const handleEventClick = (info: EventClickArg) => {
+        const appt = info.event.extendedProps.raw;
+
+        // Extract date and time strings for the HTML inputs
+        const start = new Date(appt.start_time);
+        const end = new Date(appt.end_time);
+
+        setFormData({
+            customer_id: appt.customer_id?.toString() || '',
+            employee_id: appt.employee_id.toString(),
+            service_category_id: appt.service_category_id.toString(),
+            start_date: start.toISOString().split('T')[0],
+            start_time: start.toISOString().split('T')[1].substring(0, 5),
+            end_date: end.toISOString().split('T')[0],
+            end_time: end.toISOString().split('T')[1].substring(0, 5),
+            status: appt.status
+        });
+
+        setSelectedEvent(appt);
         setIsEditModalOpen(true);
+    };
+
+    // 3. Save / Update Logic
+    const handleSaveAppointment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            // Combine Date & Time into proper ISO format for backend
+            const startDateTime = new Date(`${formData.start_date}T${formData.start_time}:00`).toISOString();
+            const endDateTime = new Date(`${formData.end_date}T${formData.end_time}:00`).toISOString();
+
+            const payload = {
+                customer_id: formData.customer_id ? Number(formData.customer_id) : null,
+                employee_id: Number(formData.employee_id),
+                service_category_id: Number(formData.service_category_id),
+                start_time: startDateTime,
+                end_time: endDateTime,
+                status: formData.status
+            };
+
+            if (isEditModalOpen && selectedEvent) {
+                await apiClient.put(`/appointments/${selectedEvent.id}`, payload);
+            } else {
+                await apiClient.post('/appointments/', payload);
+            }
+
+            setIsNewModalOpen(false);
+            setIsEditModalOpen(false);
+            fetchAllData(); // Refresh the calendar
+        } catch (error: any) {
+            console.error("Failed to save:", error);
+            alert(error.response?.data?.detail || "An error occurred while saving the appointment.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Quick Action to instantly Cancel
+    const handleCancelAppointment = async () => {
+        if (!selectedEvent || !window.confirm("Are you sure you want to cancel this appointment?")) return;
+
+        setIsSubmitting(true);
+        try {
+            await apiClient.put(`/appointments/${selectedEvent.id}`, { status: 'cancelled' });
+            setIsEditModalOpen(false);
+            fetchAllData();
+        } catch (error) {
+            console.error("Failed to cancel:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // 4. Handle Drag & Drop Rescheduling directly on the Calendar
+    const handleEventDrop = async (info: EventDropArg) => {
+        const apptId = info.event.id;
+        const newStart = info.event.start?.toISOString();
+        const newEnd = info.event.end?.toISOString() || newStart; // Fallback if dragged without end time
+
+        try {
+            await apiClient.put(`/appointments/${apptId}`, { start_time: newStart, end_time: newEnd });
+            // Let the calendar UI handle the move visually without reloading the whole page
+        } catch (error) {
+            alert("Failed to reschedule appointment.");
+            info.revert(); // Snap the event back to its original slot if the API fails
+        }
     };
 
     return (
         <div className="container-fluid">
-
-            {/* This CSS block overrides FullCalendar's default blue buttons 
-        to perfectly match your template's grey/white/pink styling. 
-      */}
             <style>{`
-        .fc .fc-button-primary {
-          background-color: #ffffff;
-          border: 1px solid #dee2e6;
-          color: #6c757d;
-          box-shadow: none !important;
-          text-transform: capitalize;
-          font-family: 'Overpass', sans-serif;
-          font-weight: 400;
-        }
-        .fc .fc-button-primary:hover {
-          background-color: #f8f9fa;
-          color: #343a40;
-        }
-        /* Active View Button (e.g. Month vs Week) */
-        .fc .fc-button-primary:not(:disabled).fc-button-active, 
-        .fc .fc-button-primary:not(:disabled):active {
-          background-color: var(--primary, #e8a8c3);
-          border-color: var(--primary, #e8a8c3);
-          color: #ffffff;
-        }
-        .fc .fc-toolbar-title {
-          font-family: 'Overpass', sans-serif;
-          font-weight: 600;
-          color: #343a40;
-        }
-        .fc-theme-standard th, .fc-theme-standard td {
-          border-color: #e8e8e8;
-        }
-      `}</style>
+                .fc .fc-button-primary { background-color: #ffffff; border: 1px solid #dee2e6; color: #6c757d; box-shadow: none !important; text-transform: capitalize; font-weight: 400; }
+                .fc .fc-button-primary:hover { background-color: #f8f9fa; color: #343a40; }
+                .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { background-color: var(--primary, #e8a8c3); border-color: var(--primary, #e8a8c3); color: #ffffff; }
+                .fc .fc-toolbar-title { font-weight: 600; color: #343a40; }
+                .fc-theme-standard th, .fc-theme-standard td { border-color: #e8e8e8; }
+                /* Strikethrough text for cancelled events */
+                .fc-event-cancelled .fc-event-title { text-decoration: line-through; }
+            `}</style>
 
-            <div className="row justify-content-center">
-                <div className="col-12">
+            <PageHeader title="Calendar">
+                <button type="button" className="btn btn-primary" onClick={handleOpenNewModal}>
+                    <span className="fe fe-plus fe-16 mr-2"></span>New Appointment
+                </button>
+            </PageHeader>
 
-                    <PageHeader title="Calendar">
-                        <button type="button" className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>
-                            <span className="fe fe-plus fe-16 mr-2"></span>New Appointment
-                        </button>
-                    </PageHeader>
+            <Card>
+                {loading ? <Spinner text="Loading calendar..." /> : (
+                    <div id="calendar">
+                        <FullCalendar
+                            plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+                            initialView="timeGridWeek"
+                            headerToolbar={{ left: 'today prev,next', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth' }}
+                            events={events}
+                            eventClick={handleEventClick}
+                            eventDrop={handleEventDrop}
+                            editable={true} // Allows drag & drop rescheduling!
+                            eventDisplay="block"
+                            height="auto"
+                            allDaySlot={false}
+                            slotMinTime="08:00:00" // Assuming salon opens at 8am
+                            slotMaxTime="21:00:00" // Assuming salon closes at 9pm
+                            eventClassNames={(arg) => {
+                                if (arg.event.extendedProps.status === 'cancelled') return ['fc-event-cancelled'];
+                                return [];
+                            }}
+                        />
+                    </div>
+                )}
+            </Card>
 
-                    {loading ? (
-                        <Spinner text="Loading calendar..." />
-                    ) : (
-                        <div id="calendar" style={{ marginTop: '20px' }}>
-                            <FullCalendar
-                                plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-                                initialView="dayGridMonth"
-                                initialDate="2025-07-15"
-                                headerToolbar={{
-                                    left: 'today prev,next',
-                                    center: 'title',
-                                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-                                }}
-                                events={events}
-                                eventClick={handleEventClick}
-
-                                // 1. Forces events to be solid color blocks!
-                                eventDisplay="block"
-
-                                // 2. Restores the tall, spacious day cells!
-                                // aspectRatio={1.25}
-                                height="auto"
-
-                                buttonText={{
-                                    today: 'Today',
-                                    month: 'Month',
-                                    week: 'Week',
-                                    day: 'Day',
-                                    list: 'List'
-                                }}
-                            />
-                        </div>
-                    )}
-
-                </div>
-            </div>
-
-            {/* --- NEW APPOINTMENT SLIDE MODAL --- */}
+            {/* --- REUSABLE FORM FOR NEW & EDIT --- */}
             <Modal
-                isOpen={isNewModalOpen}
-                onClose={() => setIsNewModalOpen(false)}
-                title="New Appointment"
+                isOpen={isNewModalOpen || isEditModalOpen}
+                onClose={() => { setIsNewModalOpen(false); setIsEditModalOpen(false); }}
+                title={isEditModalOpen ? "Edit Appointment" : "New Appointment"}
                 isSlide={true}
                 footer={
-                    <button type="button" className="btn btn-primary w-100" onClick={() => setIsNewModalOpen(false)}>
-                        Create Appointment
-                    </button>
+                    <div className="d-flex justify-content-between w-100">
+                        {isEditModalOpen ? (
+                            <button type="button" className="btn btn-outline-danger" onClick={handleCancelAppointment} disabled={isSubmitting || formData.status === 'cancelled'}>
+                                Cancel Appointment
+                            </button>
+                        ) : <div></div>}
+                        <div>
+                            <button type="button" className="btn btn-secondary mr-2" onClick={() => { setIsNewModalOpen(false); setIsEditModalOpen(false); }} disabled={isSubmitting}>Close</button>
+                            <button type="button" className="btn btn-primary" onClick={handleSaveAppointment} disabled={isSubmitting}>
+                                {isSubmitting ? "Saving..." : (isEditModalOpen ? "Update Booking" : "Create Booking")}
+                            </button>
+                        </div>
+                    </div>
                 }
             >
                 <form>
                     <div className="form-group">
-                        <label className="col-form-label">Customer Name</label>
-                        <div className="d-flex">
-                            <div className="flex-grow-1 mr-2">
-                                <select className="form-control">
-                                    <option value="">Search for customer...</option>
-                                    <option value="1">Brown, Asher D.</option>
-                                    <option value="2">Leblanc, Yoshio V.</option>
-                                </select>
-                            </div>
-                            <button type="button" className="btn btn-primary" style={{ height: '38px', width: '38px', padding: 0 }}>
-                                <span className="fe fe-plus fe-16"></span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="col-form-label">Service Category</label>
-                        <select className="form-control">
-                            <option value="">Select Service Category</option>
-                            <option value="1">Hair Coloring</option>
-                            <option value="2">Haircut</option>
+                        <label>Customer Name <span className="text-muted small">(Leave blank for Walk-in)</span></label>
+                        <select className="form-control" value={formData.customer_id} onChange={e => setFormData({ ...formData, customer_id: e.target.value })} disabled={isSubmitting}>
+                            <option value="">Walk-in Customer</option>
+                            {customers.map(c => <option key={c.id} value={c.id}>{c.full_name} ({c.phone_number})</option>)}
                         </select>
                     </div>
 
                     <div className="form-group">
-                        <label className="col-form-label">Service</label>
-                        <input type="text" className="form-control" placeholder="Enter service" />
+                        <label>Service Category</label>
+                        <select className="form-control" value={formData.service_category_id} onChange={e => setFormData({ ...formData, service_category_id: e.target.value })} disabled={isSubmitting} required>
+                            <option value="">Select Service Category</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
                     </div>
 
                     <div className="form-group">
-                        <label className="col-form-label">Preferred Stylist</label>
-                        <select className="form-control">
-                            <option value="">Select Preferred Stylist</option>
-                            <option value="1">Sanaa Ali Awan</option>
+                        <label>Assigned Stylist</label>
+                        <select className="form-control" value={formData.employee_id} onChange={e => setFormData({ ...formData, employee_id: e.target.value })} disabled={isSubmitting} required>
+                            <option value="">Select Stylist</option>
+                            {employees.map(e => <option key={e.id} value={e.id}>{e.full_name} {e.designation ? `(${e.designation})` : ''}</option>)}
                         </select>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group col-md-6">
                             <label>Start Date</label>
-                            <div className="input-group">
-                                <div className="input-group-prepend">
-                                    <div className="input-group-text"><span className="fe fe-calendar fe-16"></span></div>
-                                </div>
-                                <input type="date" className="form-control" />
-                            </div>
+                            <input type="date" className="form-control" value={formData.start_date} onChange={e => setFormData({ ...formData, start_date: e.target.value })} disabled={isSubmitting} required />
                         </div>
                         <div className="form-group col-md-6">
                             <label>Start Time</label>
-                            <div className="input-group">
-                                <div className="input-group-prepend">
-                                    <div className="input-group-text"><span className="fe fe-clock fe-16"></span></div>
-                                </div>
-                                <input type="time" className="form-control" />
-                            </div>
+                            <input type="time" className="form-control" value={formData.start_time} onChange={e => setFormData({ ...formData, start_time: e.target.value })} disabled={isSubmitting} required />
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group col-md-6">
                             <label>End Date</label>
-                            <div className="input-group">
-                                <div className="input-group-prepend">
-                                    <div className="input-group-text"><span className="fe fe-calendar fe-16"></span></div>
-                                </div>
-                                <input type="date" className="form-control" />
-                            </div>
+                            <input type="date" className="form-control" value={formData.end_date} onChange={e => setFormData({ ...formData, end_date: e.target.value })} disabled={isSubmitting} required />
                         </div>
                         <div className="form-group col-md-6">
                             <label>End Time</label>
-                            <div className="input-group">
-                                <div className="input-group-prepend">
-                                    <div className="input-group-text"><span className="fe fe-clock fe-16"></span></div>
-                                </div>
-                                <input type="time" className="form-control" />
-                            </div>
+                            <input type="time" className="form-control" value={formData.end_time} onChange={e => setFormData({ ...formData, end_time: e.target.value })} disabled={isSubmitting} required />
                         </div>
                     </div>
+
+                    {isEditModalOpen && (
+                        <div className="form-group">
+                            <label>Booking Status</label>
+                            <select className="form-control" value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} disabled={isSubmitting}>
+                                <option value="booked">Booked</option>
+                                <option value="completed">Completed</option>
+                                <option value="no_show">No Show</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    )}
                 </form>
             </Modal>
-
-            {/* --- EDIT APPOINTMENT SLIDE MODAL --- */}
-            <Modal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                title="Edit Appointment"
-                isSlide={true}
-                footer={
-                    <>
-                        <button type="button" className="btn btn-danger">Cancel Appointment</button>
-                        <div>
-                            <button type="button" className="btn btn-secondary mr-2" onClick={() => setIsEditModalOpen(false)}>Close</button>
-                            <button type="button" className="btn btn-primary">Update Appointment</button>
-                        </div>
-                    </>
-                }
-            >
-                {selectedEvent && (
-                    <form>
-                        <div className="form-group">
-                            <label className="col-form-label">Customer Name</label>
-                            <input type="text" className="form-control" value={selectedEvent.customerName || ''} readOnly />
-                        </div>
-                        <div className="form-group">
-                            <label className="col-form-label">Service Category</label>
-                            <input type="text" className="form-control" value={selectedEvent.serviceCategory || ''} readOnly />
-                        </div>
-                        <div className="form-group">
-                            <label className="col-form-label">Service</label>
-                            <input type="text" className="form-control" value={selectedEvent.service || ''} readOnly />
-                        </div>
-                        <div className="form-group">
-                            <label className="col-form-label">Stylist</label>
-                            <input type="text" className="form-control" value={selectedEvent.stylist || ''} readOnly />
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group col-md-6">
-                                <label>Start Date</label>
-                                <div className="input-group">
-                                    <div className="input-group-prepend"><div className="input-group-text"><span className="fe fe-calendar fe-16"></span></div></div>
-                                    <input type="date" className="form-control" value={selectedEvent.startDate || ''} readOnly />
-                                </div>
-                            </div>
-                            <div className="form-group col-md-6">
-                                <label>Start Time</label>
-                                <div className="input-group">
-                                    <div className="input-group-prepend"><div className="input-group-text"><span className="fe fe-clock fe-16"></span></div></div>
-                                    <input type="time" className="form-control" value={selectedEvent.startTime || ''} readOnly />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group col-md-6">
-                                <label>End Date</label>
-                                <div className="input-group">
-                                    <div className="input-group-prepend"><div className="input-group-text"><span className="fe fe-calendar fe-16"></span></div></div>
-                                    <input type="date" className="form-control" value={selectedEvent.endDate || ''} readOnly />
-                                </div>
-                            </div>
-                            <div className="form-group col-md-6">
-                                <label>End Time</label>
-                                <div className="input-group">
-                                    <div className="input-group-prepend"><div className="input-group-text"><span className="fe fe-clock fe-16"></span></div></div>
-                                    <input type="time" className="form-control" value={selectedEvent.endTime || ''} readOnly />
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
-                )}
-            </Modal>
-
         </div>
     );
 };
