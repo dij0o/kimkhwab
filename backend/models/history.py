@@ -13,6 +13,7 @@ class ServiceHistory(Base):
     performed_on = Column(DateTime(timezone=True), server_default=func.now())
     employee_id = Column(Integer, ForeignKey("employees.id"))
     notes = Column(String)
+    employee = relationship("Employee")
 
 class GalleryImage(Base):
     __tablename__ = "gallery_images"

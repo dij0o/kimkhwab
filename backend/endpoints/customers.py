@@ -7,8 +7,10 @@ from core.deps import get_current_user
 from models.employee import Employee
 from models.customer import Customer, CustomerProfile
 from models.appointment import Appointment
+from models.history import ServiceHistory
 from schemas.customer import CustomerCreate, CustomerResponse, CustomerUpdate
 from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
+from schemas.history import ServiceHistoryResponse
 from sqlalchemy import func
 import math
 
@@ -181,4 +183,23 @@ def delete_customer(
         status_code=status.HTTP_200_OK,
         message="Customer deleted successfully.",
         data={"id": id}
+    )
+
+@router.get("/{id}/history", response_model=APIResponse[List[ServiceHistoryResponse]])
+def get_customer_history(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    db_customer = db.query(Customer).filter(Customer.id == id).first()
+    if not db_customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+        
+    history = db.query(ServiceHistory).filter(ServiceHistory.customer_id == id).order_by(ServiceHistory.performed_on.desc()).all()
+    
+    return APIResponse(
+        status="success",
+        status_code=status.HTTP_200_OK,
+        message="Service history retrieved successfully.",
+        data=history
     )

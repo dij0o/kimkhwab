@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { PageHeader } from '../components/PageHeader';
 import { Spinner } from '../components/Spinner';
@@ -19,6 +20,8 @@ interface CustomerOption {
 }
 
 export const Gallery: React.FC = () => {
+    const [searchParams] = useSearchParams(); // Catch the URL parameters
+    const urlCustomerId = searchParams.get('customerId');
     const [loading, setLoading] = useState(true);
     const [media, setMedia] = useState<GalleryItem[]>([]);
     const [customers, setCustomers] = useState<CustomerOption[]>([]);
@@ -33,16 +36,19 @@ export const Gallery: React.FC = () => {
     const [currentMedia, setCurrentMedia] = useState<GalleryItem | null>(null);
 
     // Upload States
-    const [selectedCustomerId, setSelectedCustomerId] = useState('');
+    const [selectedCustomerId, setSelectedCustomerId] = useState(urlCustomerId || ''); // Pre-select if filtered
     const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
     // 1. Fetch Actual Media & Customers together
     const loadGalleryData = async () => {
         setLoading(true);
         try {
+            // If URL has a customerId, append it to the API call
+            const galleryEndpoint = urlCustomerId ? `/gallery/?customer_id=${urlCustomerId}` : '/gallery/';
+
             // Fetch both at the same time
             const [galleryRes, customersRes] = await Promise.all([
-                apiClient.get('/gallery/'),
+                apiClient.get(galleryEndpoint),
                 apiClient.get('/customers/')
             ]);
 
@@ -73,7 +79,7 @@ export const Gallery: React.FC = () => {
 
     useEffect(() => {
         loadGalleryData();
-    }, []);
+    }, [urlCustomerId]); // Refetch if the URL parameter changes
 
     // 2. Handle Lightbox Interactions
     const openLightbox = (item: GalleryItem) => {

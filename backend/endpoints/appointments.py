@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 import math
 
@@ -42,6 +42,7 @@ def create_appointment(
 def get_appointments(
     start_date: datetime = None, 
     end_date: datetime = None, 
+    customer_id: Optional[int] = None,
     skip: int = 0, 
     limit: int = 100, 
     db: Session = Depends(get_db),
@@ -49,7 +50,9 @@ def get_appointments(
 ):
     query = db.query(Appointment)
     
-    # Apply date filters if requested by the calendar
+   # Apply filters
+    if customer_id:
+        query = query.filter(Appointment.customer_id == customer_id)
     if start_date:
         query = query.filter(Appointment.start_time >= start_date)
     if end_date:

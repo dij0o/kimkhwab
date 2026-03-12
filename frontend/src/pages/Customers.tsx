@@ -112,12 +112,14 @@ export const Customers: React.FC = () => {
 
                                                 return (
                                                     <tr key={customer.id}>
+                                                        {/* 1. ID */}
                                                         <td>{customer.id}</td>
 
+                                                        {/* 2. Customer Details */}
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div className="avatar avatar-sm mr-3">
-                                                                    <img src={avatarUrl} alt="avatar" className="avatar-img rounded-circle" style={{ objectFit: 'cover' }} />
+                                                                    <img src={avatarUrl} alt="avatar" className="avatar-img rounded-circle" style={{ width: '32px', height: '32px', objectFit: 'cover' }} />
                                                                 </div>
                                                                 <div>
                                                                     <p className="mb-0 text-muted"><strong>{customer.full_name}</strong></p>
@@ -128,10 +130,7 @@ export const Customers: React.FC = () => {
                                                             </div>
                                                         </td>
 
-                                                        <td>
-                                                            <span className="text-muted">-</span>
-                                                        </td>
-
+                                                        {/* 3. Preferred Stylist */}
                                                         <td>
                                                             <div className="d-flex align-items-center">
                                                                 <div>
@@ -141,8 +140,10 @@ export const Customers: React.FC = () => {
                                                             </div>
                                                         </td>
 
+                                                        {/* 4. Primary Contact */}
                                                         <td>{customer.phone_number}</td>
 
+                                                        {/* 5. Media Consent */}
                                                         <td>
                                                             {customer.media_consent ? (
                                                                 <span className="badge badge-pill badge-primary">Yes</span>
@@ -151,35 +152,29 @@ export const Customers: React.FC = () => {
                                                             )}
                                                         </td>
 
+                                                        {/* 6. Number of Visits */}
                                                         <td>{customer.visit_count}</td>
 
+                                                        {/* 7. Flagged */}
                                                         <td>
                                                             <span className="text-muted">-</span>
                                                         </td>
 
+                                                        {/* 8. Actions */}
                                                         <td>
                                                             <Dropdown>
-                                                                {/* 1. View Details */}
                                                                 <Link className="dropdown-item" to={`/customers/${customer.id}`}>
                                                                     <i className="fe fe-user mr-2"></i> View Profile
                                                                 </Link>
-
-                                                                {/* 2. Edit */}
                                                                 <Link className="dropdown-item" to={`/customers/${customer.id}/edit`}>
                                                                     <i className="fe fe-edit mr-2"></i> Edit
                                                                 </Link>
-
-                                                                {/* 3. Service History (Will build this soon) */}
                                                                 <Link className="dropdown-item" to={`/customers/${customer.id}/history`}>
                                                                     <i className="fe fe-clock mr-2"></i> Service History
                                                                 </Link>
-
-                                                                {/* 4. Appointments */}
                                                                 <Link className="dropdown-item" to={`/customers/${customer.id}/appointments`}>
                                                                     <i className="fe fe-calendar mr-2"></i> Appointments
                                                                 </Link>
-
-                                                                {/* 5. Gallery Filter */}
                                                                 <Link className="dropdown-item" to={`/gallery?customerId=${customer.id}`}>
                                                                     <i className="fe fe-image mr-2"></i> Gallery
                                                                 </Link>
