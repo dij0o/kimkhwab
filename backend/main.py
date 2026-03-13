@@ -18,7 +18,8 @@ from endpoints import (
     services,
     appointments,
     financials,
-    gallery
+    gallery,
+    notifications
 )
 
 # ==========================================
@@ -118,6 +119,12 @@ app.include_router(
     gallery.router, 
     prefix=f"{settings.API_V1_STR}/gallery", 
     tags=["Gallery"]
+)
+
+app.include_router(
+    notifications.router, 
+    prefix=f"{settings.API_V1_STR}/notifications", 
+    tags=["Notifications"]
 )
 
 # ==========================================

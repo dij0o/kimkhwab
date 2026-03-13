@@ -122,9 +122,10 @@ export const Gallery: React.FC = () => {
                 <div className="form-group mb-4"><div className="custom-control custom-checkbox"><input type="checkbox" className="custom-control-input" id="isProfilePicCheck" checked={isProfilePic} onChange={(e) => setIsProfilePic(e.target.checked)} /><label className="custom-control-label" htmlFor="isProfilePicCheck">Set as Profile Picture?</label></div></div>
                 <div className="form-group">
                     <label>Upload Images</label>
-                    <div {...getRootProps()} className="border-2 rounded p-4 text-center border-light" style={{ borderStyle: 'dashed', backgroundColor: '#f8f9fa', cursor: 'pointer' }}>
+                    <div {...getRootProps()} className={`border-2 rounded p-4 text-center ${isDragActive ? 'border-primary bg-light' : 'border-light'}`} style={{ borderStyle: 'dashed', backgroundColor: isDragActive ? '#e9ecef' : '#f8f9fa', cursor: 'pointer', transition: 'all 0.2s ease' }}>
                         <input {...getInputProps()} />
-                        <i className="fe fe-upload-cloud fe-32 text-muted mb-3 d-block"></i><p className="text-muted m-0">Drag 'n' drop or click here to upload</p>
+                        <i className="fe fe-upload-cloud fe-32 text-muted mb-3 d-block"></i>
+                        {isDragActive ? <p className="text-primary m-0">Drop the files here ...</p> : <p className="text-muted m-0">Drag 'n' drop or click here to upload</p>}
                     </div>
                 </div>
                 {uploadFiles.length > 0 && (

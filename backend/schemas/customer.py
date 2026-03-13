@@ -54,9 +54,16 @@ class CustomerUpdate(BaseModel):
     media_consent: Optional[bool] = None
     profile: Optional[CustomerProfileUpdate] = None
 
+class CustomerEmployeeRef(BaseModel):
+    id: int
+    full_name: str
+    designation: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
 class CustomerResponse(CustomerBase):
     id: int
     created_at: datetime
     visit_count: int = 0
+    preferred_employee: Optional[CustomerEmployeeRef] = None
     profile: Optional[CustomerProfileResponse] = None
     model_config = ConfigDict(from_attributes=True)

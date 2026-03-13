@@ -13,11 +13,19 @@ import { Appointments } from './pages/Appointments';
 import { Gallery } from './pages/Gallery';
 import { ServiceCategories } from './pages/ServiceCategories';
 import { Services } from './pages/Services';
+import { Invoices } from './pages/Invoices';
+import { InvoiceCreate } from './pages/InvoiceCreate';
+import { Bookkeeping } from './pages/Bookkeeping';
+import { Profile } from './pages/Profile';
 
 function App() {
   return (
     <Router>
       <Routes>
+
+        {/* Redirect root URL to Dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
         {/* --- Public Routes --- */}
         <Route path="/login" element={<Login />} />
 
@@ -26,6 +34,9 @@ function App() {
 
           {/* Dashboard Hub */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Profile */}
+          <Route path="/profile" element={<Profile />} />
 
           {/* Customer Management */}
           <Route path="/customers" element={<Customers />} />
@@ -50,6 +61,13 @@ function App() {
           {/* Services */}
           <Route path="/service-categories" element={<ServiceCategories />} />
           <Route path="/services" element={<Services />} />
+
+          {/* Invoices */}
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/invoices/create" element={<InvoiceCreate />} />
+
+          {/* Bookkeeping */}
+          <Route path="/bookkeeping" element={<Bookkeeping />} />
         </Route>
 
         {/* --- Fallback Route --- */}

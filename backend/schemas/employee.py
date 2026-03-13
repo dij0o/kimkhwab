@@ -68,6 +68,10 @@ class EmployeeUpdate(BaseModel):
     salary: Optional[int] = None
     is_active: Optional[bool] = None
 
+class PasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
+
 class EmployeeResponse(EmployeeBase):
     id: int
     created_at: datetime

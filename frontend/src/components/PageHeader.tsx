@@ -1,8 +1,9 @@
 import React from 'react';
 
+// Change title from 'string' to 'React.ReactNode'
 interface PageHeaderProps {
-    title: string;
-    children?: React.ReactNode; // This allows us to pass buttons into the right side
+    title: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ title, children }) => {
@@ -14,7 +15,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, children }) => {
                         <h2 className="h3 mb-0 page-title">{title}</h2>
                     </div>
                     {children && (
-                        <div className="col-auto text-right">
+                        <div className="col-auto d-flex align-items-center">
                             {children}
                         </div>
                     )}

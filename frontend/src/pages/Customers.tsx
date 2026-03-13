@@ -19,6 +19,7 @@ interface Customer {
     media_consent: boolean;
     visit_count: number;
     is_active: boolean;
+    preferred_employee?: { full_name: string; designation?: string | null } | null;
     created_at: string;
 }
 
@@ -90,8 +91,10 @@ export const Customers: React.FC = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <p className="mb-0 text-muted"><strong>Unassigned</strong></p>
-                                        <small className="mb-0 text-muted">Stylist</small>
+                                        <p className="mb-0 text-muted">
+                                            <strong>{customer.preferred_employee?.full_name || 'Unassigned'}</strong>
+                                        </p>
+                                        <small className="mb-0 text-muted">{customer.preferred_employee?.designation || (customer.preferred_employee ? 'Staff' : 'No Preference')}</small>
                                     </td>
                                     <td>{customer.phone_number}</td>
                                     <td>

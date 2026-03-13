@@ -1,18 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import apiClient from '../api/client';
 
 export const Layout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
     const [profileOpen, setProfileOpen] = useState(false);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
+
+    // Fetch the logged-in user's profile picture on load
+    useEffect(() => {
+        const userId = localStorage.getItem('user_id');
+        if (userId) {
+            apiClient.get(`/employees/${userId}`)
+                .then(res => {
+                    if (res.data.data.profile_image_path) {
+                        setProfileImage(res.data.data.profile_image_path);
+                    }
+                })
+                .catch(err => console.error("Failed to load user avatar for navbar", err));
+        }
+    }, []);
+
+    // Format the image URL properly
+    const avatarUrl = profileImage
+        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${profileImage}`
+        : '/assets/avatars/placeholder.svg';
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_id');
         navigate('/login');
     };
 
-    // Helper to accurately highlight the active menu item, even on nested routes (like /customers/new)
+    // Helper to accurately highlight the active menu item
     const isActive = (path: string) => location.pathname.startsWith(path) ? 'active' : '';
 
     return (
@@ -29,20 +52,28 @@ export const Layout: React.FC = () => {
                                 <span className="dot dot-md bg-success"></span>
                             </a>
                         </li>
-                        <li className="nav-item dropdown">
+
+                        {/* PROFILE DROPDOWN */}
+                        <li className={`nav-item dropdown ${profileOpen ? 'show' : ''}`}>
                             <a
                                 className="nav-link dropdown-toggle text-muted pr-0"
                                 href="#!"
                                 onClick={(e) => { e.preventDefault(); setProfileOpen(!profileOpen); }}
                             >
                                 <span className="avatar avatar-sm mt-2">
-                                    <img src="/assets/avatars/face-1.jpg" alt="..." className="avatar-img rounded-circle" />
+                                    <img src={avatarUrl} alt="Profile" className="avatar-img rounded-circle" style={{ objectFit: 'cover', width: '32px', height: '32px' }} />
                                 </span>
                             </a>
-                            <div className={`dropdown-menu dropdown-menu-right ${profileOpen ? 'show' : ''}`} style={profileOpen ? { position: 'absolute', right: 0, top: '100%', zIndex: 1000 } : {}}>
-                                <a className="dropdown-item" href="#!">Profile</a>
-                                <a className="dropdown-item" href="#!">Activities</a>
-                                <button className="dropdown-item text-danger" onClick={handleLogout}>Logout</button>
+
+                            {/* Added the dynamic 'show' class here to make it open! */}
+                            <div className={`dropdown-menu dropdown-menu-right ${profileOpen ? 'show' : ''}`} style={{ position: 'absolute' }}>
+                                <Link className="dropdown-item" to="/profile" onClick={() => setProfileOpen(false)}>
+                                    <i className="fe fe-user mr-2"></i>My Profile
+                                </Link>
+                                <div className="dropdown-divider"></div>
+                                <button className="dropdown-item text-danger" onClick={handleLogout}>
+                                    <i className="fe fe-log-out mr-2"></i>Logout
+                                </button>
                             </div>
                         </li>
                     </ul>
@@ -105,7 +136,7 @@ export const Layout: React.FC = () => {
                             {/* Financials */}
                             <p className="text-muted nav-heading mt-4 mb-1"><span>Financials</span></p>
                             <li className="nav-item w-100">
-                                <Link className={`nav-link ${isActive('/ledger')}`} to="/ledger">
+                                <Link className={`nav-link ${isActive('/bookkeeping')}`} to="/bookkeeping">
                                     <i className="fe fe-book fe-16"></i><span className="ml-3 item-text">Ledger</span>
                                 </Link>
                             </li>
@@ -146,7 +177,7 @@ export const Layout: React.FC = () => {
                 </aside>
 
                 {/* MAIN CONTENT AREA (Pages inject here) */}
-                <main role="main" className="main-content">
+                <main role="main" className="main-content" onClick={() => profileOpen && setProfileOpen(false)}>
                     <Outlet />
                 </main>
 

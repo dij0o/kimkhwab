@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -15,6 +16,7 @@ import { Card } from '../components/Card';
 export const Appointments: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     // Dropdown Data States
     const [customers, setCustomers] = useState<any[]>([]);
@@ -92,6 +94,16 @@ export const Appointments: React.FC = () => {
     useEffect(() => {
         fetchAllData();
     }, []);
+
+    // Listen for dashboard redirects to auto-open the modal
+    useEffect(() => {
+        if (searchParams.get('new') === 'true') {
+            handleOpenNewModal();
+            // Clear the parameter so it doesn't re-open if they refresh the page
+            searchParams.delete('new');
+            setSearchParams(searchParams, { replace: true });
+        }
+    }, [searchParams]);
 
     // 2. Open Modals and Pre-fill Forms
     const handleOpenNewModal = () => {

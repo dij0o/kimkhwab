@@ -5,13 +5,14 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
+from pydantic import BaseModel
 
 from core.database import get_db
-from core.security import get_password_hash
+from core.security import get_password_hash, verify_password
 from core.deps import get_current_user
 from models.employee import Employee
 from models.financial import EmployeePayslip, LedgerEntry
-from schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate
+from schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate, PasswordUpdate
 from schemas.payslip import EmployeePayslipCreate, EmployeePayslipResponse
 from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
 
@@ -258,4 +259,34 @@ def get_payslips(
         status="success", status_code=status.HTTP_200_OK,
         message="Payslips retrieved successfully.",
         data=payslips, meta=meta
+    )
+
+@router.put("/{id}/password", response_model=APIResponse[dict])
+def update_employee_password(
+    id: int,
+    password_data: PasswordUpdate,
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    # Only allow users to change their own password (unless they are admin)
+    if current_user.id != id and current_user.role_id != 1:
+        raise HTTPException(status_code=403, detail="Not authorized to change this password")
+
+    db_employee = db.query(Employee).filter(Employee.id == id).first()
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Verify old password
+    if not verify_password(password_data.current_password, db_employee.password):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+
+    # Hash and save new password
+    db_employee.password = get_password_hash(password_data.new_password)
+    db.commit()
+
+    return APIResponse(
+        status="success", 
+        status_code=status.HTTP_200_OK,
+        message="Password updated successfully.", 
+        data={"id": id}
     )

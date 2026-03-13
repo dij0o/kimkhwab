@@ -47,8 +47,8 @@ export const CustomerCreate: React.FC = () => {
                     setInstagram(data.instagram_handle || '');
                     setMediaConsent(data.media_consent || false);
 
+                    setPreferredStylistId(data.preferred_employee_id || '');
                     if (data.profile) {
-                        setPreferredStylistId(data.profile.preferences ? Number(data.profile.preferences) : '');
                         setBio(data.profile.notes || '');
                     }
                     if (data.profile_image_url) setProfilePicPreview(data.profile_image_url);
@@ -83,7 +83,8 @@ export const CustomerCreate: React.FC = () => {
             const customerPayload = {
                 full_name: fullName, phone_number: phone, whatsapp_number: whatsapp || null,
                 email: email || null, instagram_handle: instagram || null, media_consent: mediaConsent,
-                profile: { preferences: preferredStylistId ? preferredStylistId.toString() : null, notes: bio || null }
+                preferred_employee_id: preferredStylistId ? Number(preferredStylistId) : null,
+                profile: { preferences: null, notes: bio || null }
             };
 
             let targetCustomerId = id;
