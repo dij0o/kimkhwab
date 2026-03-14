@@ -26,6 +26,8 @@ export const Login: React.FC = () => {
             localStorage.setItem('access_token', response.data.access_token);
             localStorage.setItem('refresh_token', response.data.refresh_token);
             localStorage.setItem('user_id', response.data.user_id);
+            localStorage.setItem('role_id', response.data.role_id);
+            localStorage.setItem('role_name', response.data.role_name);
 
             navigate('/dashboard');
         } catch (err: any) {

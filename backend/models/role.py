@@ -25,5 +25,5 @@ class Role(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
     
-    # Relationship to fetch the list of permissions associated with this role
-    permissions = relationship("Permission", secondary=role_permissions, backref="roles")
+    # EXACT FIX: Removed the quotation marks around Permission
+    permissions = relationship(Permission, secondary=role_permissions, backref="roles")
