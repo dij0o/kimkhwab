@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
@@ -55,8 +55,10 @@ def create_appointment(
 
 @router.get("/", response_model=APIPaginatedResponse[AppointmentResponse])
 def get_appointments(
+    id: Optional[int] = None,
     start_date: datetime = None, 
     end_date: datetime = None, 
+    appointment_status: Optional[str] = Query(None, alias="status"),
     customer_id: Optional[int] = None,
     skip: int = 0, 
     limit: int = 100, 
@@ -66,8 +68,12 @@ def get_appointments(
     query = db.query(Appointment)
     
    # Apply filters
-    if customer_id:
+    if id is not None:
+        query = query.filter(Appointment.id == id)
+    if customer_id is not None:
         query = query.filter(Appointment.customer_id == customer_id)
+    if appointment_status:
+        query = query.filter(Appointment.status == appointment_status)
     if start_date:
         query = query.filter(Appointment.start_time >= start_date)
     if end_date:

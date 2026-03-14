@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import apiClient from '../api/client';
 import { clearSession, getUserId } from '../auth/session';
 import { resolveBackendUrl } from '../config/backend';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 export const Layout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { notify } = useFeedback();
 
     // UI States
     const [profileOpen, setProfileOpen] = useState(false);
@@ -16,6 +18,7 @@ export const Layout: React.FC = () => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [notifications, setNotifications] = useState<any[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const hasShownNotificationLoadError = useRef(false);
 
     useEffect(() => {
         const userId = getUserId();
@@ -41,7 +44,16 @@ export const Layout: React.FC = () => {
             const notifs = res.data.data;
             setNotifications(notifs);
             setUnreadCount(notifs.filter((n: any) => !n.is_read).length);
+            hasShownNotificationLoadError.current = false;
         } catch (err) {
+            if (!hasShownNotificationLoadError.current) {
+                notify({
+                    title: 'Notifications Unavailable',
+                    message: 'Unable to load notifications right now.',
+                    type: 'danger'
+                });
+                hasShownNotificationLoadError.current = true;
+            }
             console.error("Failed to fetch notifications", err);
         }
     };
@@ -51,6 +63,11 @@ export const Layout: React.FC = () => {
             await apiClient.put(`/notifications/${id}/read`);
             fetchNotifications(); // Refresh list to update count
         } catch (err) {
+            notify({
+                title: 'Update Failed',
+                message: 'Unable to mark that notification as read.',
+                type: 'danger'
+            });
             console.error(err);
         }
     };
@@ -60,6 +77,11 @@ export const Layout: React.FC = () => {
             await apiClient.put('/notifications/read-all');
             fetchNotifications();
         } catch (err) {
+            notify({
+                title: 'Update Failed',
+                message: 'Unable to mark all notifications as read.',
+                type: 'danger'
+            });
             console.error(err);
         }
     };

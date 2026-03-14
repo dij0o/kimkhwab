@@ -6,6 +6,7 @@ from core.database import get_db
 from core.deps import get_current_user
 from models.employee import Employee
 from models.customer import Customer
+from models.appointment import Appointment
 from models.service import Service
 from models.financial import Invoice, InvoiceItem, LedgerEntry
 from schemas.financial import (
@@ -32,7 +33,10 @@ def create_invoice(
     snapshot of the transaction, and automatically updates the ledger if paid.
     """
     # 1. Verify the customer exists
-    customer = db.query(Customer).filter(Customer.id == invoice_in.customer_id).first()
+    customer = db.query(Customer).filter(
+        Customer.id == invoice_in.customer_id,
+        Customer.is_active == True
+    ).first()
     if not customer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
@@ -42,6 +46,42 @@ def create_invoice(
     # 2. Extract items and prepare the main invoice data
     items_data = invoice_in.items
     invoice_dict = invoice_in.model_dump(exclude={"items", "snapshot"})
+    appointment = None
+
+    if invoice_in.appointment_id is not None:
+        appointment = db.query(Appointment).filter(Appointment.id == invoice_in.appointment_id).first()
+        if not appointment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Appointment with ID {invoice_in.appointment_id} not found."
+            )
+
+        if appointment.status in {"cancelled", "no_show"}:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot create an invoice for an appointment marked as {appointment.status}."
+            )
+
+        existing_invoice = db.query(Invoice).filter(Invoice.appointment_id == appointment.id).first()
+        if existing_invoice:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Appointment #{appointment.id} already has invoice #{existing_invoice.id}."
+            )
+
+        if appointment.customer_id is not None and appointment.customer_id != customer.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The selected customer does not match the linked appointment."
+            )
+
+        if appointment.customer_id is None:
+            appointment.customer_id = customer.id
+
+        if invoice_dict.get("employee_id") is None:
+            invoice_dict["employee_id"] = appointment.employee_id
+
+        appointment.status = "completed"
     
     # 3. Build the immutable snapshot (capturing exact names/details at this moment in time)
     snapshot = {

@@ -12,10 +12,12 @@ import { PageHeader } from '../components/PageHeader';
 import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
 import { Card } from '../components/Card';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 export const Appointments: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { notify, confirm } = useFeedback();
 
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
@@ -87,7 +89,7 @@ export const Appointments: React.FC = () => {
             setEvents(mappedEvents);
         } catch (error) {
             console.error("Failed to load calendar data:", error);
-            alert("Failed to connect to server.");
+            notify({ title: 'Connection Error', message: 'Failed to connect to server.', type: 'danger' });
         } finally {
             setLoading(false);
         }
@@ -166,10 +168,15 @@ export const Appointments: React.FC = () => {
 
             setIsNewModalOpen(false);
             setIsEditModalOpen(false);
+            notify({
+                title: isEditModalOpen ? 'Appointment Updated' : 'Appointment Created',
+                message: isEditModalOpen ? 'The appointment has been updated successfully.' : 'The appointment has been created successfully.',
+                type: 'success'
+            });
             fetchAllData(); // Refresh the calendar
         } catch (error: any) {
             console.error("Failed to save:", error);
-            alert(error.response?.data?.detail || "An error occurred while saving the appointment.");
+            notify({ title: 'Save Failed', message: error.response?.data?.detail || 'An error occurred while saving the appointment.', type: 'danger' });
         } finally {
             setIsSubmitting(false);
         }
@@ -177,15 +184,26 @@ export const Appointments: React.FC = () => {
 
     // Quick Action to instantly Cancel
     const handleCancelAppointment = async () => {
-        if (!selectedEvent || !window.confirm("Are you sure you want to cancel this appointment?")) return;
+        if (!selectedEvent) return;
+
+        const shouldCancel = await confirm({
+            title: 'Cancel Appointment',
+            message: 'Are you sure you want to cancel this appointment?',
+            confirmLabel: 'Cancel Appointment',
+            confirmTone: 'danger'
+        });
+
+        if (!shouldCancel) return;
 
         setIsSubmitting(true);
         try {
             await apiClient.put(`/appointments/${selectedEvent.id}`, { status: 'cancelled' });
             setIsEditModalOpen(false);
+            notify({ title: 'Appointment Cancelled', message: 'The appointment has been cancelled.', type: 'success' });
             fetchAllData();
         } catch (error) {
             console.error("Failed to cancel:", error);
+            notify({ title: 'Cancellation Failed', message: 'Failed to cancel the appointment.', type: 'danger' });
         } finally {
             setIsSubmitting(false);
         }
@@ -201,7 +219,7 @@ export const Appointments: React.FC = () => {
             await apiClient.put(`/appointments/${apptId}`, { start_time: newStart, end_time: newEnd });
             // Let the calendar UI handle the move visually without reloading the whole page
         } catch (error) {
-            alert("Failed to reschedule appointment.");
+            notify({ title: 'Reschedule Failed', message: 'Failed to reschedule appointment.', type: 'danger' });
             info.revert(); // Snap the event back to its original slot if the API fails
         }
     };

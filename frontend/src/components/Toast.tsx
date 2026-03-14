@@ -7,6 +7,8 @@ interface ToastProps {
     type?: 'success' | 'danger' | 'warning' | 'primary'; // Defines the header color
     duration?: number; // How long before it auto-closes (default 3 seconds)
     onClose: () => void;
+    floating?: boolean;
+    containerStyle?: React.CSSProperties;
 }
 
 export const Toast: React.FC<ToastProps> = ({
@@ -15,7 +17,9 @@ export const Toast: React.FC<ToastProps> = ({
     message,
     type = 'primary',
     duration = 3000,
-    onClose
+    onClose,
+    floating = true,
+    containerStyle
 }) => {
 
     // Auto-close timer
@@ -31,7 +35,9 @@ export const Toast: React.FC<ToastProps> = ({
     if (!show) return null;
 
     return (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 9999 }}>
+        <div
+            style={floating ? { position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 9999, ...containerStyle } : containerStyle}
+        >
             <div className="toast show shadow-lg border-0" role="alert" style={{ minWidth: '250px' }}>
                 <div className={`toast-header bg-${type} text-white border-0`}>
                     <strong className="mr-auto">{title}</strong>

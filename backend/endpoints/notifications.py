@@ -7,7 +7,7 @@ from models.notification import Notification
 from schemas.notification import NotificationResponse
 from schemas.response import APIResponse
 
-router = APIRouter(prefix="/notifications", tags=["Notifications"])
+router = APIRouter(tags=["Notifications"])
 
 @router.get("/", response_model=APIResponse[list[NotificationResponse]])
 def get_my_notifications(

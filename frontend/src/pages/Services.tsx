@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../api/client';
 
 import { PageHeader } from '../components/PageHeader';
-import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
 import { Dropdown } from '../components/Dropdown';
-import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { TableCard } from '../components/TableCard';
 
 interface Service {
     id: number;
@@ -101,50 +100,49 @@ export const Services: React.FC = () => {
                 </button>
             </PageHeader>
 
-            <Card>
-                {loading ? (
-                    <Spinner text="Loading services..." />
-                ) : services.length === 0 ? (
-                    <EmptyState icon="fe-scissors" title="No Services Found" description="Create a new service to start building your catalog." />
-                ) : (
-                    <table className="table table-borderless table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Service</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+            <TableCard
+                loading={loading}
+                loadingText="Loading services..."
+                isEmpty={services.length === 0}
+                emptyState={<EmptyState icon="fe-scissors" title="No Services Found" description="Create a new service to start building your catalog." />}
+            >
+                <table className="table table-borderless table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Service</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {services.map((service) => (
+                            <tr key={service.id}>
+                                <td>{service.id}</td>
+                                <td>{service.name}</td>
+                                <td>{categories.find(c => c.id === service.category_id)?.name || `Category ${service.category_id}`}</td>
+                                <td>Rs. {Number(service.price).toFixed(2)}</td>
+                                <td>
+                                    {service.is_active ? (
+                                        <span className="badge badge-primary text-dark">Active</span>
+                                    ) : (
+                                        <span className="badge badge-secondary text-dark">Inactive</span>
+                                    )}
+                                </td>
+                                <td>
+                                    <Dropdown>
+                                        <button className="dropdown-item" onClick={() => handleOpenModal(service)}>Edit</button>
+                                        <button className="dropdown-item">View Details</button>
+                                        <button className="dropdown-item">{service.is_active ? "Deactivate" : "Activate"}</button>
+                                    </Dropdown>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {services.map((service) => (
-                                <tr key={service.id}>
-                                    <td>{service.id}</td>
-                                    <td>{service.name}</td>
-                                    <td>{categories.find(c => c.id === service.category_id)?.name || `Category ${service.category_id}`}</td>
-                                    <td>Rs. {Number(service.price).toFixed(2)}</td>
-                                    <td>
-                                        {service.is_active ? (
-                                            <span className="badge badge-primary text-dark">Active</span>
-                                        ) : (
-                                            <span className="badge badge-secondary text-dark">Inactive</span>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <Dropdown>
-                                            <button className="dropdown-item" onClick={() => handleOpenModal(service)}>Edit</button>
-                                            <button className="dropdown-item">View Details</button>
-                                            <button className="dropdown-item">{service.is_active ? "Deactivate" : "Activate"}</button>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </Card>
+                        ))}
+                    </tbody>
+                </table>
+            </TableCard>
 
             <Pagination meta={meta} onPageChange={fetchServices} />
 

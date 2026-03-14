@@ -4,11 +4,10 @@ import apiClient from '../api/client';
 
 import { PageHeader } from '../components/PageHeader';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
-import { Spinner } from '../components/Spinner';
 import { Dropdown } from '../components/Dropdown';
 import { Avatar } from '../components/Avatar';
-import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { TableCard } from '../components/TableCard';
 
 interface Customer {
     id: number;
@@ -59,67 +58,66 @@ export const Customers: React.FC = () => {
                 </button>
             </PageHeader>
 
-            <Card>
-                {loading ? (
-                    <Spinner text="Loading customers..." />
-                ) : customers.length === 0 ? (
-                    <EmptyState icon="fe-users" title="No Customers Found" description="Try adjusting your search or create a new customer." />
-                ) : (
-                    <table className="table table-borderless table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Customer Details</th>
-                                <th>Preferred Stylist</th>
-                                <th>Primary Contact</th>
-                                <th>Media Consent</th>
-                                <th>Visits</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {customers.map((customer) => (
-                                <tr key={customer.id}>
-                                    <td>{customer.id}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Avatar src={customer.profile_image_url} size="sm" className="mr-3" />
-                                            <div>
-                                                <p className="mb-0 text-muted"><strong>{customer.full_name}</strong></p>
-                                                <small className="mb-0 text-muted">@{customer.full_name.split(' ')[0].toLowerCase()}</small>
-                                            </div>
+            <TableCard
+                loading={loading}
+                loadingText="Loading customers..."
+                isEmpty={customers.length === 0}
+                emptyState={<EmptyState icon="fe-users" title="No Customers Found" description="Try adjusting your search or create a new customer." />}
+            >
+                <table className="table table-borderless table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer Details</th>
+                            <th>Preferred Stylist</th>
+                            <th>Primary Contact</th>
+                            <th>Media Consent</th>
+                            <th>Visits</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {customers.map((customer) => (
+                            <tr key={customer.id}>
+                                <td>{customer.id}</td>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <Avatar src={customer.profile_image_url} size="sm" className="mr-3" />
+                                        <div>
+                                            <p className="mb-0 text-muted"><strong>{customer.full_name}</strong></p>
+                                            <small className="mb-0 text-muted">@{customer.full_name.split(' ')[0].toLowerCase()}</small>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <p className="mb-0 text-muted">
-                                            <strong>{customer.preferred_employee?.full_name || 'Unassigned'}</strong>
-                                        </p>
-                                        <small className="mb-0 text-muted">{customer.preferred_employee?.designation || (customer.preferred_employee ? 'Staff' : 'No Preference')}</small>
-                                    </td>
-                                    <td>{customer.phone_number}</td>
-                                    <td>
-                                        {customer.media_consent ? (
-                                            <span className="badge badge-pill badge-primary">Yes</span>
-                                        ) : (
-                                            <span className="badge badge-pill badge-secondary">No</span>
-                                        )}
-                                    </td>
-                                    <td>{customer.visit_count}</td>
-                                    <td>
-                                        <Dropdown>
-                                            <Link className="dropdown-item" to={`/customers/${customer.id}`}><i className="fe fe-user mr-2"></i> View Profile</Link>
-                                            <Link className="dropdown-item" to={`/customers/${customer.id}/edit`}><i className="fe fe-edit mr-2"></i> Edit</Link>
-                                            <Link className="dropdown-item" to={`/customers/${customer.id}/history`}><i className="fe fe-clock mr-2"></i> Service History</Link>
-                                            <Link className="dropdown-item" to={`/customers/${customer.id}/appointments`}><i className="fe fe-calendar mr-2"></i> Appointments</Link>
-                                            <Link className="dropdown-item" to={`/gallery?customerId=${customer.id}`}><i className="fe fe-image mr-2"></i> Gallery</Link>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </Card>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p className="mb-0 text-muted">
+                                        <strong>{customer.preferred_employee?.full_name || 'Unassigned'}</strong>
+                                    </p>
+                                    <small className="mb-0 text-muted">{customer.preferred_employee?.designation || (customer.preferred_employee ? 'Staff' : 'No Preference')}</small>
+                                </td>
+                                <td>{customer.phone_number}</td>
+                                <td>
+                                    {customer.media_consent ? (
+                                        <span className="badge badge-pill badge-primary">Yes</span>
+                                    ) : (
+                                        <span className="badge badge-pill badge-secondary">No</span>
+                                    )}
+                                </td>
+                                <td>{customer.visit_count}</td>
+                                <td>
+                                    <Dropdown>
+                                        <Link className="dropdown-item" to={`/customers/${customer.id}`}><i className="fe fe-user mr-2"></i> View Profile</Link>
+                                        <Link className="dropdown-item" to={`/customers/${customer.id}/edit`}><i className="fe fe-edit mr-2"></i> Edit</Link>
+                                        <Link className="dropdown-item" to={`/customers/${customer.id}/history`}><i className="fe fe-clock mr-2"></i> Service History</Link>
+                                        <Link className="dropdown-item" to={`/customers/${customer.id}/appointments`}><i className="fe fe-calendar mr-2"></i> Appointments</Link>
+                                        <Link className="dropdown-item" to={`/gallery?customerId=${customer.id}`}><i className="fe fe-image mr-2"></i> Gallery</Link>
+                                    </Dropdown>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </TableCard>
 
             <Pagination meta={meta} onPageChange={fetchCustomers} />
         </div>

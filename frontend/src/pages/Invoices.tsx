@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
-import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
 import { Dropdown } from '../components/Dropdown';
-import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
-import { useNavigate } from 'react-router-dom';
+import { DataTableCard } from '../components/DataTableCard';
+import { CustomerQuickCreateModal, type QuickCustomerRecord } from '../components/CustomerQuickCreateModal';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 interface Invoice {
     id: number;
+    employee_id?: number | null;
+    appointment_id?: number | null;
     start_time: string;
     end_time: string;
     total_amount: number;
@@ -22,39 +25,208 @@ interface Invoice {
     };
 }
 
+interface EmployeeSummary {
+    id: number;
+    full_name: string;
+    designation?: string | null;
+    is_active?: boolean;
+}
+
+interface AppointmentRecord {
+    id: number;
+    customer_id?: number | null;
+    employee_id?: number | null;
+    start_time: string;
+    end_time: string;
+    status: string;
+    customer?: { full_name?: string | null } | null;
+    employee?: { full_name?: string | null } | null;
+    category?: { name?: string | null } | null;
+}
+
+const DATA_TABLE_PAGE_SIZES = [10, 25, 50, 100];
+const EMPTY_INVOICES: Invoice[] = [];
+const EMPTY_EMPLOYEES: EmployeeSummary[] = [];
+const EMPTY_APPOINTMENTS: AppointmentRecord[] = [];
+const EMPTY_EMPLOYEE_NAMES: Record<number, string> = {};
+
+const getAppointmentStatusBadgeClass = (status: string): string => {
+    if (status === 'completed') {
+        return 'badge badge-pill badge-primary';
+    }
+
+    if (status === 'cancelled' || status === 'no_show') {
+        return 'badge badge-pill badge-secondary';
+    }
+
+    return 'badge badge-pill badge-light border text-dark';
+};
+
 export const Invoices: React.FC = () => {
     const navigate = useNavigate();
+    const { notify } = useFeedback();
     const [loading, setLoading] = useState(true);
-    const [invoices, setInvoices] = useState<Invoice[]>([]);
-    const [meta, setMeta] = useState<PaginationMeta | null>(null);
+    const [invoices, setInvoices] = useState(EMPTY_INVOICES);
+    const [employees, setEmployees] = useState(EMPTY_EMPLOYEES);
+    const [employeeNames, setEmployeeNames] = useState(EMPTY_EMPLOYEE_NAMES);
+    const [appointments, setAppointments] = useState(EMPTY_APPOINTMENTS);
+    const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [appointmentSearchTerm, setAppointmentSearchTerm] = useState('');
+    const [pageSize, setPageSize] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Modal States
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+    const [isCustomerCreateModalOpen, setIsCustomerCreateModalOpen] = useState(false);
+    const [isAppointmentSelectModalOpen, setIsAppointmentSelectModalOpen] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Refund State
     const [refundAmount, setRefundAmount] = useState<number | ''>('');
-    const [refundReason, setRefundReason] = useState<string>('');
+    const [refundReason, setRefundReason] = useState('');
 
-    const fetchInvoices = async (page: number = 1, limit: number = 10) => {
+    const fetchInvoices = async () => {
         setLoading(true);
         try {
-            const skip = (page - 1) * limit;
-            const response = await apiClient.get(`/invoices/?skip=${skip}&limit=${limit}`);
-            setInvoices(response.data.data);
-            setMeta(response.data.meta);
+            const initialInvoiceResponse = await apiClient.get('/financials/invoices?skip=0&limit=100');
+            const initialInvoices = Array.isArray(initialInvoiceResponse.data.data)
+                ? initialInvoiceResponse.data.data
+                : [];
+            const totalInvoiceCount = Number(initialInvoiceResponse.data.meta?.total_records ?? initialInvoices.length);
+
+            const invoiceData = initialInvoices.length < totalInvoiceCount
+                ? (await apiClient.get(`/financials/invoices?skip=0&limit=${totalInvoiceCount}`)).data.data
+                : initialInvoices;
+
+            const employeeResponse = await apiClient.get('/employees/?limit=500');
+            const employeeList: EmployeeSummary[] = Array.isArray(employeeResponse.data.data)
+                ? employeeResponse.data.data.filter((employee: EmployeeSummary) => employee.is_active)
+                : [];
+            const employeeLookup = employeeList.reduce((lookup: Record<number, string>, employee) => {
+                lookup[employee.id] = employee.full_name;
+                return lookup;
+            }, {});
+
+            setInvoices(Array.isArray(invoiceData) ? invoiceData : []);
+            setEmployees(employeeList);
+            setEmployeeNames(employeeLookup);
         } catch (err) {
-            console.error("Failed to load invoices", err);
+            console.error('Failed to load invoices', err);
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchAppointments = async () => {
+        setAppointmentsLoading(true);
+        try {
+            const response = await apiClient.get('/appointments/?limit=500');
+            setAppointments(Array.isArray(response.data.data) ? response.data.data : []);
+        } catch (error) {
+            console.error('Failed to load appointments', error);
+        } finally {
+            setAppointmentsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        fetchInvoices(1, 10);
+        void fetchInvoices();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, pageSize]);
+
+    const getStaffName = (invoice: Invoice): string => {
+        if (invoice.employee_id && employeeNames[invoice.employee_id]) {
+            return employeeNames[invoice.employee_id];
+        }
+
+        return invoice.snapshot?.cashier_username || 'Unassigned';
+    };
+
+    const getItemSummary = (invoice: Invoice): string => {
+        const itemNames = Array.isArray(invoice.snapshot?.items)
+            ? invoice.snapshot.items.map((item) => item.service_name).filter(Boolean)
+            : [];
+
+        if (itemNames.length === 0) {
+            return 'No line items';
+        }
+
+        const visibleItems = itemNames.slice(0, 2);
+        const remainingCount = itemNames.length - visibleItems.length;
+
+        return remainingCount > 0
+            ? `${visibleItems.join(', ')} +${remainingCount} more`
+            : visibleItems.join(', ');
+    };
+
+    const filteredInvoices = invoices.filter((invoice) => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) {
+            return true;
+        }
+
+        return [
+            invoice.id.toString(),
+            invoice.snapshot?.customer_name || 'walk-in',
+            getStaffName(invoice),
+            getItemSummary(invoice),
+            invoice.paid ? 'paid' : 'unpaid',
+            invoice.appointment_id ? `appointment ${invoice.appointment_id}` : ''
+        ].some((value) => value.toLowerCase().includes(query));
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / pageSize));
+    const activePage = Math.min(currentPage, totalPages);
+    const pageStart = (activePage - 1) * pageSize;
+    const paginatedInvoices = filteredInvoices.slice(pageStart, pageStart + pageSize);
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
+
+    const paginationMeta: PaginationMeta | null = filteredInvoices.length === 0
+        ? null
+        : {
+            total_records: filteredInvoices.length,
+            total_pages: totalPages,
+            current_page: activePage,
+            limit: pageSize,
+            has_next: activePage < totalPages,
+            has_prev: activePage > 1
+        };
+
+    const availableAppointments = appointments
+        .filter((appointment) => !['cancelled', 'no_show'].includes(appointment.status))
+        .filter((appointment) => !invoices.some((invoice) => invoice.appointment_id === appointment.id))
+        .filter((appointment) => {
+            const query = appointmentSearchTerm.trim().toLowerCase();
+            if (!query) {
+                return true;
+            }
+
+            const customerName = appointment.customer?.full_name || 'walk-in';
+            const staffName = appointment.employee?.full_name
+                || (appointment.employee_id ? employeeNames[appointment.employee_id] : '')
+                || 'unassigned';
+            const categoryName = appointment.category?.name || '';
+
+            return [
+                appointment.id.toString(),
+                customerName,
+                staffName,
+                categoryName,
+                appointment.status
+            ].some((value) => value.toLowerCase().includes(query));
+        })
+        .sort((left, right) => new Date(right.start_time).getTime() - new Date(left.start_time).getTime());
 
     const openViewModal = (invoice: Invoice) => {
         setSelectedInvoice(invoice);
@@ -63,19 +235,19 @@ export const Invoices: React.FC = () => {
 
     const openRefundModal = (invoice: Invoice) => {
         setSelectedInvoice(invoice);
-        setRefundAmount(invoice.total_amount); // Default to full refund
+        setRefundAmount(invoice.total_amount);
         setRefundReason(`Credit Note / Correction for Invoice #${invoice.id.toString().padStart(4, '0')}`);
         setIsRefundModalOpen(true);
     };
 
-    const handleIssueRefund = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedInvoice || !refundAmount || !refundReason) return;
+    const handleIssueRefund = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!selectedInvoice || !refundAmount || !refundReason) {
+            return;
+        }
 
         setIsSubmitting(true);
         try {
-            // We issue a Credit Note by posting an Expense to the Ledger
-            // referencing this specific invoice ID.
             await apiClient.post('/financials/ledger', {
                 amount: Number(refundAmount),
                 entry_type: 'expense',
@@ -85,98 +257,247 @@ export const Invoices: React.FC = () => {
             });
 
             setIsRefundModalOpen(false);
-            alert(`Successfully issued a credit note for Rs. ${refundAmount.toLocaleString()}`);
-            // No need to reload invoices, as the invoice itself remains untouched!
-
+            notify({ title: 'Credit Note Issued', message: `Successfully issued a credit note for Rs. ${refundAmount.toLocaleString()}.`, type: 'success' });
         } catch (error: any) {
-            alert(error.response?.data?.detail || "Failed to process credit note.");
+            notify({ title: 'Refund Failed', message: error.response?.data?.detail || 'Failed to process credit note.', type: 'danger' });
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleWalkInCustomerCreated = (customer: QuickCustomerRecord) => {
+        navigate(`/invoices/create?customerId=${customer.id}`);
+    };
+
+    const handleOpenAppointmentModal = () => {
+        setAppointmentSearchTerm('');
+        setIsAppointmentSelectModalOpen(true);
+        void fetchAppointments();
+    };
+
     return (
         <div className="container-fluid">
             <PageHeader title="Invoices">
-                <button type="button" className="btn btn-primary" onClick={() => navigate('/invoices/create')}>
-                    <span className="fe fe-plus fe-12 mr-2"></span>Create New Invoice
-                </button>
+                <>
+                    <button
+                        type="button"
+                        className="btn btn-primary mr-2"
+                        onClick={() => setIsCustomerCreateModalOpen(true)}
+                    >
+                        <span className="fe fe-plus fe-12 mr-2"></span>Create New Invoice for Walk-in
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleOpenAppointmentModal}
+                    >
+                        <span className="fe fe-plus fe-12 mr-2"></span>Create New Invoice from Appointment
+                    </button>
+                </>
             </PageHeader>
 
-            <Card noPadding>
-                {loading ? (
-                    <div className="p-4"><Spinner text="Loading invoices..." /></div>
-                ) : invoices.length === 0 ? (
-                    <div className="p-4"><EmptyState icon="fe-file-text" title="No Invoices Found" description="Complete an appointment to generate an invoice." /></div>
+            <DataTableCard
+                loading={loading}
+                loadingText="Loading invoices..."
+                isEmpty={filteredInvoices.length === 0}
+                emptyState={<EmptyState icon="fe-file-text" title="No Invoices Found" description="Create a walk-in customer or invoice a booked appointment to get started." />}
+                totalRecords={invoices.length}
+                filteredRecords={filteredInvoices.length}
+                currentPage={activePage}
+                pageSize={pageSize}
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                onPageSizeChange={setPageSize}
+                pageSizeOptions={DATA_TABLE_PAGE_SIZES}
+                searchPlaceholder="Search invoices..."
+                pagination={(
+                    <Pagination
+                        meta={paginationMeta}
+                        onPageChange={(skip, limit) => {
+                            setCurrentPage(Math.floor(skip / limit) + 1);
+                        }}
+                    />
+                )}
+            >
+                <table className="table table-hover datatables mb-0">
+                    <thead className="thead-light">
+                        <tr>
+                            <th className="pl-4">Invoice ID</th>
+                            <th>Date / Time</th>
+                            <th>Customer</th>
+                            <th>Staff</th>
+                            <th>Services</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th className="text-center">Appointment</th>
+                            <th className="pr-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paginatedInvoices.map((invoice) => {
+                            const startTime = new Date(invoice.start_time);
+                            const endTime = new Date(invoice.end_time);
+                            const itemSummary = getItemSummary(invoice);
+
+                            return (
+                                <tr key={invoice.id}>
+                                    <td className="pl-4"><strong>#{invoice.id.toString().padStart(4, '0')}</strong></td>
+                                    <td>
+                                        {startTime.toLocaleDateString()}<br />
+                                        <small className="text-muted">
+                                            {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </small>
+                                    </td>
+                                    <td>{invoice.snapshot?.customer_name || 'Walk-in'}</td>
+                                    <td>{getStaffName(invoice)}</td>
+                                    <td>
+                                        <span className="text-truncate d-inline-block" style={{ maxWidth: '240px' }} title={itemSummary}>
+                                            {itemSummary}
+                                        </span>
+                                    </td>
+                                    <td><strong>Rs. {Number(invoice.total_amount).toLocaleString()}</strong></td>
+                                    <td>
+                                        {invoice.paid ? (
+                                            <span className="badge badge-pill badge-primary">Paid</span>
+                                        ) : (
+                                            <span className="badge badge-pill badge-secondary">Unpaid</span>
+                                        )}
+                                    </td>
+                                    <td className="text-center">
+                                        {invoice.appointment_id ? (
+                                            <button
+                                                type="button"
+                                                className="btn btn-link btn-sm p-0 text-primary"
+                                                onClick={() => navigate('/appointments')}
+                                                title={`Open appointments for linked appointment #${invoice.appointment_id}`}
+                                            >
+                                                <span className="fe fe-link fe-14"></span>
+                                            </button>
+                                        ) : (
+                                            <span className="text-muted">-</span>
+                                        )}
+                                    </td>
+                                    <td className="pr-4">
+                                        <Dropdown>
+                                            <button type="button" className="dropdown-item" onClick={() => openViewModal(invoice)}>
+                                                <i className="fe fe-eye mr-2"></i> View Details
+                                            </button>
+                                            <button type="button" className="dropdown-item" onClick={() => window.print()}>
+                                                <i className="fe fe-printer mr-2"></i> Print
+                                            </button>
+                                            {invoice.paid && (
+                                                <button type="button" className="dropdown-item text-danger" onClick={() => openRefundModal(invoice)}>
+                                                    <i className="fe fe-refresh-cw mr-2"></i> Issue Credit Note
+                                                </button>
+                                            )}
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </DataTableCard>
+
+            <CustomerQuickCreateModal
+                isOpen={isCustomerCreateModalOpen}
+                onClose={() => setIsCustomerCreateModalOpen(false)}
+                onCreated={handleWalkInCustomerCreated}
+                employees={employees}
+            />
+
+            <Modal
+                isOpen={isAppointmentSelectModalOpen}
+                onClose={() => setIsAppointmentSelectModalOpen(false)}
+                title="Create Invoice from Appointment"
+                isSlide={true}
+                size="xl"
+                footer={(
+                    <button type="button" className="btn btn-secondary" onClick={() => setIsAppointmentSelectModalOpen(false)}>
+                        Close
+                    </button>
+                )}
+            >
+                <div className="form-group">
+                    <label htmlFor="appointmentInvoiceSearch">Search Appointments</label>
+                    <input
+                        id="appointmentInvoiceSearch"
+                        type="text"
+                        className="form-control"
+                        placeholder="Search by appointment ID, customer, staff, category, or status"
+                        value={appointmentSearchTerm}
+                        onChange={(event) => setAppointmentSearchTerm(event.target.value)}
+                    />
+                </div>
+
+                {appointmentsLoading ? (
+                    <div className="py-5 text-center text-muted">Loading appointments...</div>
+                ) : availableAppointments.length === 0 ? (
+                    <EmptyState
+                        icon="fe-calendar"
+                        title="No Appointments Ready"
+                        description="There are no invoice-ready appointments that match your search."
+                    />
                 ) : (
-                    <table className="table table-borderless table-hover mb-0">
-                        <thead className="thead-light">
-                            <tr>
-                                <th className="pl-4">Invoice ID</th>
-                                <th>Date / Time</th>
-                                <th>Customer</th>
-                                <th>Services</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th className="pr-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {invoices.map((inv) => {
-                                const invDate = new Date(inv.start_time);
-                                return (
-                                    <tr key={inv.id}>
-                                        <td className="pl-4"><strong>#{inv.id.toString().padStart(4, '0')}</strong></td>
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0">
+                            <thead className="thead-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Staff</th>
+                                    <th>Category</th>
+                                    <th>Date / Time</th>
+                                    <th>Status</th>
+                                    <th className="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {availableAppointments.map((appointment) => (
+                                    <tr key={appointment.id}>
+                                        <td><strong>#{appointment.id}</strong></td>
+                                        <td>{appointment.customer?.full_name || 'Walk-in'}</td>
+                                        <td>{appointment.employee?.full_name || (appointment.employee_id ? employeeNames[appointment.employee_id] : 'Unassigned')}</td>
+                                        <td>{appointment.category?.name || '-'}</td>
                                         <td>
-                                            {invDate.toLocaleDateString()}<br />
-                                            <small className="text-muted">{invDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                                            {new Date(appointment.start_time).toLocaleDateString()}<br />
+                                            <small className="text-muted">
+                                                {new Date(appointment.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(appointment.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </small>
                                         </td>
-                                        <td>{inv.snapshot?.customer_name || 'Walk-in'}</td>
                                         <td>
-                                            <span className="text-truncate d-inline-block" style={{ maxWidth: '200px' }}>
-                                                {inv.snapshot?.items?.map(i => i.service_name).join(', ')}
+                                            <span className={getAppointmentStatusBadgeClass(appointment.status)}>
+                                                {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                                             </span>
                                         </td>
-                                        <td><strong>Rs. {Number(inv.total_amount).toLocaleString()}</strong></td>
-                                        <td>
-                                            {inv.paid ? (
-                                                <span className="badge badge-pill badge-primary">Paid</span>
-                                            ) : (
-                                                <span className="badge badge-pill badge-secondary">Unpaid</span>
-                                            )}
-                                        </td>
-                                        <td className="pr-4">
-                                            <Dropdown>
-                                                <button className="dropdown-item" onClick={() => openViewModal(inv)}>
-                                                    <i className="fe fe-eye mr-2"></i> View Details
-                                                </button>
-                                                <button className="dropdown-item" onClick={() => window.print()}>
-                                                    <i className="fe fe-printer mr-2"></i> Print
-                                                </button>
-                                                {inv.paid && (
-                                                    <button className="dropdown-item text-danger" onClick={() => openRefundModal(inv)}>
-                                                        <i className="fe fe-refresh-cw mr-2"></i> Issue Credit Note
-                                                    </button>
-                                                )}
-                                            </Dropdown>
+                                        <td className="text-right">
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-primary"
+                                                onClick={() => navigate(`/invoices/create?appointmentId=${appointment.id}`)}
+                                            >
+                                                Select
+                                            </button>
                                         </td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
-            </Card>
+            </Modal>
 
-            <div className="mt-3">
-                <Pagination meta={meta} onPageChange={fetchInvoices} />
-            </div>
-
-            {/* --- VIEW INVOICE MODAL --- */}
             {selectedInvoice && (
-                <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} title={`Invoice #${selectedInvoice.id.toString().padStart(4, '0')}`} footer={
-                    <button type="button" className="btn btn-primary" onClick={() => window.print()}><i className="fe fe-printer mr-2"></i>Print Receipt</button>
-                }>
+                <Modal
+                    isOpen={isViewModalOpen}
+                    onClose={() => setIsViewModalOpen(false)}
+                    title={`Invoice #${selectedInvoice.id.toString().padStart(4, '0')}`}
+                    footer={(
+                        <button type="button" className="btn btn-primary" onClick={() => window.print()}>
+                            <i className="fe fe-printer mr-2"></i>Print Receipt
+                        </button>
+                    )}
+                >
                     <div className="row mb-4">
                         <div className="col-md-6">
                             <p className="text-muted mb-1">Billed To</p>
@@ -195,8 +516,8 @@ export const Invoices: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {selectedInvoice.snapshot?.items?.map((item, idx) => (
-                                <tr key={idx}>
+                            {selectedInvoice.snapshot?.items?.map((item, index) => (
+                                <tr key={index}>
                                     <td>{item.service_name}</td>
                                     <td className="text-right">Rs. {Number(item.unit_price).toLocaleString()}</td>
                                 </tr>
@@ -214,16 +535,22 @@ export const Invoices: React.FC = () => {
                 </Modal>
             )}
 
-            {/* --- REFUND / CREDIT NOTE MODAL --- */}
             {selectedInvoice && (
-                <Modal isOpen={isRefundModalOpen} onClose={() => setIsRefundModalOpen(false)} title="Issue Credit Note / Refund" isSlide={false} footer={
-                    <>
-                        <button type="button" className="btn btn-secondary" onClick={() => setIsRefundModalOpen(false)} disabled={isSubmitting}>Cancel</button>
-                        <button type="button" className="btn btn-danger" onClick={handleIssueRefund} disabled={isSubmitting}>
-                            {isSubmitting ? "Processing..." : "Process Adjustment"}
-                        </button>
-                    </>
-                }>
+                <Modal
+                    isOpen={isRefundModalOpen}
+                    onClose={() => setIsRefundModalOpen(false)}
+                    title="Issue Credit Note / Refund"
+                    footer={(
+                        <>
+                            <button type="button" className="btn btn-secondary" onClick={() => setIsRefundModalOpen(false)} disabled={isSubmitting}>
+                                Cancel
+                            </button>
+                            <button type="button" className="btn btn-danger" onClick={handleIssueRefund} disabled={isSubmitting}>
+                                {isSubmitting ? 'Processing...' : 'Process Adjustment'}
+                            </button>
+                        </>
+                    )}
+                >
                     <div className="alert alert-info">
                         <i className="fe fe-info mr-2"></i>
                         Invoices cannot be altered after payment. Processing this will create a balancing expense entry in your Ledger.
@@ -238,7 +565,7 @@ export const Invoices: React.FC = () => {
                                     className="form-control font-weight-bold text-danger"
                                     value={refundAmount}
                                     max={selectedInvoice.total_amount}
-                                    onChange={e => setRefundAmount(Number(e.target.value))}
+                                    onChange={(event) => setRefundAmount(Number(event.target.value))}
                                     required
                                 />
                             </div>
@@ -250,7 +577,7 @@ export const Invoices: React.FC = () => {
                                 type="text"
                                 className="form-control"
                                 value={refundReason}
-                                onChange={e => setRefundReason(e.target.value)}
+                                onChange={(event) => setRefundReason(event.target.value)}
                                 required
                             />
                         </div>

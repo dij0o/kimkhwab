@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
-import { Spinner } from '../components/Spinner';
-import { Card } from '../components/Card';
 import { Modal } from '../components/Modal';
 import { Toast } from '../components/Toast';
 import { Dropdown } from '../components/Dropdown';
+import { EmptyState } from '../components/EmptyState';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
+import { TableCard } from '../components/TableCard';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 type RoleStatus = 'active' | 'inactive';
 
@@ -142,6 +143,7 @@ const getStatusBadgeClass = (status: RoleStatus): string =>
     status === 'inactive' ? 'badge badge-pill badge-secondary' : 'badge badge-pill badge-primary';
 
 export const Roles: React.FC = () => {
+    const { confirm } = useFeedback();
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [roles, setRoles] = useState<RoleRecord[]>([]);
@@ -338,7 +340,14 @@ export const Roles: React.FC = () => {
     };
 
     const handleDeleteRole = async (role: RoleRecord) => {
-        if (!window.confirm(`Are you sure you want to delete the "${role.name}" role?`)) {
+        const shouldDelete = await confirm({
+            title: 'Delete Role',
+            message: `Are you sure you want to delete the "${role.name}" role?`,
+            confirmLabel: 'Delete Role',
+            confirmTone: 'danger'
+        });
+
+        if (!shouldDelete) {
             return;
         }
 
@@ -387,76 +396,75 @@ export const Roles: React.FC = () => {
                         </>
                     </PageHeader>
 
-                    <Card className="shadow">
-                        {loading ? (
-                            <Spinner text="Loading roles..." />
-                        ) : (
-                            <div className="table-responsive">
-                                <table className="table table-borderless table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Role Name</th>
-                                            <th>Description</th>
-                                            <th>Number of Employees</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {paginatedRoles.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={6} className="text-center text-muted py-5">
-                                                    No roles matched your search.
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            paginatedRoles.map((role) => (
-                                                <tr key={role.id}>
-                                                    <td>{role.id}</td>
-                                                    <td>{role.name}</td>
-                                                    <td className="text-muted">{role.description || 'No description provided.'}</td>
-                                                    <td>{role.user_count}</td>
-                                                    <td>
-                                                        <span className={getStatusBadgeClass(role.status)}>
-                                                            {getStatusLabel(role.status)}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <Dropdown>
-                                                            <button
-                                                                type="button"
-                                                                className="dropdown-item"
-                                                                onClick={() => handleOpenEditModal(role)}
-                                                            >
-                                                                Edit Role
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="dropdown-item"
-                                                                onClick={() => handleOpenViewModal(role)}
-                                                            >
-                                                                View Permissions
-                                                            </button>
-                                                            {role.id !== 1 && (
-                                                                <button
-                                                                    type="button"
-                                                                    className="dropdown-item text-danger"
-                                                                    onClick={() => handleDeleteRole(role)}
-                                                                >
-                                                                    Delete Role
-                                                                </button>
-                                                            )}
-                                                        </Dropdown>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                    <TableCard
+                        loading={loading}
+                        loadingText="Loading roles..."
+                        isEmpty={paginatedRoles.length === 0}
+                        emptyState={(
+                            <EmptyState
+                                icon="fe-shield"
+                                title="No Roles Found"
+                                description={searchTerm ? 'No roles matched your search.' : 'Create a role to start assigning permissions.'}
+                            />
                         )}
-                    </Card>
+                        responsive={true}
+                        className="shadow"
+                    >
+                        <table className="table table-borderless table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Role Name</th>
+                                    <th>Description</th>
+                                    <th>Number of Employees</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedRoles.map((role) => (
+                                    <tr key={role.id}>
+                                        <td>{role.id}</td>
+                                        <td>{role.name}</td>
+                                        <td className="text-muted">{role.description || 'No description provided.'}</td>
+                                        <td>{role.user_count}</td>
+                                        <td>
+                                            <span className={getStatusBadgeClass(role.status)}>
+                                                {getStatusLabel(role.status)}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <Dropdown>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item"
+                                                    onClick={() => handleOpenEditModal(role)}
+                                                >
+                                                    Edit Role
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item"
+                                                    onClick={() => handleOpenViewModal(role)}
+                                                >
+                                                    View Permissions
+                                                </button>
+                                                {role.id !== 1 && (
+                                                    <button
+                                                        type="button"
+                                                        className="dropdown-item text-danger"
+                                                        onClick={() => handleDeleteRole(role)}
+                                                    >
+                                                        Delete Role
+                                                    </button>
+                                                )}
+                                            </Dropdown>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </TableCard>
 
                     <Pagination
                         meta={paginationMeta}

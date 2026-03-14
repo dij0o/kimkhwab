@@ -8,11 +8,13 @@ import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
 import apiClient from '../api/client';
 import { resolveBackendUrl } from '../config/backend';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 interface GalleryItem { id: number; url: string; type: 'image' | 'video'; customerName: string; isProfilePicture: boolean; }
 interface CustomerOption { id: number; full_name: string; }
 
 export const Gallery: React.FC = () => {
+    const { notify } = useFeedback();
     const [searchParams] = useSearchParams();
     const urlCustomerId = searchParams.get('customerId');
     const [loading, setLoading] = useState(true);
@@ -56,7 +58,10 @@ export const Gallery: React.FC = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] }, maxSize: 52428800 });
 
     const handleUpload = async () => {
-        if (!selectedCustomerId || uploadFiles.length === 0) return alert("Select customer and files.");
+        if (!selectedCustomerId || uploadFiles.length === 0) {
+            notify({ title: 'Missing Information', message: 'Select a customer and at least one file before uploading.', type: 'warning' });
+            return;
+        }
         try {
             await Promise.all(uploadFiles.map(file => {
                 const formData = new FormData();
@@ -68,8 +73,9 @@ export const Gallery: React.FC = () => {
             setUploadFiles([]);
             setIsUploadModalOpen(false);
             await loadGalleryData();
+            notify({ title: 'Upload Complete', message: 'Media uploaded successfully.', type: 'success' });
         } catch (error) {
-            alert("Upload failed.");
+            notify({ title: 'Upload Failed', message: 'Upload failed.', type: 'danger' });
         }
     };
 

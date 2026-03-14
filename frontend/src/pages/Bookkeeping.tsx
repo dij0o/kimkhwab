@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
-import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { TableCard } from '../components/TableCard';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 interface LedgerEntry {
     id: number;
@@ -24,6 +25,7 @@ interface FinancialSummary {
 }
 
 export const Bookkeeping: React.FC = () => {
+    const { notify, confirm } = useFeedback();
     const [loading, setLoading] = useState(true);
     const [entries, setEntries] = useState<LedgerEntry[]>([]);
     const [summary, setSummary] = useState<FinancialSummary>({ total_income: 0, total_expense: 0, balance: 0 });
@@ -74,7 +76,8 @@ export const Bookkeeping: React.FC = () => {
 
     const handleSaveEntry = async (entryType: 'income' | 'expense') => {
         if (!formData.amount || !formData.category || !formData.description) {
-            return alert("Amount, Category, and Description are required.");
+            notify({ title: 'Missing Information', message: 'Amount, Category, and Description are required.', type: 'warning' });
+            return;
         }
 
         setIsSubmitting(true);
@@ -90,22 +93,37 @@ export const Bookkeeping: React.FC = () => {
             setFormData(initialFormState);
             setIsIncomeModalOpen(false);
             setIsExpenseModalOpen(false);
+            notify({
+                title: entryType === 'income' ? 'Income Recorded' : 'Expense Recorded',
+                message: entryType === 'income' ? 'The income entry has been added.' : 'The expense entry has been added.',
+                type: 'success'
+            });
             fetchLedgerData(1, 15);
         } catch (error: any) {
-            alert(error.response?.data?.detail || `Failed to add ${entryType}.`);
+            notify({ title: 'Save Failed', message: error.response?.data?.detail || `Failed to add ${entryType}.`, type: 'danger' });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm("Are you sure you want to permanently delete this transaction?")) {
-            try {
-                await apiClient.delete(`/financials/ledger/${id}`);
-                fetchLedgerData(meta?.current_page || 1, 15);
-            } catch (error) {
-                alert("Failed to delete transaction.");
-            }
+        const shouldDelete = await confirm({
+            title: 'Delete Transaction',
+            message: 'Are you sure you want to permanently delete this transaction?',
+            confirmLabel: 'Delete Transaction',
+            confirmTone: 'danger'
+        });
+
+        if (!shouldDelete) {
+            return;
+        }
+
+        try {
+            await apiClient.delete(`/financials/ledger/${id}`);
+            notify({ title: 'Transaction Deleted', message: 'The transaction has been removed.', type: 'success' });
+            fetchLedgerData(meta?.current_page || 1, 15);
+        } catch (error) {
+            notify({ title: 'Delete Failed', message: 'Failed to delete transaction.', type: 'danger' });
         }
     };
 
@@ -143,60 +161,60 @@ export const Bookkeeping: React.FC = () => {
             </div>
 
             {/* Ledger Table */}
-            <Card noPadding>
-                {loading ? (
-                    <div className="p-5"><Spinner text="Loading ledger..." /></div>
-                ) : entries.length === 0 ? (
-                    <div className="p-5"><EmptyState icon="fe-book" title="Ledger is Empty" description="No financial transactions have been recorded yet." /></div>
-                ) : (
-                    <div className="table-responsive">
-                        <table className="table table-hover table-borderless mb-0">
-                            <thead className="thead-light border-bottom">
-                                <tr>
-                                    <th className="pl-4">ID</th>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Category</th>
-                                    <th>Reference</th>
-                                    <th className="text-right">Amount</th>
-                                    <th className="text-center">Type</th>
-                                    <th className="text-right pr-4">Action</th>
+            <TableCard
+                loading={loading}
+                loadingText="Loading ledger..."
+                isEmpty={entries.length === 0}
+                emptyState={<EmptyState icon="fe-book" title="Ledger is Empty" description="No financial transactions have been recorded yet." />}
+                noPadding={true}
+                responsive={true}
+                stateContainerClassName="p-5"
+            >
+                <table className="table table-hover table-borderless mb-0">
+                    <thead className="thead-light border-bottom">
+                        <tr>
+                            <th className="pl-4">ID</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Reference</th>
+                            <th className="text-right">Amount</th>
+                            <th className="text-center">Type</th>
+                            <th className="text-right pr-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {entries.map((entry) => {
+                            const isIncome = entry.entry_type === 'income';
+                            return (
+                                <tr key={entry.id}>
+                                    <td className="pl-4 text-muted">#{entry.id}</td>
+                                    <td>
+                                        <strong>{new Date(entry.created_at).toLocaleDateString()}</strong><br />
+                                        <small className="text-muted">{new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                                    </td>
+                                    <td>{entry.description}</td>
+                                    <td><span className="badge badge-light border">{entry.category}</span></td>
+                                    <td className="text-muted small">{entry.reference_id || '-'}</td>
+                                    <td className={`text-right font-weight-bold ${isIncome ? 'text-success' : 'text-danger'}`}>
+                                        {isIncome ? '+' : '-'} Rs. {Number(entry.amount).toLocaleString()}
+                                    </td>
+                                    <td className="text-center">
+                                        <span className={`badge badge-pill ${isIncome ? 'badge-success text-white' : 'badge-danger text-white'}`}>
+                                            {entry.entry_type.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td className="text-right pr-4">
+                                        <button className="btn btn-sm btn-link text-muted" onClick={() => handleDelete(entry.id)}>
+                                            <i className="fe fe-trash-2 text-danger"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {entries.map((entry) => {
-                                    const isIncome = entry.entry_type === 'income';
-                                    return (
-                                        <tr key={entry.id}>
-                                            <td className="pl-4 text-muted">#{entry.id}</td>
-                                            <td>
-                                                <strong>{new Date(entry.created_at).toLocaleDateString()}</strong><br />
-                                                <small className="text-muted">{new Date(entry.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
-                                            </td>
-                                            <td>{entry.description}</td>
-                                            <td><span className="badge badge-light border">{entry.category}</span></td>
-                                            <td className="text-muted small">{entry.reference_id || '-'}</td>
-                                            <td className={`text-right font-weight-bold ${isIncome ? 'text-success' : 'text-danger'}`}>
-                                                {isIncome ? '+' : '-'} Rs. {Number(entry.amount).toLocaleString()}
-                                            </td>
-                                            <td className="text-center">
-                                                <span className={`badge badge-pill ${isIncome ? 'badge-success text-white' : 'badge-danger text-white'}`}>
-                                                    {entry.entry_type.toUpperCase()}
-                                                </span>
-                                            </td>
-                                            <td className="text-right pr-4">
-                                                <button className="btn btn-sm btn-link text-muted" onClick={() => handleDelete(entry.id)}>
-                                                    <i className="fe fe-trash-2 text-danger"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </Card>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </TableCard>
 
             <div className="mt-3 mb-5">
                 <Pagination meta={meta} onPageChange={fetchLedgerData} />

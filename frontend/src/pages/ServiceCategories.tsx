@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api/client';
 import { PageHeader } from '../components/PageHeader';
-import { Spinner } from '../components/Spinner';
 import { Modal } from '../components/Modal';
 import { Pagination, type PaginationMeta } from '../components/Pagination';
 import { Dropdown } from '../components/Dropdown';
-import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { TableCard } from '../components/TableCard';
 
 interface ServiceCategory {
     id: number;
@@ -83,58 +82,57 @@ export const ServiceCategories: React.FC = () => {
                 </button>
             </PageHeader>
 
-            <Card>
-                {loading ? (
-                    <Spinner text="Loading categories..." />
-                ) : categories.length === 0 ? (
-                    <EmptyState icon="fe-folder" title="No Categories Found" description="Create a new category to group your services." />
-                ) : (
-                    <table className="table table-borderless table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Service Category</th>
-                                <th>Number of Services</th>
-                                <th>Background Color</th>
-                                <th>Font Color</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+            <TableCard
+                loading={loading}
+                loadingText="Loading categories..."
+                isEmpty={categories.length === 0}
+                emptyState={<EmptyState icon="fe-folder" title="No Categories Found" description="Create a new category to group your services." />}
+            >
+                <table className="table table-borderless table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Service Category</th>
+                            <th>Number of Services</th>
+                            <th>Background Color</th>
+                            <th>Font Color</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {categories.map((cat) => (
+                            <tr key={cat.id}>
+                                <td>{cat.id}</td>
+                                <td>{cat.name}</td>
+                                <td>{cat.num_services}</td>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <div className="color-swatch" style={{ width: '20px', height: '20px', backgroundColor: cat.background_color, borderRadius: '4px', marginRight: '8px', border: '1px solid #dee2e6' }}></div>
+                                        <span className="text-muted small">{cat.background_color}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <div className="color-swatch" style={{ width: '20px', height: '20px', backgroundColor: cat.text_color, borderRadius: '4px', marginRight: '8px', border: '1px solid #dee2e6' }}></div>
+                                        <span className="text-muted small">{cat.text_color}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {cat.is_active ? <span className="badge badge-pill badge-primary">Active</span> : <span className="badge badge-pill badge-secondary">Inactive</span>}
+                                </td>
+                                <td>
+                                    <Dropdown>
+                                        <button className="dropdown-item" onClick={() => handleOpenModal(cat)}>Edit</button>
+                                        <button className="dropdown-item">View Details</button>
+                                        <button className="dropdown-item">{cat.is_active ? "Deactivate" : "Activate"}</button>
+                                    </Dropdown>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {categories.map((cat) => (
-                                <tr key={cat.id}>
-                                    <td>{cat.id}</td>
-                                    <td>{cat.name}</td>
-                                    <td>{cat.num_services}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <div className="color-swatch" style={{ width: '20px', height: '20px', backgroundColor: cat.background_color, borderRadius: '4px', marginRight: '8px', border: '1px solid #dee2e6' }}></div>
-                                            <span className="text-muted small">{cat.background_color}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <div className="color-swatch" style={{ width: '20px', height: '20px', backgroundColor: cat.text_color, borderRadius: '4px', marginRight: '8px', border: '1px solid #dee2e6' }}></div>
-                                            <span className="text-muted small">{cat.text_color}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {cat.is_active ? <span className="badge badge-pill badge-primary">Active</span> : <span className="badge badge-pill badge-secondary">Inactive</span>}
-                                    </td>
-                                    <td>
-                                        <Dropdown>
-                                            <button className="dropdown-item" onClick={() => handleOpenModal(cat)}>Edit</button>
-                                            <button className="dropdown-item">View Details</button>
-                                            <button className="dropdown-item">{cat.is_active ? "Deactivate" : "Activate"}</button>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </Card>
+                        ))}
+                    </tbody>
+                </table>
+            </TableCard>
 
             <Pagination meta={meta} onPageChange={fetchCategories} />
 

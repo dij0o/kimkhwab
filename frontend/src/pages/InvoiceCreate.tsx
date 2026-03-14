@@ -5,6 +5,8 @@ import { PageHeader } from '../components/PageHeader';
 import { Spinner } from '../components/Spinner';
 import { Card } from '../components/Card';
 import { Avatar } from '../components/Avatar';
+import { CustomerQuickCreateModal, type QuickCustomerRecord } from '../components/CustomerQuickCreateModal';
+import { useFeedback } from '../feedback/FeedbackProvider';
 
 interface LineItem {
     id: number;
@@ -12,18 +14,45 @@ interface LineItem {
     qty: number;
 }
 
+interface CustomerSummary extends QuickCustomerRecord {}
+
+interface EmployeeSummary {
+    id: number;
+    full_name: string;
+    designation?: string | null;
+    is_active?: boolean;
+}
+
+interface ServiceSummary {
+    id: number;
+    name: string;
+    price: number;
+    is_active?: boolean;
+}
+
+interface AppointmentSummary {
+    id: number;
+    customer_id?: number | null;
+    employee_id?: number | null;
+    start_time: string;
+    end_time: string;
+}
+
 export const InvoiceCreate: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const appointmentId = searchParams.get('appointmentId');
+    const customerIdParam = searchParams.get('customerId');
+    const { notify } = useFeedback();
 
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
 
     // Data Sources
-    const [customers, setCustomers] = useState<any[]>([]);
-    const [employees, setEmployees] = useState<any[]>([]);
-    const [services, setServices] = useState<any[]>([]);
+    const [customers, setCustomers] = useState<CustomerSummary[]>([]);
+    const [employees, setEmployees] = useState<EmployeeSummary[]>([]);
+    const [services, setServices] = useState<ServiceSummary[]>([]);
 
     // Form State
     const [customerId, setCustomerId] = useState<string>('');
@@ -46,14 +75,18 @@ export const InvoiceCreate: React.FC = () => {
                     apiClient.get('/services/?limit=100')
                 ]);
 
-                setCustomers(custRes.data.data.filter((c: any) => c.is_active !== false));
-                setEmployees(empRes.data.data.filter((e: any) => e.is_active));
-                setServices(svcRes.data.data.filter((s: any) => s.is_active));
+                setCustomers(custRes.data.data.filter((c: CustomerSummary) => c.is_active !== false));
+                setEmployees(empRes.data.data.filter((e: EmployeeSummary) => e.is_active));
+                setServices(svcRes.data.data.filter((s: ServiceSummary) => s.is_active));
+
+                if (customerIdParam) {
+                    setCustomerId(customerIdParam);
+                }
 
                 // If launched from an appointment, fetch it and pre-fill the form!
                 if (appointmentId) {
-                    const apptRes = await apiClient.get(`/appointments/?id=${appointmentId}`);
-                    const appt = apptRes.data.data.find((a: any) => a.id.toString() === appointmentId);
+                    const apptRes = await apiClient.get(`/appointments/?id=${appointmentId}&limit=1`);
+                    const appt = apptRes.data.data.find((a: AppointmentSummary) => a.id.toString() === appointmentId);
 
                     if (appt) {
                         if (appt.customer_id) setCustomerId(appt.customer_id.toString());
@@ -72,8 +105,8 @@ export const InvoiceCreate: React.FC = () => {
                 setLoading(false);
             }
         };
-        fetchInitialData();
-    }, [appointmentId]);
+        void fetchInitialData();
+    }, [appointmentId, customerIdParam]);
 
     // Selected Customer Details for the UI Card
     const selectedCustomer = customers.find(c => c.id.toString() === customerId);
@@ -100,8 +133,18 @@ export const InvoiceCreate: React.FC = () => {
 
         // Validation
         const validItems = lineItems.filter(item => item.service_id !== '');
-        if (validItems.length === 0) return alert("Please select at least one service.");
-        if (!employeeId) return alert("Please select a staff member.");
+        if (validItems.length === 0) {
+            notify({ title: 'Missing Services', message: 'Please select at least one service.', type: 'warning' });
+            return;
+        }
+        if (!customerId) {
+            notify({ title: 'Missing Customer', message: 'Please select or create a customer before saving the invoice.', type: 'warning' });
+            return;
+        }
+        if (!employeeId) {
+            notify({ title: 'Missing Staff', message: 'Please select a staff member.', type: 'warning' });
+            return;
+        }
 
         setIsSubmitting(true);
 
@@ -111,6 +154,9 @@ export const InvoiceCreate: React.FC = () => {
 
             const itemsPayload = validItems.map(item => {
                 const svc = services.find(s => s.id.toString() === item.service_id);
+                if (!svc) {
+                    throw new Error(`Selected service ${item.service_id} is no longer available.`);
+                }
                 return {
                     service_id: Number(item.service_id),
                     unit_price: Number(svc.price),
@@ -120,8 +166,9 @@ export const InvoiceCreate: React.FC = () => {
             });
 
             const payload = {
-                customer_id: customerId ? Number(customerId) : null,
+                customer_id: Number(customerId),
                 employee_id: Number(employeeId),
+                appointment_id: appointmentId ? Number(appointmentId) : null,
                 start_time: startDateTime,
                 end_time: endDateTime,
                 total_amount: grandTotal,
@@ -131,21 +178,26 @@ export const InvoiceCreate: React.FC = () => {
             };
 
             // 1. Create the Invoice
-            await apiClient.post('/invoices/', payload);
+            await apiClient.post('/financials/invoices', payload);
+            notify({ title: 'Invoice Created', message: 'The invoice has been created successfully.', type: 'success' });
 
-            // 2. If it was linked to an appointment, mark that appointment as Completed
-            if (appointmentId) {
-                await apiClient.put(`/appointments/${appointmentId}`, { status: 'completed' });
-            }
-
-            // 3. Redirect back to invoices list
+            // 2. Redirect back to invoices list
             navigate('/invoices');
         } catch (error: any) {
             console.error(error);
-            alert(error.response?.data?.detail || "Failed to save invoice.");
+            const fallbackMessage = error instanceof Error ? error.message : 'Failed to save invoice.';
+            notify({ title: 'Save Failed', message: error.response?.data?.detail || fallbackMessage, type: 'danger' });
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleCustomerCreated = (customer: QuickCustomerRecord) => {
+        setCustomers((previous) => {
+            const withoutDuplicate = previous.filter((existingCustomer) => existingCustomer.id !== customer.id);
+            return [customer, ...withoutDuplicate];
+        });
+        setCustomerId(customer.id.toString());
     };
 
     if (loading) return <div className="mt-5"><Spinner text="Loading checkout..." /></div>;
@@ -174,12 +226,19 @@ export const InvoiceCreate: React.FC = () => {
                     <Card title={
                         <div className="d-flex justify-content-between align-items-center">
                             <span>Customer</span>
-                            {!customerId && <span className="badge badge-secondary" style={{ backgroundColor: '#e9ecef', color: '#6c757d' }}>Walk-in</span>}
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => setIsCustomerModalOpen(true)}
+                                disabled={isSubmitting}
+                            >
+                                <i className="fe fe-user-plus mr-1"></i>Create Customer
+                            </button>
                         </div>
                     }>
                         <div className="form-group mb-0">
                             <select className="form-control" value={customerId} onChange={e => setCustomerId(e.target.value)} disabled={isSubmitting}>
-                                <option value="">Walk-in Customer (No Profile)</option>
+                                <option value="">Select Customer</option>
                                 {customers.map(c => <option key={c.id} value={c.id}>{c.full_name} ({c.phone_number})</option>)}
                             </select>
                         </div>
@@ -313,6 +372,13 @@ export const InvoiceCreate: React.FC = () => {
                     </Card>
                 </div>
             </div>
+
+            <CustomerQuickCreateModal
+                isOpen={isCustomerModalOpen}
+                onClose={() => setIsCustomerModalOpen(false)}
+                onCreated={handleCustomerCreated}
+                employees={employees}
+            />
         </div>
     );
 };
