@@ -1,14 +1,30 @@
+import calendar
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+from zoneinfo import ZoneInfo
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy import case, func
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 
+from core.config import Configs
 from core.database import get_db
 from core.deps import get_current_user
 from models.employee import Employee
 from models.customer import Customer
 from models.appointment import Appointment
-from models.service import Service
+from models.service import Service, ServiceCategory
 from models.financial import Invoice, InvoiceItem, LedgerEntry
+from schemas.dashboard import (
+    DashboardChartResponse,
+    DashboardChartSeries,
+    DashboardCountMetric,
+    DashboardMetricsResponse,
+    DashboardMoneyMetric,
+    DashboardRangeSummary,
+    DashboardResponse
+)
 from schemas.financial import (
     InvoiceCreate, InvoiceResponse, 
     LedgerEntryResponse, LedgerEntryBase
@@ -17,6 +33,266 @@ from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
 import math
 
 router = APIRouter()
+BUSINESS_TIMEZONE = ZoneInfo(Configs.BUSINESS_TIMEZONE)
+
+
+def _format_range_label(start_date: date, end_date: date) -> str:
+    return f"{start_date.strftime('%b %d, %Y')} - {end_date.strftime('%b %d, %Y')}"
+
+
+def _resolve_dashboard_range(
+    start_date: date | None,
+    end_date: date | None
+) -> tuple[date, date, date, date]:
+    today = datetime.now(BUSINESS_TIMEZONE).date()
+    resolved_end = end_date or today
+    resolved_start = start_date or (resolved_end - timedelta(days=29))
+
+    if resolved_start > resolved_end:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="start_date must be on or before end_date."
+        )
+
+    range_length = (resolved_end - resolved_start).days + 1
+    comparison_end = resolved_start - timedelta(days=1)
+    comparison_start = comparison_end - timedelta(days=range_length - 1)
+
+    return resolved_start, resolved_end, comparison_start, comparison_end
+
+
+def _resolve_month_to_date_range(today: date) -> tuple[date, date, date, date]:
+    current_start = today.replace(day=1)
+    current_end = today
+
+    if current_start.month == 1:
+        previous_month = 12
+        previous_year = current_start.year - 1
+    else:
+        previous_month = current_start.month - 1
+        previous_year = current_start.year
+
+    previous_start = date(previous_year, previous_month, 1)
+    previous_month_last_day = calendar.monthrange(previous_year, previous_month)[1]
+    previous_end_day = min(today.day, previous_month_last_day)
+    previous_end = date(previous_year, previous_month, previous_end_day)
+
+    return current_start, current_end, previous_start, previous_end
+
+
+def _calculate_trend_percentage(
+    current_total: Decimal | int,
+    previous_total: Decimal | int
+) -> float | None:
+    current_value = float(current_total)
+    previous_value = float(previous_total)
+
+    if previous_value == 0:
+        if current_value == 0:
+            return None
+        return 100.0
+
+    return round(((current_value - previous_value) / previous_value) * 100, 1)
+
+
+def _get_ledger_totals(
+    db: Session,
+    start_date: date,
+    end_date: date
+) -> tuple[Decimal, Decimal]:
+    totals = db.query(
+        func.coalesce(
+            func.sum(case((LedgerEntry.type == "income", LedgerEntry.amount), else_=0)),
+            0
+        ).label("income_total"),
+        func.coalesce(
+            func.sum(case((LedgerEntry.type == "expense", LedgerEntry.amount), else_=0)),
+            0
+        ).label("expense_total")
+    ).filter(
+        LedgerEntry.is_deleted == False,
+        LedgerEntry.entry_date >= start_date,
+        LedgerEntry.entry_date <= end_date
+    ).one()
+
+    return Decimal(totals.income_total or 0), Decimal(totals.expense_total or 0)
+
+
+def _get_appointment_count(
+    db: Session,
+    start_date: date,
+    end_date: date
+) -> int:
+    return (
+        db.query(func.count(Appointment.id))
+        .filter(
+            func.date(Appointment.start_time) >= start_date,
+            func.date(Appointment.start_time) <= end_date,
+            Appointment.status.notin_(["cancelled", "no_show"])
+        )
+        .scalar()
+        or 0
+    )
+
+
+def _build_dashboard_chart(
+    db: Session,
+    start_date: date,
+    end_date: date
+) -> DashboardChartResponse:
+    bucket_dates = [
+        start_date + timedelta(days=offset)
+        for offset in range((end_date - start_date).days + 1)
+    ]
+    categories = [bucket.strftime("%b %d") for bucket in bucket_dates]
+    bucket_lookup = {bucket: index for index, bucket in enumerate(bucket_dates)}
+
+    rows = (
+        db.query(
+            func.date(Appointment.start_time).label("bucket_date"),
+            ServiceCategory.name.label("category_name"),
+            func.count(Appointment.id).label("appointment_total")
+        )
+        .join(ServiceCategory, ServiceCategory.id == Appointment.service_category_id)
+        .filter(
+            func.date(Appointment.start_time) >= start_date,
+            func.date(Appointment.start_time) <= end_date,
+            Appointment.status.notin_(["cancelled", "no_show"])
+        )
+        .group_by(func.date(Appointment.start_time), ServiceCategory.name)
+        .order_by(func.date(Appointment.start_time).asc(), ServiceCategory.name.asc())
+        .all()
+    )
+
+    chart_map: dict[str, list[int]] = {}
+
+    for row in rows:
+        if row.category_name not in chart_map:
+            chart_map[row.category_name] = [0] * len(bucket_dates)
+
+        bucket_index = bucket_lookup.get(row.bucket_date)
+        if bucket_index is not None:
+            chart_map[row.category_name][bucket_index] = int(row.appointment_total)
+
+    ordered_series = sorted(
+        chart_map.items(),
+        key=lambda item: sum(item[1]),
+        reverse=True
+    )
+
+    series = [
+        DashboardChartSeries(name=category_name, data=data_points)
+        for category_name, data_points in ordered_series
+    ]
+
+    return DashboardChartResponse(
+        categories=categories,
+        series=series,
+        metric_label="Appointments",
+        group_label="Service Categories"
+    )
+
+
+# ==========================================
+# DASHBOARD
+# ==========================================
+
+@router.get("/dashboard", response_model=APIResponse[DashboardResponse])
+def get_dashboard_overview(
+    start_date: date | None = None,
+    end_date: date | None = None,
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    today = datetime.now(BUSINESS_TIMEZONE).date()
+    (
+        current_month_start,
+        current_month_end,
+        previous_month_start,
+        previous_month_end
+    ) = _resolve_month_to_date_range(today)
+
+    (
+        resolved_start,
+        resolved_end,
+        comparison_start,
+        comparison_end
+    ) = _resolve_dashboard_range(start_date, end_date)
+
+    current_income, current_expenses = _get_ledger_totals(db, current_month_start, current_month_end)
+    previous_income, previous_expenses = _get_ledger_totals(db, previous_month_start, previous_month_end)
+
+    current_revenue = current_income - current_expenses
+    previous_revenue = previous_income - previous_expenses
+
+    current_appointments = _get_appointment_count(db, current_month_start, current_month_end)
+    previous_appointments = _get_appointment_count(db, previous_month_start, previous_month_end)
+
+    upcoming_appointments = (
+        db.query(Appointment)
+        .options(
+            joinedload(Appointment.customer),
+            joinedload(Appointment.employee),
+            joinedload(Appointment.category)
+        )
+        .filter(
+            Appointment.status == "booked",
+            Appointment.start_time >= datetime.now(BUSINESS_TIMEZONE)
+        )
+        .order_by(Appointment.start_time.asc())
+        .limit(5)
+        .all()
+    )
+
+    dashboard_data = DashboardResponse(
+        kpi_range=DashboardRangeSummary(
+            start_date=current_month_start,
+            end_date=current_month_end,
+            label=_format_range_label(current_month_start, current_month_end),
+            comparison_start_date=previous_month_start,
+            comparison_end_date=previous_month_end,
+            comparison_label=_format_range_label(previous_month_start, previous_month_end)
+        ),
+        range=DashboardRangeSummary(
+            start_date=resolved_start,
+            end_date=resolved_end,
+            label=_format_range_label(resolved_start, resolved_end),
+            comparison_start_date=comparison_start,
+            comparison_end_date=comparison_end,
+            comparison_label=_format_range_label(comparison_start, comparison_end)
+        ),
+        metrics=DashboardMetricsResponse(
+            income=DashboardMoneyMetric(
+                total=current_income,
+                previous_total=previous_income,
+                trend_percentage=_calculate_trend_percentage(current_income, previous_income)
+            ),
+            expenses=DashboardMoneyMetric(
+                total=current_expenses,
+                previous_total=previous_expenses,
+                trend_percentage=_calculate_trend_percentage(current_expenses, previous_expenses)
+            ),
+            net_revenue=DashboardMoneyMetric(
+                total=current_revenue,
+                previous_total=previous_revenue,
+                trend_percentage=_calculate_trend_percentage(current_revenue, previous_revenue)
+            ),
+            appointments_in_range=DashboardCountMetric(
+                total=current_appointments,
+                previous_total=previous_appointments,
+                trend_percentage=_calculate_trend_percentage(current_appointments, previous_appointments)
+            )
+        ),
+        chart=_build_dashboard_chart(db, resolved_start, resolved_end),
+        upcoming_appointments=upcoming_appointments
+    )
+
+    return APIResponse(
+        status="success",
+        status_code=status.HTTP_200_OK,
+        message="Dashboard analytics retrieved successfully.",
+        data=dashboard_data
+    )
 
 # ==========================================
 # INVOICES

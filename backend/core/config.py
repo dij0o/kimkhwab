@@ -27,6 +27,7 @@ class Configs(BaseSettings):
     # Redis (For caching, rate limiting, or background tasks like generating reports)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    BUSINESS_TIMEZONE: str = "Asia/Karachi"
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
