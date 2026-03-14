@@ -1,29 +1,9 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
-from sqlalchemy.orm import relationship
-from core.database import Base
+"""Compatibility exports for role-related ORM models.
 
-# The Many-to-Many mapping table
-role_permissions = Table(
-    'role_permissions',
-    Base.metadata,
-    Column('role_id', Integer, ForeignKey('roles.id', ondelete="CASCADE"), primary_key=True),
-    Column('permission_id', Integer, ForeignKey('permissions.id', ondelete="CASCADE"), primary_key=True),
-    extend_existing=True
-)
+Role and Permission are defined in models.employee so the SQLAlchemy
+declarative registry only ever sees one mapper per table/class name.
+"""
 
-class Permission(Base):
-    __tablename__ = "permissions"
-    __table_args__ = {'extend_existing': True}
-    id = Column(Integer, primary_key=True, index=True)
-    code = Column(String, unique=True, nullable=False)
-    description = Column(String)
+from models.employee import Permission, Role, role_permissions
 
-class Role(Base):
-    __tablename__ = "roles"
-    __table_args__ = {'extend_existing': True}
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False)
-    description = Column(String)
-    
-    # EXACT FIX: Removed the quotation marks around Permission
-    permissions = relationship(Permission, secondary=role_permissions, backref="roles")
+__all__ = ["Permission", "Role", "role_permissions"]

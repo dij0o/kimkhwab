@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
+import { setSession } from '../auth/session';
 
 export const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -23,11 +24,11 @@ export const Login: React.FC = () => {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             });
 
-            localStorage.setItem('access_token', response.data.access_token);
-            localStorage.setItem('refresh_token', response.data.refresh_token);
-            localStorage.setItem('user_id', response.data.user_id);
-            localStorage.setItem('role_id', response.data.role_id);
-            localStorage.setItem('role_name', response.data.role_name);
+            setSession({
+                accessToken: response.data.access_token,
+                refreshToken: response.data.refresh_token,
+                userId: response.data.user_id
+            });
 
             navigate('/dashboard');
         } catch (err: any) {

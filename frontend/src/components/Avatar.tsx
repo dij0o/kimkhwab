@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveBackendUrl } from '../config/backend';
 
 interface AvatarProps {
     src?: string | null;
@@ -8,11 +9,8 @@ interface AvatarProps {
 }
 
 export const Avatar: React.FC<AvatarProps> = ({ src, alt = 'Avatar', size = 'sm', className = '' }) => {
-    // If the image is a local blob preview or already has http, don't prepend the backend URL
-    const isAbsolute = src?.startsWith('http') || src?.startsWith('blob:');
-
     const imageUrl = src
-        ? (isAbsolute ? src : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${src}`)
+        ? resolveBackendUrl(src)
         : '/assets/avatars/placeholder.svg';
 
     const sizeMap = {

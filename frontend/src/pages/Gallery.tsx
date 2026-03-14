@@ -7,6 +7,7 @@ import { Modal } from '../components/Modal';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
 import apiClient from '../api/client';
+import { resolveBackendUrl } from '../config/backend';
 
 interface GalleryItem { id: number; url: string; type: 'image' | 'video'; customerName: string; isProfilePicture: boolean; }
 interface CustomerOption { id: number; full_name: string; }
@@ -37,7 +38,7 @@ export const Gallery: React.FC = () => {
 
             setMedia(galleryRes.data.data.map((img: any) => ({
                 id: img.id,
-                url: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${img.file_path}`,
+                url: resolveBackendUrl(img.file_path),
                 type: 'image',
                 customerName: fetchedCustomers.find((c: any) => c.id === img.customer_id)?.full_name || `Customer #${img.customer_id}`,
                 isProfilePicture: img.is_profile_picture

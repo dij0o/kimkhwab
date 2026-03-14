@@ -4,8 +4,7 @@ from typing import List
 
 from core.database import get_db
 from core.deps import get_current_user
-from models.employee import Employee
-from models.role import Role, Permission
+from models.employee import Employee, Role, Permission
 from schemas.role import RoleCreate, RoleUpdate, RoleResponse
 from schemas.response import APIResponse
 

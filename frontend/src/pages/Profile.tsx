@@ -5,9 +5,10 @@ import { Spinner } from '../components/Spinner';
 import { Card } from '../components/Card';
 import { Avatar } from '../components/Avatar';
 import { Toast } from '../components/Toast';
+import { getUserId } from '../auth/session';
 
 export const Profile: React.FC = () => {
-    const userId = localStorage.getItem('user_id');
+    const userId = getUserId();
 
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);

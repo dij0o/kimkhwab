@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import apiClient from '../api/client';
+import { clearSession, getUserId } from '../auth/session';
+import { resolveBackendUrl } from '../config/backend';
 
 export const Layout: React.FC = () => {
     const navigate = useNavigate();
@@ -16,7 +18,7 @@ export const Layout: React.FC = () => {
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        const userId = localStorage.getItem('user_id');
+        const userId = getUserId();
 
         // 1. Fetch Profile Image
         if (userId) {
@@ -63,9 +65,7 @@ export const Layout: React.FC = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user_id');
+        clearSession();
         navigate('/login');
     };
 
@@ -76,7 +76,7 @@ export const Layout: React.FC = () => {
     };
 
     const avatarUrl = profileImage
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${profileImage}`
+        ? resolveBackendUrl(profileImage)
         : '/assets/avatars/placeholder.svg';
 
     const isActive = (path: string) => location.pathname.startsWith(path) ? 'active' : '';
