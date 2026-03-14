@@ -6,7 +6,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import os
 
 # Core & Infrastructure Imports
-from core.settings import settings
+from core.config import Configs
 from core.database import engine, Base
 from core.exceptions import custom_http_exception_handler, validation_exception_handler
 
@@ -14,12 +14,14 @@ from core.exceptions import custom_http_exception_handler, validation_exception_
 from endpoints import (
     auth,
     employees,
+    roles,
     customers,
     services,
     appointments,
     financials,
     gallery,
-    notifications
+    notifications,
+    settings
 )
 
 # ==========================================
@@ -35,9 +37,9 @@ Base.metadata.create_all(bind=engine)
 # FASTAPI APPLICATION SETUP
 # ==========================================
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    title=Configs.PROJECT_NAME,
+    version=Configs.VERSION,
+    openapi_url=f"{Configs.API_V1_STR}/openapi.json",
     description="Backend API for KimKhawb Hair Studio Management System"
 )
 
@@ -57,7 +59,7 @@ app.mount("/static", StaticFiles(directory="uploads"), name="static")
 # This allows your frontend HTML/JS files to securely communicate with this backend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=Configs.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods (GET, POST, PUT, DELETE, etc.)
     allow_headers=["*"],  # Allows all headers (especially important for Authorization tokens)
@@ -81,50 +83,62 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(
     auth.router, 
-    prefix=f"{settings.API_V1_STR}/auth", 
+    prefix=f"{Configs.API_V1_STR}/auth", 
     tags=["Authentication"]
 )
 
 app.include_router(
     employees.router, 
-    prefix=f"{settings.API_V1_STR}/employees", 
+    prefix=f"{Configs.API_V1_STR}/employees", 
     tags=["Employees & HR"]
 )
 
 app.include_router(
+    roles.router, 
+    prefix=f"{Configs.API_V1_STR}/roles", 
+    tags=["Roles"]
+)
+
+app.include_router(
     customers.router, 
-    prefix=f"{settings.API_V1_STR}/customers", 
+    prefix=f"{Configs.API_V1_STR}/customers", 
     tags=["Customers"]
 )
 
 app.include_router(
     services.router, 
-    prefix=f"{settings.API_V1_STR}/services", 
+    prefix=f"{Configs.API_V1_STR}/services", 
     tags=["Services"]
 )
 
 app.include_router(
     appointments.router, 
-    prefix=f"{settings.API_V1_STR}/appointments", 
+    prefix=f"{Configs.API_V1_STR}/appointments", 
     tags=["Appointments"]
 )
 
 app.include_router(
     financials.router, 
-    prefix=f"{settings.API_V1_STR}/financials", 
+    prefix=f"{Configs.API_V1_STR}/financials", 
     tags=["Financials"]
 )
 
 app.include_router(
     gallery.router, 
-    prefix=f"{settings.API_V1_STR}/gallery", 
+    prefix=f"{Configs.API_V1_STR}/gallery", 
     tags=["Gallery"]
 )
 
 app.include_router(
     notifications.router, 
-    prefix=f"{settings.API_V1_STR}/notifications", 
+    prefix=f"{Configs.API_V1_STR}/notifications", 
     tags=["Notifications"]
+)
+
+app.include_router(
+    settings.router, 
+    prefix=f"{Configs.API_V1_STR}/settings", 
+    tags=["Settings"]
 )
 
 # ==========================================
@@ -137,6 +151,6 @@ def read_root():
     """
     return {
         "status": "online",
-        "message": f"Welcome to the {settings.PROJECT_NAME}",
-        "version": settings.VERSION
+        "message": f"Welcome to the {Configs.PROJECT_NAME}",
+        "version": Configs.VERSION
     }

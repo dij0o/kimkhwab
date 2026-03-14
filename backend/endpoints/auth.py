@@ -6,7 +6,7 @@ from jose import jwt, JWTError
 from pydantic import BaseModel
 
 from core.database import get_db
-from core.settings import settings
+from core.config import Configs
 from core.security import verify_password, create_access_token, create_refresh_token
 from models.employee import Employee
 
@@ -47,7 +47,7 @@ def refresh_token(request: TokenRefreshRequest, db: Session = Depends(get_db)):
     try:
         # 1. Decode the refresh token
         payload = jwt.decode(
-            request.refresh_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            request.refresh_token, Configs.SECRET_KEY, algorithms=[Configs.ALGORITHM]
         )
         
         # 2. Verify it is actually a refresh token

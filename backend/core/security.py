@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Any, Union
 from jose import jwt # from pyjwt package
 import bcrypt
-from core.settings import settings
+from core.config import Configs
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Checks if a plain text password matches the hash in the database."""
@@ -21,19 +21,19 @@ def create_access_token(subject: Union[str, Any], expires_delta: Optional[timede
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(minutes=Configs.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     # Notice we added "type": "access"
     to_encode = {"exp": expire, "sub": str(subject), "type": "access"}
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, Configs.SECRET_KEY, algorithm=Configs.ALGORITHM)
 
 def create_refresh_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """Generates a long-lived JWT token used strictly for getting new access tokens."""
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(minutes=Configs.REFRESH_TOKEN_EXPIRE_MINUTES)
     
     # Notice we added "type": "refresh"
     to_encode = {"exp": expire, "sub": str(subject), "type": "refresh"}
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, Configs.SECRET_KEY, algorithm=Configs.ALGORITHM)

@@ -11,6 +11,9 @@ from models.appointment import Appointment
 from schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentResponse
 from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
 
+# IMPORT THE NOTIFICATION UTILITY
+from utils.notifications import create_in_app_notification
+
 router = APIRouter()
 
 @router.post("/", response_model=APIResponse[AppointmentResponse], status_code=status.HTTP_201_CREATED)
@@ -30,6 +33,18 @@ def create_appointment(
     db.add(db_appointment)
     db.commit()
     db.refresh(db_appointment)
+
+    # ==========================================
+    # EVENT TRIGGER: NEW BOOKING
+    # ==========================================
+    if db_appointment.employee_id:
+        create_in_app_notification(
+            db=db,
+            employee_id=db_appointment.employee_id,
+            title="New Appointment Booked",
+            message=f"You have a new appointment scheduled for {db_appointment.start_time.strftime('%b %d at %I:%M %p')}.",
+            notif_type="info"
+        )
     
     return APIResponse(
         status="success",
@@ -92,12 +107,39 @@ def update_appointment(
     if not db_appointment:
         raise HTTPException(status_code=404, detail="Appointment not found.")
         
+    # Remember the original state BEFORE applying updates
+    original_status = db_appointment.status
+    original_start_time = db_appointment.start_time
+        
     update_data = appointment_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(db_appointment, field, value)
         
     db.commit()
     db.refresh(db_appointment)
+
+    # ==========================================
+    # EVENT TRIGGERS: CANCELLATIONS & RESCHEDULING
+    # ==========================================
+    if db_appointment.employee_id:
+        # 1. Did they cancel it?
+        if original_status != "cancelled" and db_appointment.status == "cancelled":
+            create_in_app_notification(
+                db=db,
+                employee_id=db_appointment.employee_id,
+                title="Appointment Cancelled",
+                message=f"An appointment on {original_start_time.strftime('%b %d at %I:%M %p')} has been cancelled.",
+                notif_type="danger" # Red alert
+            )
+        # 2. Did they change the time?
+        elif "start_time" in update_data and original_start_time != db_appointment.start_time:
+            create_in_app_notification(
+                db=db,
+                employee_id=db_appointment.employee_id,
+                title="Appointment Rescheduled",
+                message=f"An appointment was moved to {db_appointment.start_time.strftime('%b %d at %I:%M %p')}.",
+                notif_type="warning" # Yellow alert
+            )
     
     return APIResponse(
         status="success",

@@ -16,6 +16,9 @@ from schemas.employee import EmployeeCreate, EmployeeResponse, EmployeeUpdate, P
 from schemas.payslip import EmployeePayslipCreate, EmployeePayslipResponse
 from schemas.response import APIResponse, APIPaginatedResponse, PaginationMeta
 
+# IMPORT THE NOTIFICATION UTILITY
+from utils.notifications import create_in_app_notification
+
 router = APIRouter()
 
 # ==========================================
@@ -155,6 +158,47 @@ def update_employee(
         message="Employee updated successfully.", data=db_employee
     )
 
+@router.put("/{id}/password", response_model=APIResponse[dict])
+def update_employee_password(
+    id: int,
+    password_data: PasswordUpdate,
+    db: Session = Depends(get_db),
+    current_user: Employee = Depends(get_current_user)
+):
+    # Only allow users to change their own password (unless they are admin)
+    if current_user.id != id and current_user.role_id != 1:
+        raise HTTPException(status_code=403, detail="Not authorized to change this password")
+
+    db_employee = db.query(Employee).filter(Employee.id == id).first()
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Verify old password
+    if not verify_password(password_data.current_password, db_employee.password):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+
+    # Hash and save new password
+    db_employee.password = get_password_hash(password_data.new_password)
+    db.commit()
+
+    # ==========================================
+    # EVENT TRIGGER: SECURITY ALERT
+    # ==========================================
+    create_in_app_notification(
+        db=db,
+        employee_id=db_employee.id,
+        title="Password Changed",
+        message="Your account password was just updated. If you did not make this change, please contact the administrator immediately.",
+        notif_type="warning" # Yellow alert
+    )
+
+    return APIResponse(
+        status="success", 
+        status_code=status.HTTP_200_OK,
+        message="Password updated successfully.", 
+        data={"id": id}
+    )
+
 @router.delete("/{id}", response_model=APIResponse[dict])
 def deactivate_employee(
     id: int, 
@@ -259,34 +303,4 @@ def get_payslips(
         status="success", status_code=status.HTTP_200_OK,
         message="Payslips retrieved successfully.",
         data=payslips, meta=meta
-    )
-
-@router.put("/{id}/password", response_model=APIResponse[dict])
-def update_employee_password(
-    id: int,
-    password_data: PasswordUpdate,
-    db: Session = Depends(get_db),
-    current_user: Employee = Depends(get_current_user)
-):
-    # Only allow users to change their own password (unless they are admin)
-    if current_user.id != id and current_user.role_id != 1:
-        raise HTTPException(status_code=403, detail="Not authorized to change this password")
-
-    db_employee = db.query(Employee).filter(Employee.id == id).first()
-    if not db_employee:
-        raise HTTPException(status_code=404, detail="Employee not found")
-
-    # Verify old password
-    if not verify_password(password_data.current_password, db_employee.password):
-        raise HTTPException(status_code=400, detail="Incorrect current password")
-
-    # Hash and save new password
-    db_employee.password = get_password_hash(password_data.new_password)
-    db.commit()
-
-    return APIResponse(
-        status="success", 
-        status_code=status.HTTP_200_OK,
-        message="Password updated successfully.", 
-        data={"id": id}
     )

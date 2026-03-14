@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
-class Settings(BaseSettings):
+class Configs(BaseSettings):
     # Project Metadata
     PROJECT_NAME: str = "KimKhawb Hair Studio API"
     VERSION: str = "1.0.0"
@@ -41,5 +41,4 @@ class Settings(BaseSettings):
     # This tells Pydantic to read overrides from a .env file if it exists
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
-# Instantiate the settings so it can be imported across the app
-settings = Settings()
+Configs = Configs()

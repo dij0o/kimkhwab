@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 from pydantic import ValidationError
 
 from core.database import get_db
-from core.settings import settings
+from core.config import Configs
 from models.employee import Employee
 
 # This tells FastAPI where the login URL is, enabling the Swagger UI 'Authorize' button
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{Configs.API_V1_STR}/auth/login")
 
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
@@ -18,7 +18,7 @@ def get_current_user(
     try:
         # Decode the token
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token, Configs.SECRET_KEY, algorithms=[Configs.ALGORITHM]
         )
         
         # ==========================================

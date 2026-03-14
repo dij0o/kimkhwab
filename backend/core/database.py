@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from core.settings import settings
+from core.config import Configs
 
 # Use the dynamically assembled URI from our settings file
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(Configs.SQLALCHEMY_DATABASE_URI)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

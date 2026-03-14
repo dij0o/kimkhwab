@@ -279,13 +279,99 @@ CREATE TABLE employee_payslips (
     FOREIGN KEY (ledger_entry_id) REFERENCES ledger_entries(id)
 );
 
--- ========================================
--- 19) Default Admin User
--- ========================================
-INSERT INTO roles (name, description) VALUES ('admin', 'System Administrator');
-INSERT INTO employee_types (name) VALUES ('permanent');
+-- ==========================================
+-- 19) NOTIFICATIONS TABLE
+-- ==========================================
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    title VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) DEFAULT 'info',
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+-- Index for faster queries since we will often filter by employee_id and sort by date
+CREATE INDEX idx_notifications_employee_id ON notifications(employee_id);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
+
+-- ========================================
+-- 20) Default Data, Admin User & Permissions
+-- ========================================
+
+-- Insert Base Role and Type (Forcing IDs to 1 to ensure safe foreign keys)
+INSERT INTO roles (id, name, description) VALUES (1, 'admin', 'System Administrator') ON CONFLICT DO NOTHING;
+INSERT INTO employee_types (id, name) VALUES (1, 'permanent') ON CONFLICT DO NOTHING;
+
+-- Insert ALL System Permissions
+INSERT INTO permissions (code, description) VALUES 
+    ('view_customers', 'View Customers'),
+    ('add_customers', 'Add Customers'),
+    ('edit_customers', 'Edit Customers'),
+    ('delete_customers', 'Delete Customers'),
+    ('view_appointments', 'View Appointments'),
+    ('add_appointments', 'Add Appointments'),
+    ('edit_appointments', 'Edit Appointments'),
+    ('cancel_appointments', 'Cancel Appointments'),
+    ('view_services', 'View Services'),
+    ('add_services', 'Add Services'),
+    ('edit_services', 'Edit Services'),
+    ('delete_services', 'Delete Services'),
+    ('view_invoices', 'View Invoices'),
+    ('create_invoices', 'Create Invoices'),
+    ('view_ledger', 'View Ledger'),
+    ('view_payslips', 'View & Manage Payslips'),
+    ('view_employees', 'View Employees'),
+    ('add_employees', 'Add Employees'),
+    ('edit_employees', 'Edit Employees'),
+    ('manage_roles', 'Manage Roles & Permissions'),
+    ('view_dashboard', 'View Dashboard Stats'),
+    ('view_reports', 'View Analytics & Reports'),
+    ('manage_gallery', 'Manage Gallery')
+ON CONFLICT (code) DO NOTHING;
+
+-- Map ALL Permissions to the Admin Role (role_id = 1)
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 1, id FROM permissions
+ON CONFLICT DO NOTHING;
+
+-- Create the Default Admin User
 -- Password is 'admin123'
-INSERT INTO employees (full_name, username, password, role_id, type_id, is_active) 
-VALUES ('System Admin', 'admin', '$2b$12$1ZtAH3EH8qQYLYFuN4KNgOtWOOAbdC06AMvk4dF.L9zUJKDjh/qe2', 1, 1, TRUE);
+INSERT INTO employees (
+    id, full_name, designation, username, password, role_id, type_id, specialties, 
+    id_card_number, email, mobile_number, telephone_number, 
+    address_line, city, province, postal_code, country, salary, is_active
+) VALUES (
+    1, 'Sanaa Ali Awan', 'CEO / Founder', 'Sanaa', '$2b$12$1ZtAH3EH8qQYLYFuN4KNgOtWOOAbdC06AMvk4dF.L9zUJKDjh/qe2', 
+    1, 1, 'Curly Hair', '42201-3513619-2', 'sanaa@kimkhwab.net', '03212201251', 
+    NULL, 'House 196-A, Street 22, F-11/2', 'Islamabad', 'Capital', '44000', 'Pakistan', NULL, TRUE
+) ON CONFLICT DO NOTHING;
 
+-- Adjust the sequences so new records don't conflict with these hardcoded IDs
+SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));
+SELECT setval('employee_types_id_seq', (SELECT MAX(id) FROM employee_types));
+SELECT setval('employees_id_seq', (SELECT MAX(id) FROM employees));
+SELECT setval('permissions_id_seq', (SELECT MAX(id) FROM permissions));
+
+-- ========================================
+-- 21) System Settings (Key-Value Store)
+-- ========================================
+CREATE TABLE system_settings (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(100) NOT NULL UNIQUE,
+    value TEXT,
+    description TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert some default blank keys so the frontend has them ready
+INSERT INTO system_settings (key, value, description) VALUES 
+    ('smtp_host', '', 'Email SMTP Host'),
+    ('smtp_port', '587', 'Email SMTP Port'),
+    ('smtp_user', '', 'Email SMTP Username'),
+    ('smtp_pass', '', 'Email SMTP Password'),
+    ('smtp_from_email', '', 'System From Email Address'),
+    ('whatsapp_api_token', '', 'Meta WhatsApp Cloud API Token'),
+    ('whatsapp_phone_number_id', '', 'Meta WhatsApp Phone Number ID')
+ON CONFLICT (key) DO NOTHING;

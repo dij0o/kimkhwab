@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -14,9 +14,11 @@ import { Modal } from '../components/Modal';
 import { Card } from '../components/Card';
 
 export const Appointments: React.FC = () => {
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
-    const [searchParams, setSearchParams] = useSearchParams();
 
     // Dropdown Data States
     const [customers, setCustomers] = useState<any[]>([]);
@@ -255,13 +257,26 @@ export const Appointments: React.FC = () => {
                 isSlide={true}
                 footer={
                     <div className="d-flex justify-content-between w-100">
-                        {isEditModalOpen ? (
-                            <button type="button" className="btn btn-outline-danger" onClick={handleCancelAppointment} disabled={isSubmitting || formData.status === 'cancelled'}>
-                                Cancel Appointment
-                            </button>
-                        ) : <div></div>}
+                        {/* LEFT SIDE BUTTONS */}
+                        <div>
+                            {isEditModalOpen ? (
+                                <button type="button" className="btn btn-outline-danger" onClick={handleCancelAppointment} disabled={isSubmitting || formData.status === 'cancelled'}>
+                                    Cancel Appointment
+                                </button>
+                            ) : <div></div>}
+                        </div>
+
+                        {/* RIGHT SIDE BUTTONS */}
                         <div>
                             <button type="button" className="btn btn-secondary mr-2" onClick={() => { setIsNewModalOpen(false); setIsEditModalOpen(false); }} disabled={isSubmitting}>Close</button>
+
+                            {/* THE CHECKOUT BUTTON */}
+                            {isEditModalOpen && selectedEvent && formData.status !== 'cancelled' && (
+                                <button type="button" className="btn btn-success text-white mr-2" onClick={() => navigate(`/invoices/create?appointmentId=${selectedEvent.id}`)}>
+                                    <i className="fe fe-check-circle mr-2"></i>Checkout
+                                </button>
+                            )}
+
                             <button type="button" className="btn btn-primary" onClick={handleSaveAppointment} disabled={isSubmitting}>
                                 {isSubmitting ? "Saving..." : (isEditModalOpen ? "Update Booking" : "Create Booking")}
                             </button>
